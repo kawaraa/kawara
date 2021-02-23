@@ -43,6 +43,7 @@ class ProductResolver {
       const collections = await this.productRepository.getCollection(country);
       response.json({ currency, rate, collections });
     } catch (error) {
+      console.log(error);
       response.status(500).end(CustomError.toJson(error));
     }
   }

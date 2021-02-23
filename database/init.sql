@@ -3,7 +3,7 @@ USE `user`;
 
 CREATE TABLE `account` (
   `id` VARCHAR(250),
-  `type` ENUM('admin', 'seller', 'buyer') NOT NULL,
+  `type` ENUM('seller', 'buyer') NOT NULL,
   `email` VARCHAR(100) NOT NULL UNIQUE,
   `password` VARCHAR(250) NOT NULL,
   `firstName` VARCHAR(20) NULL,
@@ -182,8 +182,8 @@ CREATE TABLE `deleted` (
   PRIMARY KEY(`id`)
 );
 
+-- To suport arabic language run the following commands
 -- ALTER TABLE `product` MODIFY column `description` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
 -- ALTER TABLE `customer` MODIFY column `about` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
 -- ALTER TABLE `order` MODIFY column `note` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
--- `warehouse` ENUM('eu', 'na', 'sa', 'as', 'af', 'oc') NOT NULL,
 -- costPrice, wholesalePrice, retailPrice
