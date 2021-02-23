@@ -1,0 +1,201 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const adminLinks = require("./admin-links.hbs");
+const { Formatter } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Admin Dashboard payouts")}
+
+    <style>
+      h2 {
+        text-align: center;
+        margin-bottom: 24px;
+        font-size: 18px;
+      }
+
+      #payout-list {
+        list-style: none;
+      }
+
+      .payouts-header,
+      .sales-wrapper {
+        display: flex;
+        align-items: center;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 16px;
+        border-bottom: 0.5px solid var(--blur);
+        cursor: pointer;
+      }
+
+      .sales-wrapper:hover {
+        background: var(--blur);
+      }
+
+      .seller,
+      .sold,
+      .sales,
+      .fee,
+      .payout {
+        width: 150px;
+        display: flex;
+      }
+
+      .bank-info-wrapper {
+        position: relative;
+        overflow: hidden;
+        max-height: 0;
+        font-size: 16px;
+        transition: 0.5s ease;
+      }
+
+      .bank-info-wrapper.show {
+        max-height: 180px;
+      }
+
+      .bank-info-wrapper>p {
+        display: flex;
+      }
+
+      .bank-info-wrapper>:nth-child(2) {
+        flex-flow: row wrap;
+        margin: 10px 0;
+      }
+
+      .account-holder,
+      .type,
+      .routing-number,
+      .account-number,
+      .created {
+        min-width: 100px;
+        margin-right: 10px;
+        padding-right: 10px;
+        border-right: 1px solid var(--blur);
+      }
+
+      .bank-info-wrapper>.btn {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        padding: 3px 8px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container payouts">
+        ${adminLinks()}
+        <div class="tab-content payouts">
+          <h2>Issue these payouts on the first and 15th of every month.</h2>
+          <h4 class="payouts-header">
+            <span class="seller">Seller</span>
+            <span class="sold">Sold</span>
+            <span class="sales">Sales</span>
+            <span class="fee">Fee</span>
+            <span class="payout">Payout</span>
+          </h4>
+
+          <ul id="payout-list">
+            <li class="payout-item">
+              <p class="sales-wrapper" onclick="showBankInfo(this.nextElementSibling)">
+                <a href="/admin/user/" class="seller link"></a>
+                <span class="sold"></span>
+                <span class="sales"></span>
+                <span class="fee"></span>
+                <span class="payout"></span>
+              </p>
+              <div class="bank-info-wrapper">
+                <p>
+                  <span class="account-holder"></span>
+                  <span class="type"></span>
+                  <span class="country"></span>
+                </p>
+                <p>
+                  <span class="routing-number"></span>
+                  <span class="account-number"></span>
+                  <span class="bic"></span>
+                </p>
+                <p>
+                  <span class="created"></span>
+                  <span class="status"></span>
+                </p>
+                <button onclick="handlePayout(this)" type="button" class="btn">Pay</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const payoutList = queryId("payout-list");
+      const payoutEl = payoutList.children[0].cloneNode(true);
+      ${ Formatter.toString() }
+      payoutList.innerHTML = "";
+
+      function showBankInfo(bankInfo) {
+        if (bankInfo) bankInfo.classList.toggle("show");
+      }
+
+      async function handlePayout(btn) {
+        if (!confirm("Are you sure you want to payout?")) return;
+        const url = "/api/admin/payout/" + btn.name
+        setLoading(true);
+        const res = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (res.error) return showErrorMessage(res.error);
+        btn.parentElement.parentElement.remove();
+      }
+
+      function renderPayout(wrapper, payout) {
+        const sellerEl = wrapper.querySelector(".seller");
+        sellerEl.src += payout.sellerId;
+        sellerEl.innerText = payout.sellerName;
+        wrapper.querySelector(".sold").innerText = payout.sold;
+        wrapper.querySelector(".sales").innerText = priceToString(payout.sales);
+        wrapper.querySelector(".fee").innerText = priceToString(payout.fee);
+        wrapper.querySelector(".payout").innerText = priceToString(payout.payout);
+        if (payout.bank) {
+          wrapper.querySelector(".account-holder").innerText = payout.bank.accountHolder;
+          wrapper.querySelector(".type").innerText = payout.bank.type;
+          wrapper.querySelector(".country").innerText = payout.bank.country;
+          wrapper.querySelector(".routing-number").innerText = payout.bank.routingNumber;
+          if (!payout.bank.routingNumber) wrapper.querySelector(".routing-number").remove();
+          wrapper.querySelector(".account-number").innerText = payout.bank.accountNumber;
+          if (payout.bank.bic) wrapper.querySelector(".bic").innerText = payout.bank.bic;
+          wrapper.querySelector(".created").innerText = Formatter.dateToText(payout.bank.created);
+          wrapper.querySelector(".status").innerText = payout.bank.status;
+          wrapper.querySelector(".btn").name = payout.sellerId;
+          if (payout.bank.status !== "confirmed") wrapper.querySelector(".btn").remove();
+        } else {
+          wrapper.querySelector(".bank-info-wrapper").remove();
+        }
+        payoutList.appendChild(wrapper)
+      }
+
+      async function fetchPayouts(query) {
+        payoutList.innerHTML = "";
+        const url = "/api/admin/payouts" + query;
+        setLoading(true);
+        const payouts = await fetch(url).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (payouts.error) return showErrorMessage(payouts.error);
+        payouts.forEach(payout => renderPayout(payoutEl.cloneNode(true), payout));
+      }
+      fetchPayouts("?search=&offset=0&limit=20&sortBy=desc");
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

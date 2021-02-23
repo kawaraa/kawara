@@ -1,0 +1,183 @@
+module.exports = () => `
+<style>
+  .pictures-wrapper {
+    position: relative;
+    padding-bottom: 30px;
+  }
+
+  #main-picture-preview-wrapper {
+    display: none;
+    max-width: 300px;
+    max-height: 300px;
+    margin: 0 auto 10px auto;
+  }
+
+  .pictures-file-input-wrapper {
+    overflow: hidden;
+    display: flex;
+    border-radius: 5px;
+  }
+
+  #main-picture-preview-wrapper>img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  #main-picture {
+    display: block;
+    margin: 0 auto 10px auto;
+    width: 250px;
+    border-radius: 5px;
+    box-shadow: 0 0 2px 0 var(--font);
+  }
+
+  #pictures,
+  #video,
+  #main-picture {
+    position: relative;
+    overflow: hidden;
+    flex: 5;
+    height: 40px;
+    padding: 0;
+    font-size: 5px;
+    background: var(--red);
+    cursor: pointer;
+  }
+
+  #main-picture:after,
+  #pictures:after,
+  #video:after {
+    content: attr(data-msg);
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    padding-top: 7px;
+    font-size: 20px;
+    text-align: center;
+    background: var(--red);
+    color: var(--white);
+    cursor: pointer;
+  }
+
+  #main-picture:after {
+    background: var(--white);
+    color: var(--font);
+  }
+
+  #video:after {
+    background: var(--blue);
+    color: var(--white);
+  }
+
+  #pictures:hover:after {
+    background: var(--dark);
+  }
+
+  #video:hover:after {
+    background: var(--dark);
+  }
+
+
+  .picture-urls {
+    position: relative;
+    margin: 25px 15px 10px 0;
+  }
+
+
+  .picture-urls>input[type="button"] {
+    bottom: 5px;
+    right: -25px;
+  }
+
+  .picture-urls>input[type="url"] {
+    display: block;
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: none;
+    box-shadow: 0 0 0px 1px var(--dark);
+    border-radius: 3px;
+  }
+
+  .pictures-wrapper>.add-btn {
+    right: 15px;
+  }
+
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {
+
+    #main-picture,
+    #pictures,
+    #video {
+      height: 35px;
+    }
+
+
+    #main-picture:after,
+    #pictures:after,
+    #video:after {
+      font-size: 18px;
+    }
+
+    .picture-urls {
+      margin: 25px 15px 10px 15px;
+    }
+  }
+</style>
+
+<div class="input-field">
+  <label>Pictures:</label>
+  <div class="pictures-wrapper">
+    <div id="main-picture-preview-wrapper"><img src="" alt=""></div>
+    <input onchange="showInputText(this)" type="file" accept="image/*" name="mainPicture"
+      data-msg="Upload the main picture" id="main-picture" />
+    <div class="pictures-file-input-wrapper">
+      <input onchange="showInputText(this)" type="file" accept="image/*" name="pictures" multiple
+        data-msg="Upload pictures" id="pictures" />
+      <input onchange="showInputText(this)" type="file" accept="video/*" name="video" data-msg="Upload a video"
+        id="video" />
+    </div>
+
+    <button type="button" onclick="addPictureUrl()" class="add-btn">Add Picture URL</button>
+
+    <div class="picture-urls">
+      <input type="button" value="+" onclick="this.parentElement.remove()" style="display: none;" />
+      <input type="url" name="pictureUrls" class="nf" />
+    </div>
+  </div>
+</div>
+
+<script>
+  const picturesWrapper = query(".pictures-wrapper");
+  const pictureUrlEl = picturesWrapper.children[4].cloneNode(true);
+  const previewWrapper = queryId("main-picture-preview-wrapper");
+
+  function addPictureUrl() {
+    const el = pictureUrlEl.cloneNode(true);
+    el.children[0].style.display = "block";
+    picturesWrapper.appendChild(el);
+  }
+
+  function getPictures() {
+    const pictureUrlInputs = Array.from(picturesWrapper.querySelectorAll("input[name=pictureUrls]"));
+    return pictureUrlInputs.filter(input => input.value).map(input => input.value).join(",")
+  }
+
+  function showInputText(input) {
+    const files = input.files.length
+    let msg = files > 0 ? files + " pictures selected" : "Upload pictures";
+    if (input.name === "video") msg = files > 0 ? files + " video selected" : "Upload a video"
+    else if (input.name === "mainPicture") {
+      previewWrapper.style.display = "flex";
+      msg = files > 0 ? files + " picture selected" : "Upload the main pictures"
+      if (files > 0) previewWrapper.children[0].src = URL.createObjectURL(input.files[0]);
+      else previewWrapper.style.display = "none";
+
+    }
+    input.dataset.msg = msg
+  }
+</script>
+`;

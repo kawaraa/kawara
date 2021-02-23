@@ -1,0 +1,159 @@
+const header = require("../../../layout/header.hbs");
+const navbar = require("../../../layout/navbar.hbs");
+const footer = require("../../../layout/footer.hbs");
+const sellerLinks = require("../seller-links.hbs");
+const salesTabContent = require("./sales-tab-content.hbs");
+const historyTabContent = require("./history-tab-content.hbs");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Seller dashboard")}
+
+    <style>
+      .sales-tab-btns-wrapper {
+        overflow: hidden;
+        display: flex;
+        border-radius: 25px;
+      }
+
+      .sales-btn {
+        text-decoration: none;
+        flex: 2;
+        padding: 3px;
+        font-size: 17px;
+        text-align: center;
+        background: var(--dark);
+        color: var(--white);
+        border: none;
+        cursor: pointer;
+        transition: 0.2s ease;
+      }
+
+      .sales-btn.active,
+      .sales-btn:hover {
+        background: var(--red);
+      }
+
+      .sales-tab-content {
+        display: none;
+        margin-top: 30px;
+      }
+
+      .sales-tab-content.show {
+        display: block;
+      }
+
+      .sales-tab-content>h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .sales-tab-content.balance {
+        max-width: 600px;
+        margin: 30px auto 0 auto;
+      }
+
+      .sales-tab-content>dl {
+        display: flex;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        font-size: 18px;
+        border-bottom: 0.5px solid var(--blur);
+
+      }
+
+      .sales-tab-content>dl:last-child {
+        border-bottom: none;
+      }
+
+      .sales-tab-content>dl>dt {
+        flex: 2;
+      }
+
+      .sales-tab-content>dl>dd {
+        flex: 8;
+        text-align: right;
+      }
+
+      .sales-tab-content>div {
+        text-align: right;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {}
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container seller-dashboard">
+        ${sellerLinks()}
+        <div class="tab-content sales">
+          <div class="sales-tab-btns-wrapper" onclick="showSalesTabContent(event)">
+            <button class="sales-btn nf active" name="balance">Balance</button>
+            <button class="sales-btn nf" name="sales">Sales</button>
+            <button class="sales-btn nf" name="history">Sales History</button>
+          </div>
+          <section class="sales-tab-content balance show">
+            <h2>Balance</h2>
+            <dl>
+              <dt>Sold</dt>
+              <dd class="balance-sold"></dd>
+            </dl>
+            <dl>
+              <dt>Fee</dt>
+              <dd class="balance-fee"></dd>
+            </dl>
+            <dl>
+              <dt>Total Payable</dt>
+              <dd class="balance-total"></dd>
+            </dl>
+          </section>
+
+          ${salesTabContent()}
+          ${historyTabContent()}
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const balanceContentWrapper = query(".sales-tab-content.balance");
+
+      function showSalesTabContent({ target }) {
+        if (!target.name) return
+        queryAll(".sales-tab-content").forEach(tabContent => removeClass(tabContent, "show"));
+        addClass(query(".sales-tab-content." + target.name), "show");
+        Array.from(target.parentElement.children).forEach(btn => removeClass(btn, "active"));
+        addClass(target, "active");
+        switch (target.name) {
+          case "sales":
+            renderSalesTabContent();
+            break;
+          case "history":
+            renderHistoryTabContent();
+        }
+      }
+
+      (async () => {
+        setLoading(true);
+        const balance = await fetch("/api/seller/balance").then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (balance.error) return showErrorMessage(balance.error);
+
+        query(".balance-sold").innerText = priceToString(balance.sold);
+        query(".balance-fee").innerText = priceToString(balance.fee);
+        query(".balance-total").innerText = priceToString(balance.total);
+
+      })()
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

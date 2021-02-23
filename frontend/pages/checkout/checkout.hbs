@@ -1,0 +1,720 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const { Validator, countries } = require("k-utilities");
+const stripePublicKey = env.STRIPE_PUBLIC_KEY;
+
+module.exports = ({user, body}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Checkout EasyGetShop")}
+    <style>
+      .container.checkout {
+        min-height: 90vh;
+        padding-top: 30px;
+      }
+
+      .checkout-heading {
+        text-align: center;
+      }
+
+      .checkout.box {
+        overflow: hidden;
+        border-radius: 15px;
+        background: var(--white);
+        margin: 20px 0;
+        padding: 25px;
+      }
+
+      .checkout.box.payment {
+        overflow: visible;
+      }
+
+      .checkout.h {
+        font-size: 22px;
+        margin-bottom: 40px;
+        color: black;
+      }
+
+      .box.h {
+        font-size: 18px;
+        margin-top: 35px;
+        color: black;
+      }
+
+      .box.row {
+        margin-right: 25px;
+        display: flex;
+      }
+
+      .box.row.country {
+        margin-bottom: 0;
+      }
+
+      .input-field {
+        position: relative;
+        flex: 3;
+        margin: 10px 15px 0 0;
+      }
+
+      .box.row> :last-child {
+        margin-right: 0;
+      }
+
+      .input-field>label {
+        display: block;
+        font-size: 16px;
+        outline: none;
+        margin-bottom: 5px;
+      }
+
+      .input-field>input,
+      .input-field>select {
+        overflow: hidden;
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 17px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 0 3px 0 var(--font);
+        outline: none;
+      }
+
+      .input-field.method {
+        max-height: 100px;
+        box-shadow: 0 0 3px 0 var(--font);
+        border-radius: 5px;
+      }
+
+      .input-field.method.focus {
+        box-shadow: 0 0 0 2px var(--red);
+      }
+
+      .input-field>span {
+        display: block;
+        font-size: 20px;
+        text-align: center;
+        color: black;
+        margin-top: 10px;
+      }
+
+      .input-field>img {
+        display: block;
+        width: 45px;
+        margin: auto;
+      }
+
+      .input-field>.paypal {
+        width: 100px;
+        margin-top: 10px;
+      }
+
+      .card-logos {
+        flex-flow: row wrap;
+        text-align: center;
+        margin-top: 10px;
+        margin-bottom: 20px;
+      }
+
+      img.card {
+        height: 25px;
+      }
+
+      .input-field>input[type="radio"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
+      #payment-info-wrapper {
+        display: none;
+        margin: 30px auto;
+        max-width: 420px;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 0 2px var(--font);
+      }
+
+      #payment-info-wrapper> :first-child {
+        margin-bottom: 20px;
+      }
+
+      label[for=bank-holder] {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 16px;
+      }
+
+      #bank-holder {
+        display: block;
+        width: 100%;
+        border: none;
+        padding: 5px 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        box-shadow: 0 0 2px 0 var(--font);
+        outline: none;
+      }
+
+      #card-errors {
+        font-size: 16px;
+        color: var(--red);
+        text-align: center;
+        margin-top: 25px;
+      }
+
+      #paypal-payment {
+        position: relative;
+        display: none;
+        margin-top: 20px;
+        padding-left: 25px;
+        font-size: 20px;
+      }
+
+      #paypal-payment:before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 2px;
+        left: 0;
+        width: 20px;
+        height: 20px;
+        background: var(--blue);
+        border-radius: 50%;
+      }
+
+      #paypal-payment:after {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 8px;
+        left: 6px;
+        width: 8px;
+        height: 8px;
+        background: var(--white);
+        border-radius: 50%;
+      }
+
+      .submit-btn-wrapper {
+        text-align: right;
+        margin: 25px 25px 0 0;
+      }
+
+      .submit.btn {
+        display: inline-block;
+        padding: 10px 25px;
+        font-size: 20px;
+      }
+
+      .submit.btn:disabled {
+        background: gray;
+        cursor: not-allowed;
+      }
+
+      .checkout-item-list {
+        list-style: none;
+      }
+
+      .checkout-item-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        padding: 15px;
+        background: var(--white);
+        border-bottom: 1px solid var(--blur);
+      }
+
+      .checkout-item-column.img {
+        overflow: hidden;
+        min-width: 140px;
+        max-width: 140px;
+        max-height: 200px;
+        display: flex;
+        align-items: center;
+        margin-right: 10px;
+      }
+
+      .checkout-item-img {
+        width: 100%;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+
+      .checkout-item-column.details {
+        overflow: hidden;
+        position: relative;
+        flex: auto;
+        padding-right: 30px;
+      }
+
+      .checkout-item-name {
+        display: block;
+        font-size: 18px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+        margin-bottom: 10px;
+      }
+
+      .checkout-item-name:hover {
+        display: block;
+        color: var(--red);
+      }
+
+      .checkout-item-type {
+        display: flex;
+        align-items: center;
+        margin: 5px 0;
+      }
+
+      .type-name {
+        margin-right: 10px;
+        font-size: 14px;
+      }
+
+      .type-desc {
+        overflow: hidden;
+        display: flex;
+        font-weight: bold;
+        min-width: 50px;
+        max-width: 135px;
+        max-height: 60px;
+        font-size: 15px;
+        text-transform: uppercase;
+      }
+
+      .type-desc>img {
+        max-width: 30px;
+        max-height: 30px;
+        cursor: pointer;
+      }
+
+      .checkout-item-price {
+        font-size: 18px;
+        font-weight: bolder;
+        margin: 5px 0;
+      }
+
+      .checkout-item-shipping {
+        font-size: 16px;
+      }
+
+      .shipping-cost,
+      .shipping-country {
+        font-weight: bold;
+      }
+
+      .checkout-item-quantity {
+        display: inline-block;
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        font-size: 18px;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .checkout.box {
+          padding: 10px;
+        }
+
+        .box.row {
+          flex-flow: column;
+          margin: 0;
+        }
+
+        .input-field {
+          margin: 10px 0 10px 0;
+        }
+
+        .input-field.method {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex: auto;
+          height: 40px;
+        }
+
+        .input-field.method>span {
+          display: none;
+        }
+
+        .input-field>img {
+          width: 40px;
+        }
+
+        .card-logos {
+          margin: 10px 0 10px 0;
+        }
+
+        .submit-btn-wrapper {
+          margin-right: 0;
+        }
+
+        .submit.btn {
+          display: block;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          width: 100%;
+          z-index: 8;
+          border-radius: 0;
+        }
+
+        .checkout-item-wrapper {
+          padding: 5px;
+        }
+
+        .checkout-item-column.img {
+          min-width: 100px;
+          max-width: 100px;
+        }
+
+        .checkout-item-name {
+          font-size: 16px;
+          margin-bottom: 5px;
+        }
+
+        .checkout-item-type {
+          margin: 2px 0;
+          font-size: 12px;
+        }
+
+        .type-name {
+          font-size: 14px;
+        }
+
+        .type-name> :first-child {
+          display: none;
+        }
+
+        .type-desc {
+          font-size: 13px;
+        }
+
+        .type-desc>img {
+          max-width: 25px;
+          max-height: 25px;
+        }
+
+        .shipping-cost {
+          color: var(--blue);
+        }
+
+        .checkout-item-quantity {
+          bottom: 20px;
+          right: 20px;
+          font-size: 16px;
+        }
+
+        .checkout-item-shipping {
+          font-size: 12px;
+        }
+      }
+    </style>
+    <script src="https://js.stripe.com/v3/"></script>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+
+      <main class="container checkout">
+        <h1 class="checkout-heading">Checkout</h1>
+        <form action="/checkout/complete" method="GET" onchange="handleChange(event)" onsubmit="pay(event)">
+          <input type="hidden" name="payment_intent" value="">
+          <section class="checkout box">
+            <h2 class="checkout h">Shipping Information</h2>
+            <h3 class="box h">Personal Information</h3>
+            <div class="box row personal">
+              <div class="input-field">
+                <label for="full-name">Full Name</label>
+                <input type="text" name="fullName" min="5" max="40" required id="full-name" value="Mister Tester" />
+              </div>
+              <div class="input-field">
+                <label for="email">Email</label>
+                <input type="email" name="email" required id="email" value="test@kawaraa.com" />
+              </div>
+              <div class="input-field">
+                <label for="phone">Phone Number</label>
+                <input type="tel" name="phone" id="phone" placeholder="+1234567890" value="+31646349556" />
+              </div>
+            </div>
+            <h3 class="box h">Address</h3>
+            <div class="box row country">
+              <div class="input-field">
+                <label for="country">Country</label>
+                <select name="country" required id="country">
+                  ${countries.render((key, value)=>`
+                  <option value="${key}" ${key===user.country && "selected" }>${value[0]}</option>
+                  `)}
+                </select>
+              </div>
+              <div class="input-field">
+                <label for="state">State / Province / Region</label>
+                <input type="text" name="state" min="2" max="85" required value="Test state" />
+              </div>
+              <div class="input-field">
+                <label for="city">City / Town</label>
+                <input type="city" name="city" min="2" max="85" required id="city" value="Test city" />
+              </div>
+            </div>
+            <div class="box row street">
+              <div class="input-field">
+                <label for="postal-code">Zip / Postal Code</label>
+                <input type="text" name="postalCode" min="4" max="10" required id="postal-code" value="1010EE" />
+              </div>
+              <div class="input-field">
+                <label for="street">Street</label>
+                <input type="text" name="street" min="2" max="150" required id="street" value="Test street" />
+              </div>
+              <div class="input-field">
+                <label for="house-number">House Number</label>
+                <input type="text" name="houseNumber" id="house-number" value="10" />
+              </div>
+              <div class="input-field">
+                <label for="addition">Addition (Optional)</label>
+                <input type="text" name="addition" id="addition" value="" value="A" />
+              </div>
+            </div>
+          </section>
+
+          <section class="checkout box payment">
+            <h2 class="checkout h">Payment Methods</h2>
+            <div class="box row">
+              <label class="input-field method">
+                <span>Card</span>
+                <div class="card-logos">
+                  <img src="/image/visa-card-logo.png" alt="" class="card" />
+                  <img src="/image/master-card-logo.png" alt="" class="card" />
+                  <img src="/image/maestro-card-logo.png" alt="" class="card" />
+                  <img src="/image/american-express-logo.png" alt="" class="card" />
+                </div>
+                <input type="radio" name="paymentMethod" value="card" />
+              </label>
+              <label class="input-field method">
+                <span>Ideal</span>
+                <img src="/image/ideal-logo.png" alt="" />
+                <input type="radio" name="paymentMethod" value="idealBank" />
+              </label>
+              <label class="input-field method">
+                <span>PayPal</span>
+                <img src="/image/paypal-logo.png" alt="" class="paypal" />
+                <input type="radio" name="paymentMethod" value="paypal" />
+              </label>
+            </div>
+            <div id="payment-info-wrapper">
+              <div>
+                <label for="bank-holder">Bank Holder</label>
+                <input type="text" name="bankHolder" id="bank-holder" placeholder="J Kelvin">
+              </div>
+              <div id="payment-info"></div>
+            </div>
+            <div id="paypal-payment">PayPal</div>
+            <div id="card-errors" role="alert"></div>
+            <div class="submit-btn-wrapper">
+              <button type="submit" class="submit btn" disabled>Pay</button>
+            </div>
+          </section>
+        </form>
+
+        <section class="checkout box">
+          <h2 class="checkout h">Order Review</h2>
+          <ul class="checkout-item-list">
+            ${JSON.parse(body.items).render(item => `
+            <li class="checkout-item-wrapper">
+              <div class="checkout-item-column img">
+                <img src="${item.picture}" onclick="previewPicture(event)" alt="" class="checkout-item-img">
+              </div>
+              <div class="checkout-item-column details">
+                <a href="/" class="checkout-item-name">${item.name}</a>
+                <dl class="checkout-item-type">
+                  <dt class="type-name">Type<span> / Color / Material</span>:</dt>
+                  <dd class="type-desc type">
+                    ${!Validator.isUrl(item.type)?item.type:`
+                    <img src="${item.type}" onclick="previewPicture(event)" alt="" />
+                    `}
+                  </dd>
+                </dl>
+                <dl class="checkout-item-type">
+                  <dt class="type-name">Size<span> / Other</span>:</dt>
+                  <dd class="type-desc size">${item.size}</dd>
+                </dl>
+                <div class="checkout-item-price">${Number.parseInt(item.price).priceToString(user.rate, user.currency)}
+                </div>
+                <p class="checkout-item-shipping">
+                  <span class="shipping-cost">
+                    ${Number.parseInt(item.shippingCost) > 0 ?
+                    Number.parseInt(item.shippingCost).priceToString(user.rate, user.currency) : "Free"}
+                  </span>
+                  shipping to
+                  <span class="shipping-country">${item.country}</span>
+                </p>
+              </div>
+              <span class="checkout-item-quantity">${item.quantity}</span>
+            </li>
+            `)}
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const stripe = Stripe("${stripePublicKey}");
+      const paymentInfoWrapper = queryId("payment-info-wrapper");
+      const paypalPayment = queryId("paypal-payment");
+      const errorEl = queryId("card-errors");
+      const paymentMethodBtns = queryAll("input[name=paymentMethod]");
+      const payButton = query(".submit.btn");
+      const stripeElement = stripe.elements();
+      const return_url = window.location.origin + "/checkout/complete";
+      const items = ${ body.items };
+
+      ${ Validator.toString() }
+
+      const cardStyle = {
+        base: {
+          color: "#585757",
+          fontFamily: "-apple-system, 'Helvetica Neue', BlinkMacSystemFont,'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+          fontSmoothing: "antialiased",
+          fontSize: "20px",
+          "::placeholder": { color: "#aab7c4" },
+        },
+        invalid: { color: "#fa755a", iconColor: "#fa755a" }
+      };
+      const idealStyle = {
+        base: {
+          fontFamily: "-apple-system, 'Helvetica Neue', BlinkMacSystemFont,'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+          padding: "10px 15px",
+          boxShadow: "0 0 0 2px red",
+          color: "#585757",
+          fontSize: "18px",
+          "::placeholder": { color: "#aab7c4" },
+        },
+      }
+
+      const card = stripeElement.create("card", { style: cardStyle });
+      const ideal = stripeElement.create("idealBank", { style: idealStyle });
+
+      card.on("change", ({ error, complete }) => {
+        if (complete) return (payButton.disabled = false) + (errorEl.textContent = "");
+        if (error) (payButton.disabled = true) + (errorEl.textContent = error.message)
+        else errorEl.textContent = "";
+      });
+      ideal.on("change", (complete) => {
+        payButton.disabled = true;
+        if (complete) return (payButton.disabled = false) + (errorEl.textContent = "");
+      });
+
+      function handleChange({ target }) {
+        if (target.name != "paymentMethod") return;
+        payButton.disabled = true;
+
+        paymentMethodBtns.forEach(el => {
+          el.checked ? addClass(el.parentElement, "focus") : removeClass(el.parentElement, "focus");
+        });
+
+        paypalPayment.style.display = "none";
+        paymentInfoWrapper.style.display = "none";
+
+        if (target.value === "card") {
+          paymentInfoWrapper.style.display = "block";
+          query("label[for=bank-holder]").innerText = "Name on card";
+          ideal.unmount();
+          card.mount("#payment-info");
+        }
+        else if (target.value === "idealBank") {
+          paymentInfoWrapper.style.display = "block";
+          query("label[for=bank-holder]").innerText = "Bank Holder";
+          card.unmount();
+          ideal.mount("#payment-info");
+        } else {
+          payButton.disabled = false;
+          paypalPayment.style.display = "block";
+        }
+      }
+
+      async function pay(e) {
+        e.preventDefault();
+        const { paymentMethod, bankHolder } = e.target;
+        const { fullName, email, phone, country, state, city, postalCode, street, houseNumber, addition } = e.target;
+
+        if (!Validator.isString(fullName.value, 5, 40)) return fullName.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isEmail(email.value)) return email.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isPhoneNumber(phone.value)) return phone.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isString(state.value, 2, 85)) return state.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isString(city.value, 2, 85)) return city.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isString(postalCode.value, 4, 10)) return postalCode.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isString(street.value, 5, 130)) return street.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isString(houseNumber.value, 0, 20)) return houseNumber.style.boxShadow = "0 0 0 2px red";
+
+        const address = {
+          country: country.value,
+          state: state.value,
+          city: city.value,
+          postal_code: postalCode.value,
+          line1: street.value + " " + houseNumber.value + " " + addition.value
+        };
+        const shipping = { name: fullName.value, phone: phone.value, address };
+        const receipt_email = email.value;
+        let payment_method = { card: card, billing_details: { name: bankHolder.value, email: email.value } };
+
+        setLoading(true);
+
+        const options = { method: "POST", headers: { "Content-Type": "application/json" }, body: "" };
+        options.body = JSON.stringify({ items, shipping: { ...shipping, email: email.value, } });
+
+        if (paymentMethod.value === "card") {
+
+          const { clientSecret, error } = await fetch("/api/checkout/card", options).then((res) => res.json());
+          if (error) return setLoading(false) + showErrorMessage(error);
+          const response = await stripe.confirmCardPayment(clientSecret, { payment_method, receipt_email, shipping });
+          setLoading(false);
+          if (response.error) return errorEl.innerText = response.error.message;
+          if (response.paymentIntent.status === "succeeded") {
+            e.target.reset();
+            e.target.payment_intent.value = response.paymentIntent.id;
+            e.target.submit();
+            return items.forEach(item => Cart.remove(item.id));
+          }
+          errorEl.innerText = "Something wrong happened, Please try again!";
+
+        } else if (paymentMethod.value === "idealBank") {
+
+          const { clientSecret, error } = await fetch("/api/checkout/ideal", options).then((res) => res.json());
+          if (error) return setLoading(false) + showErrorMessage(error);
+          payment_method = { ideal, billing_details: { name: bankHolder.value, email: email.value } };
+          stripe.confirmIdealPayment(clientSecret, { payment_method, return_url });
+          items.forEach(item => Cart.remove(item.id));
+
+        } else if (paymentMethod.value === "paypal") {
+
+          const { redirectLink, error } = await fetch("/api/checkout/paypal", options).then((res) => res.json());
+          if (error) return setLoading(false) + showErrorMessage(error);
+          if (!redirectLink) return setLoading(false) + showErrorMessage("Something wrong went, please try again!");
+          window.location.replace(redirectLink);
+          // window.location.href = redirectLink;
+          items.forEach(item => Cart.remove(item.id));
+        } else {
+          showErrorMessage("Please select a payment method!");
+        }
+      }
+
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`;

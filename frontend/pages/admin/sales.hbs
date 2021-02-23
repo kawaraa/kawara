@@ -1,0 +1,159 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const adminLinks = require("./admin-links.hbs");
+const { Validator } =require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Admin Dashboard products")}
+
+    <style>
+      header {
+        display: flex;
+        margin-bottom: 20px;
+        align-items: center;
+      }
+
+      dl {
+        flex: auto;
+      }
+
+      dt {}
+
+      dd {}
+
+      .sales-header,
+      .sale-item {
+        display: flex;
+        padding-bottom: 10px;
+        border-bottom: 0.5px solid var(--blur);
+        align-items: center;
+        font-size: 16px;
+      }
+
+      .picture,
+      .price,
+      .shipping-cost,
+      .quantity,
+      .fee,
+      .payout {
+        width: 150px;
+        display: flex;
+      }
+
+      .picture>img {
+        width: 50px;
+        height: 50px;
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container">
+        ${adminLinks()}
+        <div class="tab-content products">
+          <header>
+            <dl>
+              <dt>sold</dt>
+              <dd class="sales-sold"></dd>
+            </dl>
+            <dl>
+              <dt>Fee</dt>
+              <dd class="sales-fee"></dd>
+            </dl>
+            <dl>
+              <dt>Paid out</dt>
+              <dd class="sales-paid-out"></dd>
+            </dl>
+            <dl>
+              <dt>Payouts</dt>
+              <dd class="sales-payouts"></dd>
+            </dl>
+          </header>
+          <form onchange="handleChange(this)">
+            <label for="seller">
+              <label for="paid-out">
+                Paid out<input type="checkbox" name="paidOut" id="paid-out" />
+              </label>
+              <div>Sort By
+                <label for="asc">ASC<input type="radio" name="sortBy" value="asc" id="asc" /></label>
+                <label for="desc">DESC<input type="radio" name="sortBy" value="desc" checked id="desc" /></label>
+              </div>
+            </label>
+          </form>
+          <h4 class="sales-header">
+            <span class="picture">Product</span>
+            <span class="price">Price</span>
+            <span class="shipping-cost">Shipping Cost</span>
+            <span class="quantity">Quantity</span>
+            <span class="fee">Fee</span>
+            <span class="payout">Payout</span>
+          </h4>
+          <ul id="sales-list">
+            <li class="sale-item">
+              <span class="picture"><img src="" onclick="previewPicture(event)" alt=""></span>
+              <span class="price"></span>
+              <span class="shipping-cost"></span>
+              <span class="quantity"></span>
+              <span class="fee"></span>
+              <span class="payout"></span>
+            </li>
+          </ul>
+        </div>
+      </main>
+    </div>
+
+
+    <script>
+      const salesList = queryId("sales-list");
+      const soldItemEl = salesList.children[0].cloneNode(true);
+      salesList.innerHTML = "";
+      ${ Validator.toString() }
+      let offset = 0;
+
+      function handleChange(form) {
+        const { paidOut, sortBy } = form
+        fetchSales("?search=&payout=" + paidOut.checked + "&offset=" + offset + "&limit=" + (offset + 20) + "&sortBy=" + sortBy.value)
+      }
+
+      function renderSoldItem(wrapper, item) {
+        wrapper.querySelector(".picture>img").src = item.picture;
+        wrapper.querySelector(".price").innerText = priceToString(item.price);
+        wrapper.querySelector(".shipping-cost").innerText = priceToString(item.shippingCost);
+        wrapper.querySelector(".quantity").innerText = item.quantity;
+        wrapper.querySelector(".fee").innerText = priceToString(item.fee);
+        wrapper.querySelector(".payout").innerText = priceToString(item.payout);
+        return wrapper;
+      }
+
+      async function fetchSales(urlQuery) {
+        salesList.innerHTML = "";
+        const url = "/api/admin/sales" + urlQuery;
+        setLoading(true);
+        const sales = await fetch(url).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (sales.error) return showErrorMessage(sales.error);
+
+        query(".sales-sold").innerText = priceToString(sales.sold);
+        query(".sales-paid-out").innerText = priceToString(sales.paidOut);
+        query(".sales-fee").innerText = priceToString(sales.fee);
+        query(".sales-payouts").innerText = priceToString(sales.payouts);
+
+        sales.items.forEach(item => salesList.appendChild(renderSoldItem(soldItemEl.cloneNode(true), item)));
+      }
+
+      fetchSales("?search=&payout=false&offset=0&limit=20&sortBy=desc")
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

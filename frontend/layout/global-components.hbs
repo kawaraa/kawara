@@ -1,0 +1,190 @@
+const svgIcons = require("./svg-icons.hbs");
+
+module.exports = `
+${svgIcons}
+
+<style>
+  #loading-screen-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: var(--blur);
+    z-index: 14;
+  }
+
+  #screen-loader {
+    width: 100px;
+    height: 100px;
+    border: solid var(--font) 10px;
+    border-top-color: transparent;
+    border-radius: 100px;
+    -webkit-animation: spinner 1s linear infinite;
+    animation: spinner 1s linear infinite;
+  }
+
+  @-webkit-keyframes spinner {
+    0% {
+      -webkit-transform: rotate(0deg);
+    }
+
+    100% {
+      -webkit-transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spinner {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  #prompt-message {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: 50%;
+    max-width: 90%;
+    transform: translate(50%, -110%);
+    padding: 30px 18px 18px 18px;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 0 4px 0 var(--font);
+    z-index: 15;
+    transition: 1s ease;
+  }
+
+  #prompt-message.show {
+    transform: translate(50%, 10%);
+  }
+
+  #prompt-message> :first-child {
+    display: block;
+    width: max-content;
+    max-width: 100%;
+    font-size: 16px;
+    color: var(--font);
+  }
+
+  #prompt-message> :last-child {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    font-size: 24px;
+    text-align: center;
+    background: var(--red);
+    color: var(--white);
+    line-height: 17px;
+    border-radius: 50%;
+    transform: rotate(45deg);
+    cursor: pointer;
+  }
+
+  #picture-preview-outer {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: var(--blur);
+    z-index: 12;
+  }
+
+  #picture-preview-outer:after {
+    overflow: hidden;
+    content: "+";
+    display: block;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 25px;
+    height: 25px;
+    font-size: 35px;
+    line-height: 19px;
+    text-align: center;
+    transform: rotate(45deg);
+    background: var(--white);
+    color: var(--dark);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 13;
+  }
+
+  #picture-preview-outer>div {
+    overflow: scroll;
+    width: 70%;
+    max-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #picture-preview-outer>button {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+  }
+
+  #picture-preview-outer>div>img {
+    width: 5%;
+    height: 5%;
+    animation: img-width 0.5s ease forwards;
+  }
+
+  @keyframes img-width {
+    0% {
+      width: 5%;
+      height: 5%;
+    }
+
+    100% {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {
+    #picture-preview-outer>div {
+      width: 100%;
+    }
+
+    #prompt-message> :first-child {
+      font-size: 15px;
+    }
+
+  }
+</style>
+
+<div id="loading-screen-wrapper">
+  <div id="screen-loader"></div>
+</div>
+
+<div id="prompt-message"><span></span><span onclick="showErrorMessage()">+</span></div>
+
+<div id="picture-preview-outer" onclick="if(this === event.target) this.style.display = 'none'">
+  <div><img src="" alt=""></div>
+</div>
+
+<script>
+  function previewPicture({ target }) {
+    const picturePreview = queryId("picture-preview-outer");
+    picturePreview.children[0].children[0].src = target.src;
+    picturePreview.style.display = "flex";
+  }
+</script>
+`;

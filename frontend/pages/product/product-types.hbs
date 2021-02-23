@@ -1,0 +1,178 @@
+const { Validator } = require("k-utilities");
+
+module.exports = (types)=> `
+<style>
+  .types-wrapper {
+    display: block;
+    margin: 10px 0;
+    overflow-x: scroll;
+    max-height: 400px;
+  }
+
+  .type-label,
+  .size-label {
+    display: block;
+    margin: 20px 0 10px 0;
+  }
+
+
+  .type-form {
+    display: flex;
+    flex-flow: row wrap;
+  }
+
+  .size-form {
+    display: none;
+    flex-flow: row wrap;
+  }
+
+  .size-form.show {
+    display: flex;
+    animation: opacity 0.5s ease;
+  }
+
+  .type-form-item {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    margin: 0 10px 13px 2px;
+    padding: 0;
+    font-size: 15px;
+    box-shadow: 0 0 3px 0 var(--font);
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .type-form-img {
+    display: block;
+    max-width: 60px;
+    max-height: 60px;
+  }
+
+  .type-form-value {
+    display: flex;
+    align-items: center;
+    min-width: 60px;
+    max-width: 140px;
+    max-height: 60px;
+    padding: 3px;
+    font-size: 15px;
+    text-transform: uppercase;
+  }
+
+  .size-form-item {
+    overflow: hidden;
+    position: relative;
+    min-width: 60px;
+    max-width: 140px;
+    max-height: 60px;
+    margin: 0 10px 10px 2px;
+    padding: 3px;
+    font-size: 15px;
+    text-transform: uppercase;
+    text-align: center;
+    box-shadow: 0 0 3px 0 var(--font);
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .type-form-item:hover,
+  .type-form-item.focus,
+  .size-form-item:hover,
+  .size-form-item.focus {
+    box-shadow: 0 0 0 2px var(--red);
+  }
+
+
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {
+    .types-wrapper {
+      margin: 10px 0 0 0;
+    }
+
+    .type-label,
+    .size-label {
+      margin: 0px 0 5px 0;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .type-form-img {
+      max-width: 40px;
+      max-height: 40px;
+    }
+
+    .type-form-value,
+    .size-form-item {
+      font-size: 12px;
+    }
+  }
+</style>
+
+<div class="types-wrapper">
+  <label class="type-label">Type / Color / Material:</label>
+  <form class="type-form">
+    ${types.render(type => `
+    <div class="type-form-item">
+      ${Validator.isUrl(type.type)? `
+      <img src="${type.type}" alt="" class="type-form-img" />
+      ` : `
+      <label class="type-form-value" style="background: ${type.type};">${type.type}</label>
+      `}
+      <input onclick="updateColor(this)" type="radio" name="type" value="${type.type}" class="type surface-input" />
+    </div>
+    `)}
+  </form>
+
+  <label class="size-label">Size / Other:</label>
+  ${types.render((type, i) => `
+  <form class="size-form ${i !== 0 ? '' : 'show'}" id="${type.type}">
+    ${type.sizes.render(size => `
+    <label class="size-form-item">${size.size}
+      <input onclick="updateSize(this)" type="radio" name="size" value="${size.size}" data-price="${size.price}"
+        data-in-stock="${size.inStock}" class="size surface-input" />
+    </label>
+    `)}
+  </form>
+  `)}
+</div>
+
+<script>
+  function updateColor(checkedEl) {
+    const form = checkedEl.parentElement.parentElement;
+    const types = Array.from(form.type[0] ? form.type : [form.type])
+    types.forEach(el => !el.checked && removeClass(el.parentElement, "focus"));
+
+    queryAll(".size.surface-input").forEach(el => removeClass(el.parentElement, "focus") + (el.checked = false));
+
+    addClass(checkedEl.parentElement, "focus");
+
+    queryAll(".size-form").forEach(el => removeClass(el, "show"));
+
+    addClass(queryId(checkedEl.value), "show");
+    updateProductType({ type: checkedEl.value, size: "", price: 0, quantity: 1 });
+
+    const valueHolder = checkedEl.parentElement.children[0];
+    if (valueHolder.tagName === "IMG") query(".pictures.main").src = valueHolder.src
+  };
+
+  function updateSize(checkedEl) {
+    const form = checkedEl.parentElement.parentElement;
+    const sizes = Array.from(form.size[0] ? form.size : [form.size])
+    sizes.forEach(el => !el.checked && removeClass(el.parentElement, "focus"));
+
+    addClass(checkedEl.parentElement, "focus");
+
+    const { rate, currency } = getProductType();
+    const price = Number.parseFloat(checkedEl.dataset.price);
+    updateProductType({ size: checkedEl.value, price: price * rate, quantity: 1 });
+    priceElement.innerText = priceToString(checkedEl.dataset.price);
+    inStockElement.innerText = checkedEl.dataset.inStock
+    quantityElement.max = checkedEl.dataset.inStock;
+    quantityElement.value = 1;
+
+    const valueHolder = checkedEl.parentElement.children[0];
+    if (valueHolder.tagName === "IMG") query(".pictures.main").src = valueHolder.src
+  };
+</script>
+`;

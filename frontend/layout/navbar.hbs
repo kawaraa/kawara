@@ -1,0 +1,414 @@
+const globalComponents = require("./global-components.hbs");
+const { countries } = require("k-utilities");
+
+module.exports = (user) => `
+
+<div class="navbar-outer">
+  <style>
+    /* =============== Notebook, Laptops, Desktops, Large screens & TV styles =============== */
+
+    .navbar-outer {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 60px;
+      background: var(--white);
+      z-index: 9;
+      transition: top 0.4s ease;
+      box-shadow: 0 0 5px 0 var(--font);
+    }
+
+    .navbar.container {
+      position: relative;
+      flex: auto;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    /* Brand Logo styles */
+    .navbar-logo {
+      display: flex;
+      font-size: 30px;
+      vertical-align: middle;
+      text-decoration: none;
+      font-weight: bolder;
+      border-radius: 100%;
+    }
+
+    .logo {
+      color: gray;
+    }
+
+    .logo.e {
+      color: var(--dark);
+    }
+
+    .logo.g {
+      color: var(--red);
+    }
+
+    .logo.s {
+      color: var(--blue);
+    }
+
+    .navbar.drop-menu {
+      overflow: hidden;
+      list-style: none;
+      flex: auto;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .navbar-link {
+      text-decoration: none;
+      display: block;
+      margin: 0 10px;
+      padding: 2px 8px;
+      font-size: 22px;
+      color: var(--font);
+      text-align: center;
+      transition: 0.1s ease;
+      border-radius: 50px;
+    }
+
+    .navbar-user-drop-menu-wrapper {
+      position: relative;
+      max-width: 60px;
+      height: 32px;
+      margin-right: 5px;
+      padding: 0 3px;
+      display: flex;
+      align-items: center;
+      border-bottom: 0.5px solid var(--blur);
+    }
+
+    .user-drop-menu-country {
+      flex: auto;
+      font-size: 17px;
+    }
+
+    .user-drop-menu-btn {
+      position: relative;
+      width: 25px;
+      height: 25px;
+      margin: 0 0 0 4px;
+      padding: 2px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .avatar-svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--font);
+      transition: 0.1s ease;
+    }
+
+    .avatar-svg:hover {
+      fill: var(--red);
+    }
+
+    .user-drop-menu-btn>span {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    #user-drop-menu-list {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 20px;
+      min-width: 175px;
+      flex-flow: column;
+      list-style: none;
+      background: var(--white);
+      border-radius: 5px;
+      box-shadow: 0 0 2px 0 var(--font);
+    }
+
+    #user-drop-menu-list.show {
+      display: flex;
+    }
+
+    .user-drop-menu-item {
+      position: relative;
+      display: block;
+      text-decoration: none;
+      font-size: 17px;
+      padding: 10px;
+    }
+
+    .user-drop-menu-item:hover {
+      background: var(--red);
+      color: var(--white);
+    }
+
+    .user-drop-menu-item.cp:after {
+      content: "+";
+      display: flex;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 20px;
+      height: 20px;
+      line-height: 0;
+      justify-content: center;
+      align-items: center;
+      font-size: 18px;
+      background: var(--green);
+      color: var(--white);
+      border-radius: 50%;
+    }
+
+    .navbar-link:hover {
+      background: var(--red);
+      color: var(--white);
+    }
+
+    .navbar.shopping-cart-link {
+      position: relative;
+      text-decoration: none;
+      width: 30px;
+      height: 30px;
+      margin: 0 40px 0 5px;
+    }
+
+    .shopping-cart-svg {
+      width: 100%;
+      height: 100%;
+      transition: 0.1s ease;
+    }
+
+    .shopping-cart-svg:hover {
+      stroke-width: 10px;
+      stroke: var(--font);
+      fill: var(--red);
+    }
+
+    .shopping-cart.items-num {
+      position: absolute;
+      top: -7px;
+      left: 20px;
+      background: var(--red);
+      color: var(--white);
+      border-radius: 20px;
+      font-size: 14px;
+      padding: 1px 6px;
+    }
+
+    .navbar.icon.wrapper {
+      display: none;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      z-index: 11;
+    }
+
+    .navbar.icon.wrapper.x-icon {
+      position: fixed;
+    }
+
+    .nav-icon-bar1,
+    .nav-icon-bar2,
+    .nav-icon-bar3 {
+      position: relative;
+      background: var(--dark);
+      width: 30px;
+      height: 3px;
+      margin: 5px 0;
+      border-radius: 2px;
+      transition: 0.3s ease;
+    }
+
+    .x-icon .nav-icon-bar1 {
+      transform: rotate(-45deg) translate(-6px, 7px);
+      background: var(--red);
+    }
+
+    .x-icon .nav-icon-bar2 {
+      opacity: 0;
+      background: var(--red);
+    }
+
+    .x-icon .nav-icon-bar3 {
+      transform: rotate(45deg) translate(-4px, -6px);
+      background: var(--red);
+    }
+
+
+    /* =============== Mobile, IPads & Tablet styles =============== */
+    @media screen and (max-width: 850px) {
+      .navbar-outer {
+        height: 50px;
+      }
+
+      .navbar-logo {
+        font-size: 28px;
+        position: absolute;
+        left: 5px;
+      }
+
+      .logo.letters {
+        display: none;
+      }
+
+      .navbar-user-drop-menu-wrapper {
+        margin-right: 70px;
+      }
+
+      .navbar.drop-menu {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 100vh;
+        flex-flow: column;
+        justify-content: center;
+        background: var(--dark);
+        z-index: 10;
+        transition: 0.3s ease;
+      }
+
+      .navbar-link {
+        margin: 0;
+        padding: 10px;
+        color: var(--white);
+        border-radius: 50px;
+      }
+
+      .navbar.drop-menu.drop-down {
+        width: 100%;
+      }
+
+      .navbar.icon.wrapper {
+        display: block;
+      }
+
+    }
+  </style>
+
+  <nav class="navbar container nf" title="Navigation Bar" tabindex="0">
+    <a href="/" class="navbar-logo nf" tabindex="0">
+      <span class="logo e">E</span>
+      <span class="logo letters">asy</span>
+      <span class="logo g">G</span>
+      <span class="logo letters">et</span>
+      <span class="logo s">S</span>
+      <span class="logo letters">hop</span>
+    </a>
+
+
+    <ul class="navbar drop-menu">
+      <li><a href="/" class="navbar-link nf" tabindex="0">Home</a></li>
+      <li><a href="/category?name=Health-Beauty" class="navbar-link nf" tabindex="0">Beauty</a></li>
+      <li><a href="/category?name=Jewelry-Watches" class="navbar-link nf" tabindex="0">Jewelry</a></li>
+      <li><a href="/category?name=Sports" class="navbar-link nf" tabindex="0">Sports</a></li>
+    </ul>
+
+    <a href="/shopping-cart" class="navbar shopping-cart-link nf" tabindex="0">
+      <svg class="shopping-cart-svg">
+        <use href="#shopping-cart-svg-symbol" />
+      </svg>
+      <span class="shopping-cart items-num" />0</span>
+    </a>
+
+    <div class="navbar-user-drop-menu-wrapper">
+      <span class="user-drop-menu-country">${user.country}</span>
+      ${!user.id ? "" : `
+      <button name="userDropMenu" class="user-drop-menu-btn">
+        <svg class="avatar-svg">
+          <use href="#avatar-svg-symbol" />
+        </svg>
+        <span></span>
+      </button>
+      <ul id="user-drop-menu-list">
+
+        ${user.type !== "seller" && user.type !== "admin"? "" :`
+        <li><a href="/seller/create-product" class="user-drop-menu-item cp nf" tabindex="0">Create Product</a></li>
+        <li><a href="/seller/orders" class="user-drop-menu-item nf" tabindex="0">Seller</a></li>
+        `}
+
+        <li><a href="/account" class="user-drop-menu-item nf" tabindex="0">Account</a></li>
+        <li><a href="/orders" class="user-drop-menu-item nf" tabindex="0">Orders</a></li>
+
+        ${user.type !== "admin" ? "": `
+        <li><a href="/admin/products" class="user-drop-menu-item nf" tabindex="0">Admin</a></li>
+        `}
+
+        <li><span onclick="logout()" class="user-drop-menu-item nf" tabindex="0">Logout</span></li>
+      </ul>
+      `}
+    </div>
+
+    <div class="navbar icon wrapper" onclick="toggleNavbarIcon(this)">
+      <div class="nav-icon-bar1"></div>
+      <div class="nav-icon-bar2"></div>
+      <div class="nav-icon-bar3"></div>
+    </div>
+  </nav>
+
+  <script>
+    const navbar = document.querySelector(".navbar-outer");
+    const dropMenu = document.querySelector(".navbar.drop-menu");
+    const choppingCartItemNum = document.querySelector(".shopping-cart.items-num");
+    const { country, currency, rate } = ${ JSON.stringify(user)}
+
+    let prevScroll = window.pageYOffset;
+    window.onscroll = (e) => {
+      if (window.pageYOffset < prevScroll) navbar.style.top = "0";
+      else navbar.style.top = "-" + (navbar.offsetHeight + 4) + "px";
+      prevScroll = window.pageYOffset;
+    };
+
+    function toggleNavbarIcon(x) {
+      x.classList.toggle("x-icon");
+      dropMenu.classList.toggle("drop-down");
+    }
+
+    window.addEventListener("click", ({ target: { parentElement: { name } } }) => {
+      const menu = queryId("user-drop-menu-list");
+      menu && (name !== "userDropMenu" ? removeClass(menu, "show") : menu.classList.toggle("show"));
+    });
+
+    function updateNavbarShoppingCart() {
+      choppingCartItemNum.innerText = Cart.getItems().length
+    }
+    updateNavbarShoppingCart()
+
+    function parseUREncoded(url) {
+      let obj = {};
+      try {
+        url = new URL(url);
+      } catch (error) {
+        return obj
+      }
+      let query = url.search.replace("?", "").split("&");
+      for (let i = 0; i < query.length; i++) {
+        let pair = query[i].split("=");
+        obj[pair[0]] = pair[1];
+      }
+      return obj;
+    }
+
+    queryAll(".navbar-link").forEach(link => {
+      if (link.pathname === "/category") {
+        if (parseUREncoded(window.location.href).name === parseUREncoded(link.href).name) {
+          addClass(link, "active");
+        }
+      }
+      else if (window.location.pathname == link.pathname) addClass(link, "active");
+    });
+  </script>
+</div>
+
+${globalComponents}
+
+`;

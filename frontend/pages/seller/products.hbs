@@ -1,0 +1,555 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const sellerLinks = require("./seller-links.hbs");
+const { Validator } = require("k-utilities");
+
+module.exports = ({user, url}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Seller dashboard")}
+
+    <style>
+      .tab-content.products {
+        padding-bottom: 50px;
+        position: relative;
+        margin-bottom: 30px;
+      }
+
+      .product-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: var(--white);
+        border-radius: 10px;
+        margin: 10px 0;
+        padding: 15px;
+        box-shadow: 0 0 2px 0 var(--font);
+      }
+
+      .product-column.img {
+        overflow: hidden;
+        min-width: 200px;
+        max-width: 200px;
+        margin-right: 10px;
+      }
+
+      .product-img {
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .product-column.details {
+        overflow: hidden;
+        position: relative;
+        flex: auto;
+        padding-bottom: 30px;
+      }
+
+      .status {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .status.active {
+        color: var(--green);
+      }
+
+      .product-name {
+        display: block;
+        overflow: hidden;
+        margin: 5px 0 15px 0;
+        text-decoration: none;
+        font-size: 16px;
+      }
+
+      .product-name:hover {
+        color: var(--red);
+      }
+
+      .types-wrapper,
+      .sizes-wrapper {
+        margin: 15px 0;
+      }
+
+      .types-wrapper>label,
+      .sizes-wrapper>label {
+        display: block;
+        margin: 0 10px 10px 0;
+        font-size: 16px;
+      }
+
+      .types,
+      .sizes {
+        display: flex;
+        flex-flow: row wrap;
+        margin-right: 40px;
+      }
+
+      .types>img,
+      .sizes>img {
+        min-width: 40px;
+        max-width: 40px;
+        max-height: 40px;
+        margin: 0 4px;
+        box-shadow: 0 0 0 1px var(--font);
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .types>span,
+      .sizes>span {
+        overflow: hidden;
+        min-width: 60px;
+        max-width: 140px;
+        max-height: 60px;
+        margin: 0 10px 0 4px;
+        align-items: center;
+        padding: 3px;
+        font-size: 15px;
+        text-transform: uppercase;
+        box-shadow: 0 0 0 1px var(--font);
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .types>.active,
+      .sizes>.active {
+        box-shadow: 0 0 0 2px var(--red);
+      }
+
+      .product-price-and-shipping {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+      }
+
+      .product-price {
+        font-size: 18px;
+        font-weight: bolder;
+      }
+
+      .shipping-wrapper {
+        display: flex;
+        align-items: center;
+        margin-left: 25px;
+      }
+
+      .shipping-wrapper>label {
+        font-size: 16px;
+      }
+
+      .country {
+        margin: 0 10px;
+        padding: 2px;
+        font-size: 15px;
+        border: none;
+        box-shadow: 0 0 0px 1px var(--dark);
+        border-radius: 15px;
+      }
+
+      .product-shipping-cost {
+        font-weight: bold;
+      }
+
+      .product-shipping-cost>.shipping-text {
+        margin-left: 8px;
+        padding-left: 8px;
+        font-size: 15px;
+        font-weight: normal;
+        border-left: 0.5px solid var(--blur);
+      }
+
+      .product-delete-btn {
+        position: absolute;
+        bottom: 150px;
+        right: 0;
+        width: 20px;
+        height: 25px;
+        border: none;
+        background: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      .product-delete-svg {
+        width: 100%;
+        height: 100%;
+      }
+
+      .product-delete-svg:hover {
+        fill: var(--red);
+      }
+
+      .product-source {
+        font-size: 15px;
+      }
+
+      .product-source>a {
+        text-decoration: none;
+        color: var(--blue);
+        cursor: pointer;
+      }
+
+      .product-source>a:hover {
+        color: var(--red);
+      }
+
+      .product-quantity-wrapper {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        display: flex;
+        align-items: center;
+      }
+
+      .product-quantity-wrapper>label {
+        margin-right: 5px;
+        font-size: 16px;
+      }
+
+      .product-quantity {
+        width: 60px;
+        margin-left: 5px;
+        font-size: 16px;
+        text-align: center;
+        border-radius: 3px;
+        border: 1px solid var(--red);
+      }
+
+      .product-quantity:disabled {
+        border: 0.5px solid var(--blur);
+      }
+
+      .quantity-btn {
+        margin-left: 10px;
+        font-size: 16px;
+        padding: 3px 8px;
+        background: var(--dark);
+        color: var(--white);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+      }
+
+      .quantity-btn:hover {
+        background: var(--red);
+      }
+
+      .product-quantity-wrapper>.quantity-btn[type="submit"] {
+        display: none;
+      }
+
+      .load-products.btn {
+        display: block;
+        width: 130px;
+        margin: 0 auto 50px auto;
+        padding: 5px;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+
+        .product-item {
+          display: block;
+          padding: 10px;
+        }
+
+        .product-column.img {
+          max-width: 400px;
+          margin: 0 auto;
+        }
+
+        .types-wrapper>label {
+          margin-bottom: 5px;
+        }
+
+        .types,
+        .sizes {
+          margin-right: 0;
+        }
+
+        .types>img,
+        .sizes>img {
+          margin: 4px;
+        }
+
+        .product-price-and-shipping {
+          display: block;
+        }
+
+        .shipping-wrapper {
+          position: relative;
+          flex-flow: row wrap;
+          margin: 5px 0 0 0;
+        }
+
+        .shipping-wrapper>label {
+          margin-left: 75px;
+        }
+
+        .product-shipping-cost {
+          width: 100%;
+          margin-top: 10px;
+        }
+
+        .product-shipping-cost>:first-child {
+          position: absolute;
+          top: 3px;
+          left: 0;
+        }
+
+        .product-shipping-cost>.shipping-text {
+          margin: 0;
+          padding: 0;
+          border-left: none;
+        }
+
+        .product-delete-btn {
+          right: initial;
+          bottom: 0;
+          left: 0;
+        }
+
+        .product-source {
+          font-size: 12px;
+          margin-bottom: 5px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container">
+        ${sellerLinks()}
+
+        <ul class="tab-content products">
+          <li class="product-item">
+            <span class="status"></span>
+            <div class="product-column img">
+              <img src="/" onclick="previewPicture(event)" alt="" class="product-img">
+            </div>
+            <div class="product-column details">
+              <a href="/product/" class="product-name">ifvuwbf wovfuyewyfpobwe fwe</a>
+              <div class="types-wrapper">
+                <label>Type / Color / Material</label>
+                <div class="types" onclick="renderSizes(event)"></div>
+              </div>
+              <div class="sizes-wrapper">
+                <label>Size / Other</label>
+                <div class="sizes" onclick="renderPrice(event)"></div>
+              </div>
+              <div class="product-price-and-shipping">
+                <p class="product-price"></p>
+                <div class="shipping-wrapper">
+                  <label>Shipping to </label>
+                  <select class="country" onchange="getShippingCost(this)"></select>
+                  <p class="product-shipping-cost">
+                    <span></span> <span class="shipping-text">Delivery Time</span> <span></span> Day
+                  </p>
+                </div>
+                <button class="product-delete-btn"
+                  onclick="deleteProduct(this.parentElement.parentElement.parentElement)">
+                  <svg class="product-delete-svg">
+                    <use href="#delete-svg-symbol" />
+                  </svg>
+                </button>
+              </div>
+              <div class="product-source">Product Source: <span></span><a href="" target="_blank"></a></div>
+              <form class="product-quantity-wrapper" onsubmit="handleQuantityUpdate(event)">
+                <label>In Stock</label>
+                <input name="quantity" value="0" class="product-quantity" disabled />
+                <button type="submit" name="save" class="quantity-btn">Save</button>
+                <input type="button" value="edit" onclick="enableInput(this)" class="quantity-btn" />
+              </form>
+            </div>
+          </li>
+        </ul>
+
+        <button type="button" onclick="fetchProduct()" class="nf load-products.btn">Load More</button>
+      </main>
+      <input type="hidden" value="${env.deleteProductConfirmation}" id="delete-product-confirmation">
+    </div>
+
+    <script>
+      const productList = query(".tab-content.products");
+      const productItem = query(".product-item").cloneNode(true);
+      productList.innerHTML = "";
+      let offset = 0;
+
+      ${ Validator.toString() }
+
+      function renderType(typesWrapper, type, el = null) {
+        if (Validator.isUrl(type.type)) {
+          el = document.createElement("img");
+          el.src = type.type;
+        } else {
+          el = document.createElement("span");
+          el.innerText = type.type;
+          el.style.background = type.type;
+        }
+        el.dataset.type = JSON.stringify(type);
+        typesWrapper.appendChild(el);
+      }
+      function renderSize(sizesWrapper, size) {
+        const el = document.createElement("span");
+        el.innerText = size.size;
+        el.style.background = size.size;
+        el.dataset.size = JSON.stringify(size);
+        sizesWrapper.appendChild(el);
+      }
+
+      function renderSizes({ target }) {
+        if (!target.dataset.type) return
+        const sizes = JSON.parse(target.dataset.type).sizes;
+        const sizesWrapper = target.parentElement.parentElement.nextElementSibling.children[1]
+        const product = target.parentElement.parentElement.parentElement;
+        sizesWrapper.innerHTML = "";
+        sizes.forEach(size => renderSize(sizesWrapper, size));
+
+        Array.from(target.parentElement.children).forEach(el => removeClass(el, "active"));
+        addClass(target, "active");
+        addClass(sizesWrapper.children[0], "active");
+
+        product.querySelector(".product-price").innerText = priceToString(sizes[0].price);
+        product.querySelector(".product-quantity").value = sizes[0].inStock;
+      }
+
+      function renderPrice({ target }) {
+        if (!target.dataset.size) return
+        const size = JSON.parse(target.dataset.size);
+        const product = target.parentElement.parentElement.parentElement;
+        product.querySelector(".product-price").innerText = priceToString(size.price);
+        product.querySelector(".product-quantity").value = size.inStock;
+
+        Array.from(target.parentElement.children).forEach(el => removeClass(el, "active"));
+        addClass(target, "active");
+      }
+
+      function getShippingCost(shippingEl) {
+        const shipping = JSON.parse(shippingEl.value);
+        shippingEl.nextElementSibling.children[0].innerText = priceToString(shipping.cost);
+        shippingEl.nextElementSibling.children[2].innerText = shipping.estimatedTime;
+      }
+
+      function enableInput(input) {
+        if (input.value === "edit") {
+          input.value = "cancel"
+          input.form.quantity.disabled = false;
+          input.form.save.style.display = "block";
+        } else {
+          input.value = "edit"
+          input.form.quantity.disabled = true;
+          input.form.save.style.display = "none";
+        }
+      }
+
+      async function handleQuantityUpdate(e) {
+        e.preventDefault();
+        const productEl = e.target.parentElement.parentElement;
+        const { type, sizes } = JSON.parse(productEl.querySelector(".types>.active").dataset.type);
+        const size = JSON.parse(productEl.querySelector(".sizes>.active").dataset.size).size;
+        const product = { number: productEl.dataset.number, type, size, quantity: e.target.quantity.value };
+
+        showErrorMessage();
+        setLoading(true);
+        const options = { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(product) };
+        const res = await fetch("/api/seller/product", options).then(res => res.json()).catch(networkError);
+
+        sizes.forEach(s => s.size === size ? s.inStock = e.target.quantity.value : null);
+        productEl.querySelector(".types>.active").dataset.type = JSON.stringify({ type, sizes });
+        e.target.children[1].disabled = true;
+        e.target.children[2].style.display = "none";
+        e.target.children[3].style.display = "block";
+        e.target.children[3].value = "edit"
+
+        setLoading(false);
+        if (res.error) showErrorMessage(res.error);
+      }
+
+      async function deleteProduct(productEl) {
+        const url = "/api/seller/product/" + productEl.dataset.number;
+        if (!confirm(queryId("delete-product-confirmation").value)) return;
+        setLoading(true);
+        const res = await fetch(url, { method: "DELETE" }).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (res.error) return showErrorMessage(res.error);
+        productEl.remove()
+      }
+
+      async function fetchProduct() {
+        setLoading(true);
+        const url = "/api/seller/products?limit=20&offset=" + (offset);
+        const products = await fetch(url).then(res => res.json()).catch(networkError);
+        if (products[0]) offset += 20
+        if (products.error) return showErrorMessage(products.error);
+
+        products.forEach(product => {
+          const productWrapper = productItem.cloneNode(true);
+          productWrapper.dataset.number = product.number;
+          productWrapper.querySelector(".status").innerText = product.reviewed > 0 ? "Live" : "Pending";
+          productWrapper.querySelector(".status").className += product.reviewed > 0 ? " active" : "";
+          productWrapper.querySelector(".product-img").src = product.picture;
+          const nameEl = productWrapper.querySelector(".product-name");
+          nameEl.innerText = product.name;
+          nameEl.href += product.number;
+
+          const typesWrapper = productWrapper.querySelector(".types");
+          const sizesWrapper = productWrapper.querySelector(".sizes");
+          typesWrapper.innerHTML = "";
+          sizesWrapper.innerHTML = "";
+
+          product.types.forEach(type => renderType(typesWrapper, type));
+
+          product.types[0].sizes.forEach(size => renderSize(sizesWrapper, size));
+          addClass(typesWrapper.children[0], "active");
+          addClass(sizesWrapper.children[0], "active");
+
+          productWrapper.querySelector(".product-quantity").value = product.types[0].sizes[0].inStock;
+
+          productWrapper.querySelector(".product-price").innerText = priceToString(product.types[0].sizes[0].price);
+
+          const countrySelect = productWrapper.querySelector(".country");
+          countrySelect.innerHTML = "";
+
+          product.shippings.forEach((shipping, i) => {
+            const option = document.createElement("option");
+            option.value = JSON.stringify(shipping);
+            option.innerText = shipping.country;
+            if (i === 0) {
+              option.selected = true;
+              productWrapper.querySelector(".product-shipping-cost").children[0].innerText = priceToString(shipping.cost);
+              productWrapper.querySelector(".product-shipping-cost").children[2].innerText = shipping.estimatedTime;
+            }
+            countrySelect.appendChild(option);
+          });
+          const sourceEl = productWrapper.querySelector(".product-source");
+
+          if (!Validator.isUrl(product.source)) sourceEl.children[0].innerText = product.source;
+          else {
+            sourceEl.children[1].href = product.source;
+            sourceEl.children[1].innerText = "Click here";
+          }
+          productList.appendChild(productWrapper);
+        });
+        setLoading(false);
+      };
+
+      fetchProduct();
+      // Todo: Fetch the seller's products on scroll
+
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

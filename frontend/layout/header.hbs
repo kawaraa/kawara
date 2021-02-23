@@ -1,0 +1,21 @@
+module.exports = (title, description, keywords) => `
+<title>${title || "kawara || Fast delivery with good price products"}</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description"
+  content="${description || `Kawara is web shop and e-commerce platform that provides heigh quality products with good price and fast shipping, it helps you find the nearest local supplier to deliver the product quickly.`}" />
+<meta name="keywords"
+  content="${keywords + ` ,fast shipping products, good price products, heigh quality products, we have suppliers everywhere, international fast delivery, products with tracking number`}" />
+<meta name="author" content="Kawara" />
+<!-- PAW Support -->
+<link rel="manifest" href="/manifest.json" />
+<link rel="shortcut icon" type="image/ico" sizes="48×48" href="/image/favicon/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/image/favicon/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/image/favicon/favicon-32x32.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="192x192" href="/iimage/favicon/android-chrome-192x192.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="/image/favicon/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-status-bar" content="#24305e" />
+<meta name="theme-color" content="#24305e">
+<link rel="stylesheet" type="text/css" href="/style/index.css">
+<script src="/script/utility.js"></script>
+`

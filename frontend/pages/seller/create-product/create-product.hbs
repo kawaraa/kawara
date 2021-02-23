@@ -1,0 +1,223 @@
+const header = require("../../../layout/header.hbs");
+const navbar = require("../../../layout/navbar.hbs");
+const footer = require("../../../layout/footer.hbs");
+const scrappingForm = require("./scrapping-form.hbs");
+const picturesField = require("./pictures-field.hbs");
+const typesField = require("./types-field.hbs");
+const specificationsField = require("./specifications-field.hbs");
+const shippingsField = require("./shippings-field.hbs");
+const { categories } = require("../../../config/config.json");
+const { countries } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Create a product")}
+
+    <style>
+      h2 {
+        text-align: center;
+      }
+
+      #manual-form {
+        margin: 10px auto 30px auto;
+      }
+
+      .input-field {
+        overflow: hidden;
+        display: flex;
+        margin: 10px 0;
+        padding: 15px 10px;
+        background: var(--white);
+        border-radius: 10px;
+        box-shadow: 0 0 2px 0 var(--font);
+      }
+
+      .input-field>:first-child {
+        min-width: 200px;
+        font-size: 18px;
+      }
+
+      .input-field>:nth-child(2) {
+        flex: auto;
+        font-size: 18px;
+      }
+
+      #name {
+        padding: 8px;
+        font-size: 18px;
+        border: none;
+        box-shadow: 0 0 0px 1px var(--dark);
+        border-radius: 3px;
+      }
+
+      #description {
+        max-height: 200px;
+        resize: vertical;
+        padding: 8px;
+        font-size: 16px;
+        border: none;
+        box-shadow: 0 0 0px 1px var(--dark);
+        border-radius: 3px;
+      }
+
+      #source,
+      #category {
+        padding: 8px;
+        font-size: 16px;
+        border: none;
+        box-shadow: 0 0 0px 1px var(--dark);
+        border-radius: 3px;
+      }
+
+      input[type="button"] {
+        position: absolute;
+        width: 25px;
+        height: 25px;
+        font-size: 18px;
+        font-weight: bold;
+        line-height: 0;
+        background: none;
+        border: none;
+        transform: rotate(45deg);
+        outline: none;
+        cursor: pointer;
+      }
+
+      .add-btn {
+        position: absolute;
+        bottom: 0;
+        right: 2px;
+        padding: 3px 7px;
+        font-size: 15px;
+        background: var(--blur);
+        color: var(--dark);
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+      }
+
+      #manual-form>.submit.btn {
+        display: block;
+        width: 150px;
+        margin: 40px auto;
+        padding: 10px;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .input-field {
+          display: block;
+        }
+
+        .input-field>:first-child,
+        .input-field>:nth-child(2) {
+          display: block;
+          width: 100%;
+          margin-bottom: 7px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container create-product">
+        ${user.type !== "admin" ? "" : scrappingForm()}
+
+        <h2>Add product manually</h2>
+        <form onsubmit="sendProduct(event)" id="manual-form">
+
+          ${picturesField()}
+
+          <div class="input-field">
+            <label for="name">Name:</label>
+            <input type="text" name="name" id="name"
+              value="qhiediqvdqvfou wfvuhwe fwe fhuweb oufuf vwouf vouwfj d jwef wnf wnf nw" />
+          </div>
+
+          <div class="input-field">
+            <label for="description">Description:</label>
+            <textarea name="description" id="description">
+              Description blah blah  blah  ehff jlfl fpe fkwf weohf owfuw fowugfwegf egwy fveowyg fiwye fiwe fwe
+              </textarea>
+          </div>
+
+          <div class="input-field">
+            <label for="source">Source:</label>
+            <input type="text" name="source" id="source" value="Mister Tester" />
+          </div>
+
+          <div class="input-field">
+            <label for="category">Category:</label>
+            <select name="category" required id="category">
+              ${categories.render((key, value) => `<option value="${key}">${value}</option>`)}
+            </select>
+          </div>
+
+          ${typesField()}
+
+          ${specificationsField()}
+
+          ${shippingsField(user, countries)}
+
+          <button type="submit" class="submit btn">Create</button>
+
+          <div id="manual-result">
+            <p class="error"></p><a href="/product/" class="result"></a>
+          </div>
+        </form>
+      </main>
+    </div>
+
+    <script>
+      async function sendProduct(e) {
+        e.preventDefault();
+        showErrorMessage();
+        setLoading(true);
+        try {
+          const pictureUrls = getPictures();
+          const shippings = getShippings();
+          const types = getTypes();
+          const specifications = getSpecifications();
+
+          if (!shippings || !types || !specifications) return setLoading(false);
+          else if (!pictureUrls && !e.target.pictures.files[0] && !e.target.mainPicture.files[0]) {
+            setLoading(false);
+            return showErrorMessage("Please either upload a picture or inter a picture url");
+          }
+
+          form = new FormData(e.target);
+          form.delete("type") || form.delete("size") || form.delete("price") || form.delete("quantity");
+          form.delete("country") || form.delete("estimatedTime") || form.delete("cost");
+          form.delete("specTitle") || form.delete("specDescription");
+
+          form.set("pictureUrls", pictureUrls);
+          form.append("types", types);
+          form.append("specifications", specifications);
+          form.append("shippings", shippings);
+
+          const url = "/api/seller/product";
+          const product = await fetch(url, { method: "POST", body: form }).then(res => res.json()).catch(networkError);
+          setLoading(false);
+          if (product.error) return showErrorMessage(product.error);
+          e.target.reset();
+
+          queryId("manual-result").children[1].href += product.number;
+          queryId("manual-result").children[1].innerText = "Click here to see the new product";
+        } catch (error) {
+          setLoading(false);
+          showErrorMessage("Something wrong went please try again later of try another browser.")
+        }
+      }
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`;

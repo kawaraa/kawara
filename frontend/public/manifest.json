@@ -1,0 +1,39 @@
+{
+  "name": "EasyGetShop",
+  "short_name": "EGS",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#feffff",
+  "theme_color": "#24305e",
+  "description": "EasyGetShop is web shop that provides heigh quality products with good price and fast shipping, it helps you find the nearest local supplier to deliver the product quickly.",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/image/favicon/favicon-16x16.png",
+      "type": "image/png",
+      "sizes": "16x16"
+    },
+    {
+      "src": "/image/favicon/favicon-32x32.png",
+      "type": "image/png",
+      "sizes": "32x32"
+    },
+    {
+      "src": "/image/favicon/android-chrome-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/image/favicon/maskable_icon.png",
+      "type": "image/png",
+      "sizes": "500x500",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/image/favicon/maskable_icon.png",
+      "type": "image/png",
+      "sizes": "500x500",
+      "purpose": "any maskable"
+    }
+  ]
+}

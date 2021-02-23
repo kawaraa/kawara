@@ -1,0 +1,377 @@
+module.exports = (user, countries) => `
+
+<style>
+  .bank-wrapper {
+    position: relative;
+    border-bottom: 0.5px solid var(--blur);
+    margin: 40px 20px;
+    padding: 0;
+  }
+
+  .add-bank-btns-wrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .add-bank-btns-wrapper.show {
+    display: flex;
+  }
+
+  .add-bank-btns-wrapper>button[type="button"] {
+    margin: 10px;
+    font-size: 20px;
+    padding: 5px;
+    width: 190px;
+    background: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 25px;
+  }
+
+  .form {
+    position: relative;
+    display: none;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    padding: 30px;
+    background: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 0 5px 0 var(--font);
+  }
+
+  .form.show {
+    display: block;
+  }
+
+  .form>h4 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 20px;
+  }
+
+  .field-input {
+    overflow: hidden;
+    display: flex;
+    margin: 10px 0;
+  }
+
+  .field-input>label {
+    width: 180px;
+    min-width: 180px;
+    font-size: 17px;
+  }
+
+  .field-input>input,
+  .field-input>select {
+    flex: auto;
+    font-size: 17px;
+    padding: 3px 5px;
+  }
+
+  .submit-btn {
+    text-align: right;
+  }
+
+  .submit-btn>.btn {
+    padding: 5px 10px;
+  }
+
+  .bank-info {
+    display: none;
+    flex-flow: row wrap;
+    align-items: center;
+    padding: 30px 0 15px 0;
+  }
+
+  .bank-info.show {
+    display: flex;
+    flex-flow: row wrap;
+  }
+
+  .bank-info>h4 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-right: 10px;
+    padding-right: 10px;
+    border-right: 1px solid var(--blur);
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+
+  .bank-info>h5 {
+    font-size: 18px;
+    font-weight: bold;
+    margin-right: 20px;
+  }
+
+  .bank-info>span {
+    margin-right: 20px;
+  }
+
+  .note {
+    width: 100%;
+  }
+
+  .bank-btns-wrapper {
+    width: 100%;
+    text-align: right;
+  }
+
+  .bank-btns-wrapper>.btn {
+    padding: 3px 5px;
+    font-size: 16px
+  }
+
+  .confirm-bank-form {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--white);
+    border-radius: 10px;
+  }
+
+  .confirm-bank-form.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .confirm-inputs-wrapper {
+    flex: auto;
+    display: flex;
+    justify-content: center;
+    margin: 0 20px;
+  }
+
+  .confirm-inputs-wrapper>input {
+    flex: auto;
+    font-size: 20px;
+    padding: 5px 10px;
+  }
+
+  .confirm-inputs-wrapper>.btn {
+    width: 80px;
+    border-radius: 0;
+  }
+
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {}
+</style>
+
+<section class="bank-wrapper">
+  <h4 class="title">Bank</h4>
+
+  <div class="add-bank-btns-wrapper">
+    <button type="button" name="bank" onclick="showBankForm(this)">Add Bank</button>
+    <button type="button" name="paypal" onclick="showBankForm(this)">Connect PayPal</button>
+  </div>
+
+  <article class="bank-info ">
+    <h4></h4>
+    <h5></h5>
+    <span></span>
+    <span></span>
+    <span class="note"></span>
+    <div class="bank-btns-wrapper">
+      <button type="button" class="btn delete" onclick="deleteBank(this)">Delete</button>
+      <button type="button" class="btn update" onclick="showBankForm(this)">Update</button>
+      <button onclick="addClass(setAmountsFormEL, 'show')" type="button" class="btn confirm">Confirm</button>
+    </div>
+  </article>
+
+  <form onsubmit="handleUpdateBank(event)" class="add-bank form">
+    <button type="button" onclick="cancelBankForm(this.parentElement)" class="btn cancel nf">+</button>
+    <h4>Add bank to get paid</h4>
+    <div class="field-input">
+      <label for="bank-country">Country of bank account</label>
+      <select name="country" id="bank-country">
+        ${countries.render((key, value)=>`<option value="${key}" ${key!==user.country?"":"selected"}>${value[0]}
+        </option>`)}
+      </select>
+    </div>
+    <div class="field-input">
+      <label for="account-holder">Account holder name</label>
+      <input type="text" name="accountHolder" id="account-holder" />
+    </div>
+    <div class="field-input">
+      <label for="routing-number">Routing Number</label>
+      <input type="text" name="routingNumber" id="routing-number" />
+    </div>
+    <div class="field-input">
+      <label for="account-number">Account Number</label>
+      <input type="text" name="accountNumber" id="account-number" />
+    </div>
+    <div class="field-input">
+      <label for="bic">BIC/SWIFT CODE</label>
+      <input type="text" max="11" name="bic" id="bic" />
+    </div>
+    <input type="hidden" name="type" /><input type="hidden" name="status" />
+    <div class="submit-btn">
+      <button type="submit" class="btn">Save</button>
+    </div>
+  </form>
+
+  <form onsubmit="handleUpdatePaypal(event)" class="add-paypal form">
+    <button type="button" onclick="cancelBankForm(this.parentElement)" class="btn cancel nf">+</button>
+    <h4>Connect your PayPal account to get paid</h4>
+    <div class="field-input">
+      <label for="ppl-country">Country</label>
+      <select name="country" id="ppl-country">
+        ${countries.render((key, value)=>`<option value="${key}" ${key!==user.country?"":"selected"}>${value[0]}
+        </option>`)}
+      </select>
+    </div>
+    <div class="field-input">
+      <label for="ppl-account-holder">Account owner name</label>
+      <input type="text" name="accountHolder" id="ppl-account-holder" />
+    </div>
+    <div class="field-input">
+      <label for="ppl-account-number">PayPal Account</label>
+      <input type="text" name="accountNumber" id="ppl-account-number" />
+    </div>
+    <input type="hidden" name="type" /><input type="hidden" name="routingNumber" />
+    <input type="hidden" name="bic" /><input type="hidden" name="status" />
+    <div class="submit-btn">
+      <button type="submit" class="btn">Save</button>
+    </div>
+  </form>
+
+  <form onsubmit="handleConfirmation(event)" class="confirm-bank-form">
+    <div class="confirm-inputs-wrapper">
+      <input type="hidden" name="owner" />
+      <input type="number" name="amount1" min="1" max="10" required />
+      <input type="number" name="amount2" min="1" max="10" required />
+      <button type="button" onclick="removeClass(this.parentElement, 'show')" class="btn">cancel</button>
+      <button type="submit" class="btn">Save</button>
+    </div>
+  </form>
+</section>
+
+<script>
+  const bankInfoWrapper = query(".bank-info");
+  const addBankBtnsWrapper = query(".add-bank-btns-wrapper");
+  const setAmountsFormEL = query(".confirm-bank-form");
+
+  function hideAll() {
+    Array.from(query(".bank-wrapper").querySelectorAll(".show")).forEach(el => removeClass(el, "show"));
+  }
+  function showBankForm(btn) {
+    const { country, type, accountHolder, routingNumber, accountNumber, bic, status } = btn.dataset
+    hideAll();
+    let form = query(".add-bank");
+    if (type === "paypal" || btn.name === "paypal") form = query(".add-paypal");
+    form.type.value = type || "";
+    form.accountHolder.value = accountHolder || "";
+    form.routingNumber.value = routingNumber || "";
+    form.accountNumber.value = accountNumber || "";
+    form.bic.value = bic || "";
+    form.status.value = status || "";
+    addClass(form, "show");
+  }
+
+  function cancelBankForm({ type: { value } }) {
+    hideAll();
+    if (value === "paypal" || value === "bank") addClass(bankInfoWrapper, "show");
+    else addClass(addBankBtnsWrapper, "show");
+  }
+
+
+  function renderBankInfo(bankInfo) {
+    const isNew = bankInfo.status === "initial";
+    const confirmed = bankInfo.status === "confirmed";
+    bankInfoWrapper.children[0].innerText = bankInfo.type;
+    bankInfoWrapper.children[1].innerText = bankInfo.accountHolder;
+    bankInfoWrapper.children[2].innerText = bankInfo.accountNumber;
+    bankInfoWrapper.children[3].innerText = isNew ? "" : bankInfo.status;
+    bankInfoWrapper.children[4].innerText = bankInfo.note ? bankInfo.not : "";
+
+    const updateBtn = bankInfoWrapper.querySelector(".btn.update");
+    const deleteBtn = bankInfoWrapper.querySelector(".btn.delete");
+    const confirmBtn = bankInfoWrapper.querySelector(".btn.confirm");
+    updateBtn.name = bankInfo.type;
+    updateBtn.dataset.type = bankInfo.type;
+    updateBtn.dataset.country = bankInfo.country;
+    updateBtn.dataset.accountHolder = bankInfo.accountHolder;
+    updateBtn.dataset.routingNumber = bankInfo.routingNumber;
+    updateBtn.dataset.accountNumber = bankInfo.accountNumber;
+    updateBtn.dataset.status = bankInfo.status;
+
+    if (isNew) updateBtn.style.display = "inline-block";
+    else updateBtn.style.display = "none";
+
+    if (isNew || confirmed) deleteBtn.style.display = "inline-block";
+    else deleteBtn.style.display = "none";
+
+    if (!isNew && !confirmed) confirmBtn.style.display = "inline-block";
+    else confirmBtn.style.display = "none";
+    addClass(bankInfoWrapper, "show");
+  }
+
+  async function handleUpdateBank(e) {
+    e.preventDefault();
+    const data = formToObject(e.target);
+    const options = { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }
+    setLoading(true);
+    const res = await fetch("/api/account/seller/bank", options).then(res => res.json()).catch(networkError);
+    setLoading(false);
+    if (res.error) return showErrorMessage(res.error);
+    removeClass(query(".add-bank"), "show");
+    data.type = "bank";
+    data.status = "initial";
+    renderBankInfo(data)
+  }
+
+  async function handleUpdatePaypal(e) {
+    e.preventDefault();
+    const data = formToObject(e.target);
+    const options = { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }
+    setLoading(true);
+    const res = await fetch("/api/account/seller/paypal", options).then(res => res.json()).catch(networkError);
+    setLoading(false);
+    if (res.error) return showErrorMessage(res.error);
+    removeClass(query(".add-paypal"), "show");
+    data.type = "paypal";
+    data.status = "initial";
+    renderBankInfo(data)
+  }
+  async function handleConfirmation(e) {
+    e.preventDefault();
+    const body = JSON.stringify(formToObject(e.target));
+    const options = { method: "PUT", headers: { "Content-Type": "application/json" }, body }
+    setLoading(true);
+    const banks = await fetch("/api/account/seller/bank/", options).then(res => res.json()).catch(networkError);
+    setLoading(false);
+    if (banks.error) return showErrorMessage(banks.error);
+    bankInfoWrapper.children[3].innerText = "Confirmed";
+    bankInfoWrapper.querySelector(".btn.confirm").style.display = "none";
+    bankInfoWrapper.querySelector(".btn.update").style.display = "inline-block";
+    removeClass(e.target, "show");
+  }
+
+  async function deleteBank(btn) {
+    if (!confirm("Are you sure you want to delete your payment method?")) return;
+    setLoading(true);
+    const res = await fetch("/api/account/seller/bank", { method: "DELETE" }).then(res => res.json()).catch(networkError);
+    setLoading(false);
+    if (res.error) return showErrorMessage(res.error);
+    removeClass(btn.parentElement.parentElement, "show");
+    addClass(addBankBtnsWrapper, "show");
+  }
+
+  async function renderBankTabContent() {
+    setLoading(true);
+    const bankInfo = await fetch("/api/account/seller/bank").then(res => res.json()).catch(networkError);
+    setLoading(false);
+    hideAll();
+    if (bankInfo.error) showErrorMessage(bankInfo.error);
+    else if (bankInfo.type === "bank" || bankInfo.type === "paypal") renderBankInfo(bankInfo);
+    else addClass(addBankBtnsWrapper, "show");
+  }
+  renderBankTabContent()
+
+</script>
+`;

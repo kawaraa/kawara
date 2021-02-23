@@ -1,0 +1,81 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const search = require("../../layout/search.hbs");
+const product = require("../home/product.hbs");
+
+module.exports = ({user}, {currency, rate, name, products}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header(name.replace("-"," ") + " Category")}
+    <style>
+      .container.category {
+        padding-top: 30px;
+        min-height: 90vh;
+      }
+
+      .product-list.category {
+        flex-flow: wrap;
+        padding: 20px 0 50px 0;
+      }
+
+      .btn.show-more {
+        display: block;
+        width: 130px;
+        margin: 20px auto;
+        padding: 5px;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .home.heading {
+          font-size: 25px;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+
+      ${search()}
+
+      <main class="container category">
+        <h1 class="home heading">${name.replace("-"," ")}</h1>
+        <section class="products-outer">
+          <ul class="product-list category">
+            ${products.render((p) => product(p, currency, rate, "category"))}<span style="opacity: 0;">.</span>
+          </ul>
+          <button onclick="showMorProducts()" class="btn show-more">Show more</button>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const productsWrapper = query(".product-list.category");
+      const productItem = productsWrapper.children[0].cloneNode(true);
+
+      let offset = 20;
+      async function showMorProducts() {
+        setLoading(true);
+        const url = "/api/product/category?name=${name}&limit=20&offset=" + offset
+        const category = await fetch(url).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (category.error) return showErrorMessage(category.error);
+        offset += 20
+
+        category.products.forEach((p) => productsWrapper.appendChild(renderProduct(productItem.cloneNode(true), p)));
+      }
+
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`;

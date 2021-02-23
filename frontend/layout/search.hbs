@@ -1,0 +1,81 @@
+module.exports = () => `
+<div class="search-wrapper">
+  <style>
+    .search-from {
+      display: flex;
+      max-width: 600px;
+      margin: 20px auto 0 auto;
+    }
+
+    .search-input-wrapper {
+      flex: auto;
+    }
+
+    .search-from input[type="search"] {
+      width: 100%;
+      height: 100%;
+      font-size: 20px;
+      padding: 5px 15px;
+      border: 1px solid var(--dark);
+      border-right: none;
+      border-radius: 5px 0 0 5px;
+    }
+
+    .search-from button[type="submit"] {
+      width: 55px;
+      height: 40px;
+      padding: 6px;
+      background: var(--dark);
+      border: 1px solid var(--dark);
+      border-left: none;
+      border-radius: 0 5px 5px 0;
+      cursor: pointer;
+      transition: 0.1s ease;
+    }
+
+    .search-from button[type="submit"]:hover {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    .magnifier-svg {
+      width: 100%;
+      height: 100%;
+      stroke-width: 6px;
+      stroke: var(--white);
+      fill: var(--white);
+    }
+
+    /* =============== Mobile, IPads & Tablet styles =============== */
+    @media screen and (max-width: 850px) {
+      .search-from {
+        max-width: 75%;
+      }
+
+      .search-from input[type="search"] {
+        border-radius: 25px 0 0 25px;
+      }
+
+      .search-from button[type="submit"] {
+        min-width: 45px;
+        width: 45px;
+        height: 35px;
+        padding: 7px;
+        border-radius: 0 25px 25px 0;
+      }
+    }
+  </style>
+  <form action="/search" method="GET" class="search-from">
+    <div class="search-input-wrapper"> <input type="search" name="text" class="nf"></div>
+    <button type="submit" class="magnifier-svg-wrapper" tabindex="0">
+      <svg class="magnifier-svg">
+        <use href="#magnifier-svg-symbol" />
+      </svg>
+    </button>
+  </form>
+
+  <script>
+
+  </script>
+</div>
+`;

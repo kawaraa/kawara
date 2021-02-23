@@ -1,0 +1,418 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const bank = require("./bank.hbs");
+const { countries } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Account Settings")}
+    <style>
+      .container.settings {}
+
+      .settings-h {
+        margin-top: 50px;
+        padding: 10px 20px;
+        font-size: 30px;
+      }
+
+      .settings-row {
+        display: none;
+        position: relative;
+        border-bottom: 0.5px solid var(--blur);
+        margin: 40px 20px;
+        padding: 0;
+      }
+
+      .settings-row.show {
+        display: block;
+      }
+
+      .title {
+        margin: 0;
+        padding: 0;
+        font-size: 20px;
+        color: var(--font);
+        font-weight: bold;
+      }
+
+      .title.address {
+        margin: 30px 20px;
+      }
+
+      .content {
+        margin: 0;
+        padding: 30px 0 15px 0;
+        font-size: 18px;
+        color: var(gray);
+      }
+
+      .settings-row>.btn {
+        position: absolute;
+        bottom: 10px;
+        right: 0;
+        padding: 4px 8px;
+        font-size: 16px;
+      }
+
+      .addresses {
+        display: none;
+        position: relative;
+        padding: 30px 20px 20px 20px;
+      }
+
+      .addresses.show {
+        display: flex;
+      }
+
+      .addresses>.btn {
+        position: absolute;
+        top: 0;
+        left: 20px;
+        padding: 4px 8px;
+      }
+
+      .address-wrapper {
+        position: relative;
+        flex-flow: row wrap;
+        flex: 1;
+        margin: 20px 20px 0 0;
+        padding: 20px 20px 40px 20px;
+        background: var(--white);
+        border-radius: 10px;
+      }
+
+      .address-wrapper:last-child {
+        margin-right: 0;
+      }
+
+      .address-wrapper>p {
+        font-size: 16px;
+        font-weight: bold;
+        margin: 0 0 10px 0;
+        font-size: 14px;
+      }
+
+      .address-wrapper>.name {
+        font-size: 18px;
+        font-weight: normal;
+      }
+
+      .contact-info {
+        display: flex;
+      }
+
+      .contact-info>.email {
+        margin-right: 10px;
+      }
+
+      .address-wrapper>.btn {
+        position: absolute;
+        bottom: 10px;
+        padding: 0;
+        font-size: 15px;
+        background: none;
+        color: var(--dark);
+      }
+
+      .address-wrapper>.btn:hover {
+        color: var(--red);
+      }
+
+      .delete {
+        left: 20px;
+      }
+
+      .update {
+        right: 20px;
+      }
+
+      .edit-form {
+        position: relative;
+        display: none;
+        max-width: 90%;
+        margin: 60px auto;
+        padding: 0;
+        box-shadow: 0 0 5px 0 var(--font);
+        border-radius: 5px;
+      }
+
+      .edit-form.show {
+        display: flex;
+      }
+
+      .btn.cancel {
+        position: absolute;
+        top: -30px;
+        right: -10px;
+        width: 25px;
+        height: 25px;
+        font-size: 28px;
+        line-height: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-family: monospace;
+        transform: rotate(45deg);
+        background: var(--red);
+        cursor: pointer;
+        border-radius: 50%;
+      }
+
+      .btn.save {
+        padding: 5px 20px;
+        border-radius: 0 5px 5px 0;
+      }
+
+      .edit-form>input {
+        flex: auto;
+        margin: 0;
+        padding: 5px;
+        font-size: 18px;
+        border: none;
+        border-right: 0.5px solid var(--blur);
+      }
+
+      .edit-form>.first {
+        border-radius: 5px 0 0 5px;
+      }
+
+      .address-form {
+        display: none;
+        position: relative;
+      }
+
+      .address-form.show {
+        display: block;
+      }
+
+      .delete-account.btn {
+        display: block;
+        width: 200px;
+        margin: 20px auto;
+        font-size: 20px;
+        background: var(--red);
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container settings">
+        <h1 class="settings-h">Account Settings</h1>
+        <form class="edit-form name" onsubmit="handleUpdateFullName(event)">
+          <button type="button" onclick="cancel(this.parentElement)" class="btn cancel nf">+</button>
+          <input type="text" name="firstName" required placeholder="First Name" class="first nf" />
+          <input type="text" name="lastName" required placeholder="Last Name" class="last nf" />
+          <button type="submit" class="btn save nf">Save</button>
+        </form>
+        <div class="settings-row show">
+          <h4 class="title">Name</h4>
+          <p class="content name"></p><button type="button" name="name" onclick="showForm(this)"
+            class="btn nf">Update</button>
+        </div>
+
+        <div class="settings-row show">
+          <h4 class="title">Email</h4>
+          <p class="content email"></p>
+        </div>
+
+        <form class="edit-form password" onsubmit="handleUpdatePassword(event)">
+          <button type="button" onclick="cancel(this.parentElement)" class="btn cancel nf">+</button>
+          <input type="password" name="oldPassword" min="8" required placeholder="Old Password" class="first nf" />
+          <input type="password" name="password" min="8" required placeholder="New Password" class="first nf" />
+          <input type="password" name="confirmPassword" min="8" required placeholder="Confirm Password"
+            class="last nf" />
+          <button type="submit" class="btn save nf">Save</button>
+        </form>
+        <div class="settings-row show">
+          <h4 class="title">Password</h4>
+          <p class="content">********</p><button type="button" name="password" onclick="showForm(this)"
+            class="btn nf">Update</button>
+        </div>
+
+        ${user.type !== "seller" && user.type !== "admin" ? "" : bank(user, countries)}
+
+        <h4 class="title address">Addresses</h4>
+
+        <form class="address-form" onsubmit="handleUpdateAddress(event)">
+          <button type="button" onclick="cancel(this.parentElement)" class="btn cancel nf">+</button>
+          <input type="hidden" name="id" />
+          <input type="text" name="fullName" required placeholder="Full Name" class="nf" />
+          <input type="text" name="street" required placeholder="Street" class="nf" />
+          <input type="text" name="city" required placeholder="City" class="nf" />
+          <input type="text" name="postalCode" required placeholder="Postal Code" class="nf" />
+          <input type="text" name="state" required placeholder="State / Province" class="nf" />
+          <select name="country" id="country" class="nf">
+            ${countries.render((key, value)=>`<option value="${key}">${value[0]}</option>`)}
+          </select>
+          <input type="email" name="email" required placeholder="Email" class="nf" />
+          <input type="tel" name="phone" required placeholder="Phone" class="nf" />
+          <button type="submit" class="btn save nf">Save</button>
+        </form>
+        <div class="addresses show">
+          <button type="button" name="address" onclick="showAddressForm(this)" class="btn nf">Add</button>
+          <div class="address-wrapper">
+            <p class="name"></p>
+            <p class="street"></p>
+            <p class="city"></p>
+            <p class="country"></p>
+            <p class="contact-info">
+              <span class="email"></span>
+              <span class="phone"></span>
+            </p>
+            <button type="button" onclick="handleDeleteAddress(this.nextElementSibling)"
+              class="delete btn nf">Delete</button>
+            <button type="button" onclick="showAddressForm(this)" data-id="id-djhu934gr" data-full-name="Mister Tester"
+              data-street="Test Street 90 2" data-city="Amsterdam" data-postal-code="1010EE" data-state="North Holland"
+              data-country="Netherlands" data-email="test@kawaraa.com" data-phone="+31646349555"
+              class="update btn nf">Update</button>
+          </div>
+        </div>
+
+        <input type="hidden" value="${env.deleteAccountConfirmation}" id="delete-account-confirmation" />
+        <button type="button" onclick="handleDeleteAccount()" class="delete-account btn">Delete Account</button>
+      </main>
+    </div>
+
+    <script>
+      const addressesWrapper = query(".addresses");
+      const addressesForm = query(".address-form");
+      const addressEl = addressesWrapper.children[1].cloneNode(true);
+      addressesWrapper.lastElementChild.remove();
+
+      function showForm(btn) {
+        const form = query(".edit-form." + btn.name);
+        if (form.firstName) {
+          form.firstName.value = btn.dataset.firstName;
+          form.lastName.value = btn.dataset.lastName;
+        }
+        addClass(form, "show");
+        removeClass(btn.parentElement, "show");
+      }
+
+      function cancel(form) {
+        form.reset();
+        addClass(form.nextElementSibling, "show");
+        removeClass(form, "show");
+      }
+
+      function showAddressForm(btn) {
+        if (btn.dataset.id) {
+          addressesForm.id.value = btn.dataset.id;
+          addressesForm.fullName.value = btn.dataset.fullName;
+          addressesForm.street.value = btn.dataset.street;
+          addressesForm.city.value = btn.dataset.city;
+          addressesForm.postalCode.value = btn.dataset.postalCode;
+          addressesForm.state.value = btn.dataset.state;
+          addressesForm.country.value = btn.dataset.country;
+          addressesForm.email.value = btn.dataset.email;
+          addressesForm.phone.value = btn.dataset.phone;
+        }
+        removeClass(addressesWrapper, "show");
+        addClass(addressesForm, "show");
+      }
+
+      async function handleUpdateFullName(e) {
+        e.preventDefault();
+        const data = formToObject(e.target);
+        const body = JSON.stringify(data);
+        const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
+        const res = await fetch("/api/account/full-name", options).then(res => res.json()).catch(networkError);
+        if (res.error) return showErrorMessage(res.error);
+
+        e.target.nextElementSibling.children[1].innerText = data.firstName + " " + data.lastName;
+        e.target.nextElementSibling.children[2].dataset.firstName = data.firstName;
+        e.target.nextElementSibling.children[2].dataset.lastName = data.lastName;
+        removeClass(e.target, "show");
+        addClass(e.target.nextElementSibling, "show");
+      }
+
+      async function handleUpdatePassword(e) {
+        e.preventDefault();
+        const data = formToObject(e.target)
+        if (data.password !== data.confirmPassword) return showErrorMessage("Passwords do not match (!)");
+        const body = JSON.stringify(data);
+        const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
+        const res = await fetch("/api/account/password", options).then(res => res.json()).catch(networkError);
+        if (res.error) return showErrorMessage(res.error);
+        removeClass(e.target, "show");
+        addClass(e.target.nextElementSibling, "show");
+      }
+
+      async function handleUpdateAddress(e) {
+        e.preventDefault();
+        const data = formToObject(e.target)
+        const body = JSON.stringify(data);
+        const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
+        const address = await fetch("/api/account/address", options).then(res => res.json()).catch(networkError);
+        if (address.error) return showErrorMessage(address.error);
+
+        const addressItemEl = query(".address-wrapper.id" + e.target.id.value);
+        const addressItem = renderAddress(addressItemEl || addressEl.cloneNode(true), address);
+        if (!addressItemEl) addressesWrapper.appendChild(addressItem);
+        removeClass(addressesForm, "show");
+        addClass(addressesWrapper, "show");
+      }
+
+      async function handleDeleteAddress(btn) {
+        if (!confirm("Are you sure you want to delete this address?")) return;
+        const url = "/api/account/address/" + btn.dataset.id;
+        const res = await fetch(url, { method: "DELETE" }).then(res => res.json()).catch(networkError);
+        if (res.error) return showErrorMessage(res.error);
+        btn.parentElement.remove();
+      }
+
+      function renderAddress(wrapper, address) {
+        wrapper.querySelector(".name").innerText = address.fullName;
+        wrapper.querySelector(".street").innerText = address.street;
+        wrapper.querySelector(".city").innerText = address.city + " " + address.postalCode;;
+        wrapper.querySelector(".country").innerText = address.state + ", " + address.country;
+        wrapper.querySelector(".email").innerText = address.email;
+        wrapper.querySelector(".phone").innerText = address.phone;
+        wrapper.lastElementChild.dataset.id = address.id;
+        wrapper.lastElementChild.dataset.name = address.name;
+        wrapper.lastElementChild.dataset.street = address.street;
+        wrapper.lastElementChild.dataset.city = address.city;
+        wrapper.lastElementChild.dataset.postalCode = address.postalCode;
+        wrapper.lastElementChild.dataset.state = address.state;
+        wrapper.lastElementChild.dataset.country = address.country;
+        wrapper.lastElementChild.dataset.email = address.email;
+        wrapper.lastElementChild.dataset.phone = address.phone;
+        addClass(wrapper, "id" + address.id)
+        return wrapper;
+      }
+
+      async function handleDeleteAccount() {
+        if (!confirm(queryId("delete-account-confirmation").value)) return;
+        const res = await fetch("/api/account", { method: "DELETE" }).then(res => res.json()).catch(networkError);
+        console.log(res)
+        if (res.error) return showErrorMessage(res.error);
+        window.location.reload();
+      }
+
+      (async () => {
+        const account = await fetch("/api/account").then(res => res.json()).catch(networkError);
+        if (account.error) return showErrorMessage(account.error);
+        const nameWrapper = query(".content.name")
+        nameWrapper.innerText = account.firstName + " " + account.lastName;
+        nameWrapper.nextElementSibling.dataset.firstName = account.firstName;
+        nameWrapper.nextElementSibling.dataset.lastName = account.lastName;
+        query(".content.email").innerText = account.email;
+
+        account.addresses.forEach(address => {
+          addressesWrapper.appendChild(renderAddress(addressEl.cloneNode(true), address));
+        });
+      })()
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`;

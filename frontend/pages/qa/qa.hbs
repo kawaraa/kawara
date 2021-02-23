@@ -1,0 +1,107 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const data = require("./data.json");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Questions And Answers xxxx")}
+    <style>
+      .container.qa {
+        min-height: 85vh;
+      }
+
+      .heading {
+        text-align: center;
+        margin: 100px 0 30px 0;
+      }
+
+      .questions-answers-wrapper {
+        max-width: 700px;
+        margin: auto;
+      }
+
+      .question {
+        margin-top: 10px;
+        padding: 10px;
+        background: var(--blur);
+        border-radius: 5px;
+        transition: 0.1s ease;
+        cursor: pointer;
+      }
+
+      .question:hover {
+        background: var(--font);
+        color: var(--white);
+      }
+
+      .answer-wrapper {
+        overflow: hidden;
+        max-height: 0px;
+        background: var(--white);
+        border-radius: 0 0 5px 5px;
+        transition: 0.2s ease;
+      }
+
+      .answer-wrapper.show {
+        transition: 0.5s ease;
+        max-height: 300px;
+      }
+
+      .answer {
+        overflow: scroll;
+        padding: 10px;
+      }
+
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+
+        .heading {
+          margin-top: 50px;
+          font-size: 25px;
+        }
+
+        .question {
+          font-size: 17px;
+        }
+
+        .answer {
+          font-size: 16px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+
+      <main class="container qa">
+        <h1 class="heading">Questions and answers</h1>
+        <article class="questions-answers-wrapper">
+          ${data.render((key, value)=>`
+          <h3 onclick="showAnswer(this.nextElementSibling)" class="question">${key}</h3>
+          <div class="answer-wrapper">
+            <p class="answer">${value}</p>
+          </div>
+          `)}
+        </article>
+      </main>
+    </div>
+
+    <script>
+      function showAnswer(answer) {
+        answer.classList.toggle("show");
+      }
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

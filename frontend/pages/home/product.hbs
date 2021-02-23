@@ -1,0 +1,35 @@
+module.exports = (product, currency, rate, cssClass)=> `
+<li class="product wrapper ${!cssClass? '' : cssClass}">
+  <a href="/product/${product.number}" class="product inner">
+    <div class="product image-wrapper ${!product.pictures[1]? '' : 'flip'}">
+      <div class="product image-inner">
+        <img src="${product.pictures[0]}" class="product img" alt="">
+        ${!product.pictures[1]? "" : `<img src="${product.pictures[1]}" class="product img back" alt="">`}
+      </div>
+    </div>
+    <h5 class="product name">${product.name}</h5>
+    <span class="product price">${product.price.priceToString(rate, currency)}</span>
+    <div class="product shipping">
+      <span class="product shipping-cost">
+        ${product.shippingCost > 0 ? product.shippingCost.priceToString(rate, currency) : "Free"}
+      </span>
+      shipping to <span class="product country">${product.country}</span>
+    </div>
+    <div class="product-info wrapper">
+      <span class="stars-wrapper">
+        &#9733;&#9733;&#9733;&#9733;&#9733;
+        <span class="stars front" style="width: ${Math.round((product.stars / 5) * 100)}%;">
+          &#9733;&#9733;&#9733;&#9733;&#9733;
+        </span>
+      </span>
+      <span> <span class="product sold">${product.sold}</span> Sold</span>
+
+    </div>
+  </a>
+  <button onclick="Cart.add({ ...this.dataset })" data-number="${product.number}" data-name="${product.name}"
+    data-type="${product.type}" data-size="${product.size}" data-price="${product.price}" data-currency="${currency}"
+    data-country="${product.country}" data-estimated-time="${product.estimatedTime}" :
+    data-shipping-cost="${product.shippingCost}" data-picture="${product.pictures[0]}" data-quantity="${1}"
+    class="product add">+</button>
+</li>
+`;

@@ -1,0 +1,55 @@
+module.exports = () => `
+
+<style>
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {}
+</style>
+
+<section class="sales-tab-content history">
+  <h2>Sales History</h2>
+  <h4 class="sales-header">
+    <span class="picture">Product</span>
+    <span class="price">Price</span>
+    <span class="shipping-cost">Shipping Cost</span>
+    <span class="quantity">Quantity</span>
+    <span class="fee">Fee</span>
+    <span class="payout">Received</span>
+  </h4>
+  <ul class="sales-list history">
+    <li class="sale-item">
+      <span class="picture"><img src="" onclick="previewPicture(event)" alt=""></span>
+      <span class="price"></span>
+      <span class="shipping-cost"></span>
+      <span class="quantity"></span>
+      <span class="fee"></span>
+      <span class="payout"></span>
+    </li>
+  </ul>
+</section>
+
+<script>
+  const salesHistoryList = query(".sales-list.history");
+  const saleHistoryItemEl = query(".sale-item").cloneNode(true);
+  salesHistoryList.innerHTML = "";
+
+  async function renderHistoryTabContent() {
+    salesHistoryList.innerHTML = "";
+    setLoading(true);
+    const sales = await fetch("/api/seller/sales-history").then(res => res.json()).catch(networkError);
+    setLoading(false);
+    if (sales.error) return showErrorMessage(sales.error);
+
+    sales.forEach(sale => {
+      const saleItem = saleHistoryItemEl.cloneNode(true);
+      saleItem.querySelector(".picture>img").src = sale.picture;
+      saleItem.querySelector(".price").innerText = priceToString(sale.price);
+      saleItem.querySelector(".shipping-cost").innerText = priceToString(sale.shippingCost);
+      saleItem.querySelector(".quantity").innerText = sale.quantity;
+      saleItem.querySelector(".fee").innerText = priceToString(sale.fee);
+      saleItem.querySelector(".payout").innerText = priceToString(sale.received);
+      salesHistoryList.appendChild(saleItem);
+    });
+  }
+</script>
+
+`

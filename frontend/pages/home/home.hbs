@@ -1,0 +1,91 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const search = require("../../layout/search.hbs");
+const bannerSlider = require("../../layout/banner-slider.hbs")
+const product = require("./product.hbs");
+
+module.exports = ({user}, {currency, rate, collections}, title = "Best product and fast shipping") => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header(title)}
+    <style>
+      .container.home {
+        min-height: 90vh;
+      }
+
+      .categories.name {
+        display: inline-block;
+        position: relative;
+        text-decoration: none;
+        margin: 30px 0 10px 0;
+        padding-left: 10px;
+        font-size: 30px;
+      }
+
+      .categories.name::before {
+        content: "";
+        display: block;
+        width: 0;
+        height: 4px;
+        position: absolute;
+        left: 10px;
+        bottom: -5px;
+        background: var(--red);
+        transition: 0.3s ease;
+      }
+
+      .categories.name:hover::before {
+        width: 95%;
+      }
+
+      .product-list.home {
+        background: var(--blur);
+        border-radius: 10px;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {}
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+
+      ${search()}
+
+      <main class="container home">
+        <h1 style="opacity: 0;position: fixed;">EasyGetShop has a fast delivery to all the country in the world, also
+          with good price
+          you have your order quickly.
+        </h1>
+
+        <!-- bannerSlider([], "home") -->
+
+        ${!collections[0]? "" : collections.render(col => `
+        <section class="categories wrapper">
+          <a href="/category?name=${col.name}" class="categories name">${col.name.replace("-"," ")}</a>
+          <ul class="product-list home">
+            ${col.products.render((p) => product(p, currency, rate, "home"))}
+          </ul>
+        </section>
+        `)}
+
+      </main>
+
+    </div>
+
+    <script>
+
+
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`;

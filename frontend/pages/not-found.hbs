@@ -1,0 +1,55 @@
+const header = require("../layout/header.hbs");
+const navbar = require("../layout/navbar.hbs");
+const footer = require("../layout/footer.hbs");
+const { CustomError } = require("k-utilities");
+
+module.exports = (user, error) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Page not found")}
+    <style>
+      .container.not-found {
+        min-height: 90vh;
+      }
+
+      .error {
+        margin-top: 20vh;
+        color: var(--red);
+        text-align: center;
+        padding: 20px;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .error {
+          font-size: 18px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+
+      <main class="container not-found">
+        ${error ? `
+        <h1 class="error">${CustomError.validateMsg(error)}.</h1>
+        ` : `
+        <h1 class="error">The page you are looking for does not exist.</h1>
+        `}
+      </main>
+    </div>
+
+    <script>
+
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

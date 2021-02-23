@@ -1,0 +1,31 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "This is the frontend app for for kawara",
+  "main": "app.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "npx nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kawaraa/kawara.git/frontend"
+  },
+  "homepage": "https://github.com/kawaraa/kawara#readme",
+  "bugs": {
+    "url": "https://github.com/kawaraa/kawara/issues"
+  },
+  "dependencies": {
+    "cookie": "^0.4.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "k-utilities": "^1.0.8",
+    "node-fetch": "^2.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}

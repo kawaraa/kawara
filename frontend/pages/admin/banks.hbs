@@ -1,0 +1,188 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const adminLinks = require("./admin-links.hbs");
+const { Formatter } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Admin Dashboard accounts")}
+
+    <style>
+      .banks-search-form {
+        margin: 10px 0 30px 0;
+      }
+
+      #bank-list {
+        list-style: none;
+      }
+
+      .banks-header,
+      .bank-item {
+        position: relative;
+        display: flex;
+        padding: 10px 30px 10px 0;
+        border-bottom: 0.5px solid var(--blur);
+        align-items: center;
+        font-size: 16px;
+      }
+
+      .bank-item>.bank-head {
+        display: none;
+      }
+
+      .country,
+      .type {
+        width: 80px;
+      }
+
+      .owner {
+        width: 100px;
+      }
+
+      .routing-number,
+      .account-number,
+      .created {
+        flex: 5;
+      }
+
+      .bank-item>.btn {
+        display: inline-block;
+        position: absolute;
+        right: 10px;
+        padding: 1px 6px;
+        font-family: monospace;
+        font-size: 20px;
+      }
+
+      #set-amounts-form {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        background: var(--white);
+      }
+
+      #set-amounts-form>input {
+        flex: auto;
+        font-size: 20px;
+      }
+
+      #set-amounts-form>.btn {
+        width: 80px;
+        border-radius: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container banks">
+        ${adminLinks()}
+        <div class="tab-content">
+          <form class="banks-search-form" onchange="fetchAccounts('?status='+this.type.value)">
+            <label for="seller"><input type="radio" name="type" value="initial" checked />New Added</label>
+            <label for="seller"><input type="radio" name="type" value="pending" />Pending</label>
+          </form>
+
+          <h4 class="banks-header">
+            <span class="owner">Owner</span>
+            <span class="country">Country</span>
+            <span class="type">Type</span>
+            <span class="routing-number">Routing Number</span>
+            <span class="account-number">Account number</span>
+            <span class="created">Created</span>
+          </h4>
+
+          <ul id="bank-list">
+            <li class="bank-item">
+              <h4 class="bank-head">
+                <span class="head-owner">Owner</span>
+                <span class="head-country">Country</span>
+                <span class="head-type">Type</span>
+                <span class="head-routing-number">Routing Number</span>
+                <span class="head-account-number">Account number</span>
+                <span class="head-created">Created</span>
+              </h4>
+              <a href="/admin/user/" class="owner link"></a>
+              <span class="country"></span>
+              <span class="type"></span>
+              <span class="routing-number"></span>
+              <span class="account-number"></span>
+              <span class="created"></span>
+              <button onclick="showSetAmountsForm(this)" type="button" class="btn nf">&lt;</button>
+            </li>
+            <form onsubmit="handleSetAmounts(event)" id="set-amounts-form">
+              <input type="hidden" name="owner" />
+              <input type="number" name="amount1" min="1" max="10" required />
+              <input type="number" name="amount2" min="1" max="10" required />
+              <button type="button" onclick="this.parentElement.remove()" class="btn">cancel</button>
+              <button type="submit" class="btn">Save</button>
+            </form>
+          </ul>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const bankList = queryId("bank-list");
+      const bankEl = bankList.children[0].cloneNode(true);
+      const setAmountsFormEL = queryId("set-amounts-form").cloneNode(true);
+      ${ Formatter.toString() }
+      bankList.innerHTML = "";
+
+      function showSetAmountsForm(btn) {
+        const form = setAmountsFormEL.cloneNode(true);
+        form.owner.value = btn.name;
+        btn.parentElement.appendChild(form);
+      }
+
+      async function handleSetAmounts(e) {
+        e.preventDefault();
+        const body = JSON.stringify(formToObject(e.target));
+        const options = { method: "PUT", headers: { "Content-Type": "application/json" }, body }
+        setLoading(true);
+        const banks = await fetch("/api/admin/bank", options).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (banks.error) return showErrorMessage(banks.error);
+        e.target.parentElement.remove();
+      }
+
+      async function fetchAccounts(query) {
+        bankList.innerHTML = "";
+        setLoading(true);
+        const banks = await fetch("/api/admin/banks" + query).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (banks.error) return showErrorMessage(banks.error);
+
+        banks.forEach(bank => {
+          const bankWrapper = bankEl.cloneNode(true);
+          const ownerEl = bankWrapper.querySelector(".owner");
+          ownerEl.src += bank.ownerId;
+          ownerEl.innerText = bank.ownerName;
+          bankWrapper.querySelector(".country").innerText = bank.country;
+          bankWrapper.querySelector(".type").innerText = bank.type;
+          if (bank.routingNumber) bankWrapper.querySelector(".routing-number").innerText = bank.routingNumber;
+          bankWrapper.querySelector(".account-number").innerText = bank.accountNumber;
+          bankWrapper.querySelector(".created").innerText = Formatter.dateToText(bank.created);
+          bankWrapper.querySelector(".btn").name = bank.ownerId;
+          if (bank.status !== "initial") bankWrapper.querySelector(".btn").remove();
+          bankList.appendChild(bankWrapper)
+        });
+      }
+
+      fetchAccounts("?status=initial");
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

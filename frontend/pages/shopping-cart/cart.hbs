@@ -1,0 +1,406 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const search = require("../../layout/search.hbs");
+const itemList = require("./item-list.hbs");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+  ${header("Shopping Cart at EasyGetShop")}
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <style>
+        /* =============== Notebook, Laptops, Desktops, Large screens & TV styles =============== */
+        .container.shopping-cart {
+          display: flex;
+          padding: 50px 5px;
+          min-height: 90vh;
+        }
+
+        .cart-left-wrapper {
+          overflow: hidden;
+          flex: auto;
+          margin-right: 10px;
+        }
+
+        .cart-box {
+          background: var(--white);
+          border-radius: 10px;
+          margin-bottom: 10px;
+          padding: 35px 15px;
+        }
+
+        .select-h {
+          font-size: 24px;
+          color: black;
+        }
+
+        label[for="select-all"] {
+          display: inline-block;
+          margin-top: 20px;
+        }
+
+        #select-all {
+          display: inline-block;
+          margin-right: 5px;
+        }
+
+
+        .cart-box.buyer-protection {
+          display: flex;
+          margin-top: 30px;
+        }
+
+        .protection.column {
+          flex: 5;
+        }
+
+        .payment-h {
+          text-align: center;
+          font-size: 18px;
+          margin-bottom: 15px;
+          color: black;
+        }
+
+        .protection-h {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 18px;
+          margin-bottom: 15px;
+        }
+
+        .protection-logo {
+          width: 25px;
+          margin-right: 5px;
+        }
+
+        .summary-wrapper {
+          min-width: 300px;
+        }
+
+        .summary-inner {
+          position: fixed;
+          width: 300px;
+          padding: 20px 15px;
+          background: var(--white);
+          border-radius: 10px;
+        }
+
+        .summary-h {
+          font-size: 22px;
+          margin-bottom: 20px;
+        }
+
+        .summary-subtotal {
+          display: flex;
+          flex-flow: row wrap;
+          align-items: center;
+        }
+
+        .summary-total {
+          display: flex;
+          flex-flow: row wrap;
+          align-items: center;
+          padding: 20px 0;
+          margin-top: 20px;
+          border-top: 1px solid rgb(175, 175, 175);
+        }
+
+        .subtotal-name,
+        .subtotal-desc,
+        .shipping-name,
+        .shipping-desc,
+        .total-name,
+        .total-desc {
+          width: 50%;
+          margin: 10px 0;
+        }
+
+        .subtotal-desc,
+        .shipping-desc,
+        .total-desc {
+          text-align: right;
+          color: var(--red);
+        }
+
+        .total-name,
+        .total-desc {
+          font-weight: bold;
+        }
+
+        .total-name {
+          font-size: 18px;
+        }
+
+        .total-desc {
+          font-size: 25px;
+        }
+
+        .buy-button {
+          width: 100%;
+          font-size: 20px;
+          padding: 10px 0;
+          background: var(--dark);
+          color: var(--white);
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: 0.1s;
+        }
+
+        .buy-button:hover {
+          background: var(--red);
+        }
+
+        .buy-button>span {
+          color: var(--white);
+        }
+
+        /* =============== Mobile, IPads & Tablet styles =============== */
+        @media screen and (max-width: 850px) {
+          .container.shopping-cart {
+            padding: 35px 5px;
+          }
+
+          .cart-left-wrapper {
+            margin: 0;
+          }
+
+          .cart-box {
+            padding: 10px;
+          }
+
+          .select-h {
+            font-size: 20px;
+          }
+
+          label[for="select-all"] {
+            margin-top: 15px;
+          }
+
+          .summary-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+          }
+
+          .summary-h {
+            display: none;
+          }
+
+          .summary-inner {
+            position: relative;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 10px 15px;
+            background: var(--white);
+            border-radius: 10px 10px 0 0;
+          }
+
+
+          .summary-subtotal {
+            overflow: hidden;
+            flex-flow: row wrap;
+            min-width: 100%;
+            height: 0;
+            transition: 0.3s ease;
+          }
+
+
+          .subtotal-name,
+          .shipping-name {
+            margin: 2px 0;
+            width: 80px;
+          }
+
+          .subtotal-desc,
+          .shipping-desc {
+            flex: auto;
+            width: calc(100% - 80px);
+            margin: 2px 0;
+            text-align: left;
+          }
+
+          .summary-total {
+            padding: 0;
+            margin: 0;
+            border: none;
+            cursor: pointer;
+          }
+
+          .summary-total:after {
+            content: "^";
+            display: inline-block;
+            position: relative;
+            width: 20px;
+            height: 30px;
+            left: 5px;
+            text-align: center;
+            font-size: 30px;
+            color: gray;
+            transition: 0.3s ease;
+          }
+
+          .summary-total.rotated:after {
+            transform: rotate(180deg);
+          }
+
+          .total-name {
+            margin: 2px 0;
+            width: 80px;
+            font-size: 18px;
+          }
+
+          .total-desc {
+            width: auto;
+            text-align: left;
+            font-size: 18px;
+          }
+
+          .buy-button {
+            width: 85px;
+            padding: 6px;
+            font-size: 18px;
+            border-radius: 25px;
+          }
+
+          footer.container {
+            margin-bottom: 62px;
+          }
+
+        }
+      </style>
+
+      ${search()}
+
+      <main class="container shopping-cart">
+        <div class="cart-left-wrapper">
+          <section class="cart-box select">
+            <h1 class="select-h">Shipping cart ( <span>0</span> )</h1>
+            <label for="select-all"><input type="checkbox" id="select-all" onchange="selectAll(this)" />Select
+              all</label>
+          </section>
+
+          ${itemList(user)}
+
+          <section class="cart-box buyer-protection">
+            <div class="protection column">
+              <h3 class="payment-h">Payment Methods</h3>
+              <div class="footer-payment-methods">
+                <div class="payment-method"><img src="/image/visa-card-logo.png" alt="" class="payment-logo" /></div>
+                <div class="payment-method"><img src="/image/maestro-card-logo.png" alt="" class="payment-logo" /></div>
+                <div class="payment-method"><img src="/image/master-card-logo.png" alt="" class="payment-logo" /></div>
+                <div class="payment-method"><img src="/image/american-express-logo.png" alt="" class="payment-logo" />
+                </div>
+                <div class="payment-method"><img src="/image/paypal-logo.png" alt="" class="payment-logo" /></div>
+              </div>
+            </div>
+            <div class="protection column right">
+              <h3 class="protection-h">
+                <img src="/image/protuction.png" alt="" class="protection-logo">
+                Buyer Protection
+              </h3>
+              <p>Get full refund if the item is not as described or if is not delivered.</p>
+            </div>
+          </section>
+        </div>
+
+        <form action="/checkout" method="POST" onsubmit="buy(event)" class="summary-wrapper">
+          <div class="summary-inner">
+            <h2 class="summary-h">Order Summary</h2>
+            <dl class="summary-subtotal">
+              <dt class="subtotal-name">Subtotal</dt>
+              <dd class="subtotal-desc"></dd>
+              <dt class="shipping-name">Shipping</dt>
+              <dd class="shipping-desc"></dd>
+            </dl>
+            <dl class="summary-total" onclick="showSubtotal(this)">
+              <dt class="total-name">Total</dt>
+              <dd class="total-desc"></dd>
+            </dl>
+            <input type="hidden" id="items-holder" name="items" value="[]">
+            <button type="submit" class="buy-button nf">Buy ( <span>0</span> )</button>
+        </form>
+
+    </div>
+    </main>
+
+    <script>
+      const numberOfItemsWrapper = query(".select-h>span");
+      const itemsHolder = queryId("items-holder");
+      const buyBtn = query(".buy-button");
+      const subtotalElement = query(".subtotal-desc");
+      const shippingElement = query(".shipping-desc");
+      const totalElement = query(".total-desc");
+      numberOfItemsWrapper.innerText = Cart.getItems().length;
+
+      function showSubtotal(totalWrapper) {
+        if (window.innerWidth > 850) return;
+        const subtotalWrapper = totalWrapper.parentElement.children[1]
+        if (subtotalWrapper.offsetHeight < 60) {
+          subtotalWrapper.style.height = "60px";
+          addClass(totalWrapper, "rotated");
+        } else {
+          removeClass(totalWrapper, "rotated");
+          subtotalWrapper.style.height = "0px";
+        }
+
+      }
+
+      function selectedItems(command, items) {
+        if (command === "get") return JSON.parse(itemsHolder.value);
+        itemsHolder.value = JSON.stringify(items);
+      }
+
+      subtotalElement.innerText = currency + "0.00";
+      shippingElement.innerText = currency + "0.00";
+      totalElement.innerText = currency + "0.00";
+
+      function showSummary() {
+        numberOfItemsWrapper.innerText = Cart.getItems().length;
+        buyBtn.children[0].innerText = selectedItems("get").length;
+        let total = 0, subtotal = 0, shippingCost = 0;
+        selectedItems("get").forEach(item => {
+          item.price = Number.parseInt(item.price);
+          item.shippingCost = Number.parseInt(item.shippingCost);
+          item.quantity = Number.parseInt(item.quantity);
+          subtotal += (item.price * item.quantity);
+          shippingCost += (item.shippingCost * item.quantity);
+          total += (item.price + item.shippingCost) * item.quantity;
+        });
+
+        subtotalElement.innerText = priceToString(subtotal);
+        shippingElement.innerText = priceToString(shippingCost);
+        totalElement.innerText = priceToString(total);
+      }
+
+      function selectAll(checkbox) {
+        const itemElements = Array.from(itemList.children);
+        itemElements.forEach(item => item.children[0].checked = checkbox.checked);
+        selectedItems("set", checkbox.checked ? Cart.getItems() : [])
+        showSummary();
+      }
+
+      function buy(e) {
+        e.preventDefault();
+        if (Array.from(itemList.children).find(item => item.children[0].checked)) return e.target.submit();
+        showErrorMessage("Please select the items you want to buy.");
+      }
+    </script>
+    </div>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

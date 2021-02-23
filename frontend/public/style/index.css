@@ -1,0 +1,258 @@
+/* =============== Global Style Variables  =============== */
+:root {
+  --white: #feffff;
+  --dark: #24305e; /* #17252a */
+  --red: #f76c6c; /* #f76c6c */
+  --blue: cornflowerblue; /* #a8d0e6 #7b95e0 */
+  --green: darkseagreen;
+  --blur: #00000033;
+  --background: #f4f4f4;
+  --font: #585757;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  font-family: "Lato", -apple-system, BlinkMacSystemFont, "Comic", sans-serif, Arial, Verdana, "Helvetica",
+    "Helvetica Neue", "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans";
+  color: var(--font);
+}
+
+body {
+  background: var(--background);
+}
+
+.root-container {
+  padding-top: 60px;
+}
+
+.container {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 0 5px;
+}
+
+.nf {
+  outline: none;
+}
+.link {
+  text-decoration: none;
+}
+
+.link:hover {
+  color: var(--red);
+}
+
+.btn {
+  text-decoration: none;
+  padding: 5px 10px;
+  font-size: 18px;
+  text-align: center;
+  background: var(--dark);
+  color: var(--white);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.1s ease;
+}
+
+.btn.active,
+.btn:hover {
+  background: var(--red);
+}
+.stars-wrapper {
+  display: inline-block;
+  position: relative;
+  color: var(--font);
+  font-family: BlinkMacSystemFont;
+}
+
+.stars.front {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 80%;
+  height: 100%;
+  color: var(--red);
+  font-family: BlinkMacSystemFont;
+}
+@-webkit-keyframes opacity {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes opacity {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.surface-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* =============== Desktop & Notebook styles =============== */
+
+/*  Products styles  */
+.product-list {
+  list-style: none;
+  display: flex;
+  flex-flow: row wrap;
+}
+.product.wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+  max-width: 240px;
+  margin: 15px 10px;
+  background: var(--white);
+  box-shadow: 0 0 2px 0 var(--font);
+  border-radius: 10px;
+  transition: 0.1s;
+}
+.product.wrapper:hover {
+  /* box-shadow: 0 0 10px 0 var(--font); */
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.product.wrapper:hover .product.add {
+  opacity: 1;
+}
+.product.inner {
+  text-decoration: none;
+  display: flex;
+  height: 100%;
+  padding: 10px;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+.product.image-wrapper {
+  overflow: hidden;
+  flex: auto;
+  border-radius: 10px;
+}
+.product.image-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  transform-style: preserve-3d;
+  transition: 0.8s ease;
+}
+
+.product.image-wrapper.flip:hover .product.image-inner {
+  transform: rotateY(-180deg);
+}
+.product.img {
+  min-width: 100%;
+  width: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+.product.img.back {
+  transform: rotateY(180deg);
+  transform-origin: left;
+}
+
+.product.name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: normal;
+  padding: 5px 0;
+  font-size: 15px;
+}
+
+.product-info.wrapper {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 8px;
+  font-size: 15px;
+}
+.product.price {
+  font-size: 18px;
+  font-weight: bolder;
+  color: var(--red);
+}
+.product.shipping {
+  padding-top: 8px;
+}
+.product.shipping-cost,
+.product.country {
+  font-weight: bolder;
+}
+.product.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  font-size: 28px;
+  font-weight: bold;
+  font-family: monospace;
+  border: none;
+  background: var(--red);
+  color: var(--white);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.1s;
+}
+.product.add:hover {
+  background: var(--dark);
+  color: var(--white);
+}
+
+/* =============== Mobile & Tablet styles =============== */
+@media screen and (max-width: 850px) {
+  .root-container {
+    padding-top: 50px;
+  }
+  .product.wrapper {
+    min-width: 30%;
+    max-width: 50%;
+    margin: 15px 10px;
+  }
+  .product.name {
+    font-size: 12px;
+  }
+  .product.price {
+    font-size: 16px;
+  }
+  .product.shipping {
+    padding-top: 3px;
+    font-size: 11px;
+  }
+  .product-info.wrapper {
+    font-size: 12px;
+  }
+  .product.add {
+    opacity: 1;
+    width: 20px;
+    height: 20px;
+    font-size: 19px;
+    background: none;
+    color: var(--red);
+    box-shadow: 0 0 2px 0 var(--font);
+  }
+}

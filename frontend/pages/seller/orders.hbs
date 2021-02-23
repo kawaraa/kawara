@@ -1,0 +1,472 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const sellerLinks = require("./seller-links.hbs");
+const { Validator, Formatter } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Seller dashboard orders")}
+
+    <style>
+      .tab-content.orders {
+        padding: 10px;
+      }
+
+      .order-wrapper {
+        position: relative;
+        background: var(--white);
+        border-radius: 10px;
+        margin: 25px 0;
+        padding: 15px;
+        box-shadow: 0 0 2px 0 var(--font);
+      }
+
+      .order-item {
+        position: relative;
+        display: flex;
+        border-bottom: 0.5px solid var(--blur);
+      }
+
+      .order-item-img {
+        overflow: hidden;
+        min-width: 100px;
+        max-width: 100px;
+        margin-right: 10px;
+      }
+
+      .order-item-img>img {
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .order-item-details {
+        flex: auto;
+        overflow: hidden;
+      }
+
+      .order-item-name {
+        display: block;
+        overflow: hidden;
+        margin: 5px 0 5px 0;
+        font-size: 17px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+      }
+
+      .order-item-name:hover {
+        color: var(--red);
+      }
+
+      .order-item-type,
+      .order-item-size {
+        display: flex;
+        align-items: center;
+      }
+
+      .order-item-size {
+        margin-top: 5px;
+      }
+
+      .type-name {
+        margin-right: 10px;
+        font-size: 15px;
+      }
+
+      .type-desc {
+        overflow: hidden;
+        display: flex;
+        max-width: 135px;
+        max-height: 60px;
+        font-size: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 3px;
+      }
+
+      .type-desc.size,
+      .type-desc>span {
+        font-size: 15px;
+        padding: 2px 3px;
+      }
+
+      .type-desc>img {
+        max-width: 30px;
+        max-height: 30px;
+        cursor: pointer;
+      }
+
+
+      .order-quantity {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        font-size: 18px;
+      }
+
+      .order-shipping {
+        display: flex;
+        align-items: center;
+        margin-top: 25px;
+      }
+
+      .order-shipping>p {
+        min-width: 175px;
+        width: 175px;
+        text-align: center;
+      }
+
+      .address {
+        flex: auto;
+        display: flex;
+        flex-flow: row wrap;
+      }
+
+      .address-info {
+        display: flex;
+        display: flex;
+        width: 50%;
+        margin: 3px 0;
+        font-size: 16px;
+      }
+
+      .address-info>dt {
+        margin-right: 5px;
+        min-width: 75px;
+        font-weight: bold;
+      }
+
+      .order-date {
+        font-size: 18px;
+        margin: 10px 0;
+        font-weight: bold;
+      }
+
+      .ship-it.btn {
+        display: inline-block;
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        padding: 4px 10px;
+      }
+
+      .shipment-info-form {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding: 30px;
+        background: var(--white);
+        border-radius: 10px;
+      }
+
+      .shipment-info-form>div {
+        display: flex;
+        max-width: 600px;
+        margin: 25px auto 0 auto;
+      }
+
+      .shipment-info-form> :last-child {
+        justify-content: flex-end;
+      }
+
+      .shipment-info-form>div>label {
+        width: 175px;
+        font-size: 18px;
+      }
+
+      .shipment-info-form>div>input {
+        flex: auto;
+        font-size: 18px;
+        padding: 5px;
+        border-radius: 5px;
+        border: 0.5px solid var(--dark);
+      }
+
+      .shipment-info-form>.cancel-btn {
+        overflow: hidden;
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        padding-bottom: 5px;
+        font-size: 35px;
+        line-height: 0;
+        font-weight: bold;
+        transform: rotate(45deg);
+        border-radius: 50%;
+        border: none;
+        background: none;
+        cursor: pointer;
+      }
+
+      .shipment-info-form>.cancel-btn:hover {
+        color: var(--red);
+      }
+
+      .submit.btn {
+        width: 75px;
+        margin-left: 30px;
+        padding: 5px 10px;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .order-item {
+          padding-bottom: 5px;
+        }
+
+        .order-item-img {
+          min-width: 75px;
+          max-width: 75px;
+        }
+
+        .order-item-details {
+          padding-bottom: 1px;
+        }
+
+        .order-item-name {
+          font-size: 15px;
+        }
+
+        .type-name {
+          font-size: 15px;
+        }
+
+        .type-name>span {
+          display: none;
+        }
+
+        .type-desc>img {
+          max-width: 25px;
+          max-height: 25px;
+        }
+
+        .order-shipping {
+          display: block;
+          margin-top: 10px;
+        }
+
+        .order-shipping>p {
+          width: initial;
+          margin-bottom: 5px;
+          font-size: 16px;
+          font-weight: bold;
+        }
+
+        .address {
+          flex-flow: column;
+        }
+
+        .address-info {
+          width: 100%;
+        }
+
+        .order-quantity {
+          bottom: 15px;
+          right: 15px;
+          font-size: 15px;
+        }
+
+        .order-date {
+          margin: 10px 0 0 0;
+          font-size: 15px;
+        }
+
+        .ship-it.btn {
+          font-size: 16px;
+        }
+
+        .shipment-info-form {
+          padding: 30px 10px 10px 10px;
+        }
+
+        .shipment-info-form>div {
+          flex-flow: column;
+        }
+
+        .shipment-info-form> :last-child {
+          align-items: flex-end;
+        }
+
+        .shipment-info-form>div>label {
+          margin-bottom: 5px;
+        }
+
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container seller-dashboard">
+        ${sellerLinks()}
+
+        <ul class="tab-content orders">
+          <li class="order-wrapper">
+            <section class="order-items-wrapper">
+              <article class="order-item">
+                <div class="order-item-img"><img src="" onclick="previewPicture(event)" alt=""></div>
+                <div class="order-item-details">
+                  <a href="/product/" class="order-item-name">ifvuwbf wovfuyewyfpobwe fwe</a>
+                  <dl class="order-item-type">
+                    <dt class="type-name">Type<span> / Color / Material</span>:</dt>
+                    <dd class="type-desc type">
+                      <img src="">
+                    </dd>
+                  </dl>
+                  <dl class="order-item-size">
+                    <dt class="type-name">Size<span> / Other</span>:</dt>
+                    <dd class="type-desc size"><span>1 cm</span></dd>
+                  </dl>
+                </div>
+                <p class="order-quantity">Quantity: <span>1</span></p>
+              </article>
+            </section>
+            <section class="order-shipping">
+              <p>Shipping to:</p>
+              <div class="address">
+                <dl class="address-info name">
+                  <dt>Name: </dt>
+                  <dd>Mister Tester</dd>
+                </dl>
+                <dl class="address-info street">
+                  <dt>Street: </dt>
+                  <dd>Test Street 90 2</dd>
+                </dl>
+                <dl class="address-info city">
+                  <dt>City: </dt>
+                  <dd>Amsterdam 1010EE</dd>
+                </dl>
+                <dl class="address-info country">
+                  <dt>Country: </dt>
+                  <dd>North Holland, Netherlands</dd>
+                </dl>
+                <dl class="address-info email">
+                  <dt>Email: </dt>
+                  <dd>test@kawaraa.com</dd>
+                </dl>
+                <dl class="address-info phone">
+                  <dt>Phone: </dt>
+                  <dd>+31646349555</dd>
+                </dl>
+              </div>
+            </section>
+            <p class="order-date"></p>
+            <button type="button" class="ship-it btn" onclick="showForm(this.parentElement)">Ship it</button>
+          </li>
+          <form class="shipment-info-form" onsubmit="markItAsShipped(event)">
+            <input type="hidden" name="orderId" />
+            <input type="hidden" name="soldItemIds" />
+            <div>
+              <label for="carrier">Carrier Website</label>
+              <input type="url" name="carrier" id="carrier" />
+            </div>
+            <div>
+              <label for="track-number">Tracking number</label>
+              <input type="text" name="trackNumber" id="track-number" />
+            </div>
+            <button type="button" onclick="this.parentElement.remove()" class="cancel-btn">+</button>
+            <div><button type="submit" class="submit btn">send</button></div>
+          </form>
+        </ul>
+      </main>
+    </div>
+
+    <script>
+      const orderList = query(".tab-content.orders");
+      const orderEl = query(".order-wrapper").cloneNode(true);
+      const orderItemEl = query(".order-item").cloneNode(true);
+      const form = query(".shipment-info-form").cloneNode(true);
+      orderList.innerHTML = "";
+      orderEl.querySelector(".order-items-wrapper").innerHTML = "";
+
+      ${ Validator.toString() }
+      ${ Formatter.toString() }
+
+      function showForm(orderEl) {
+        form.reset();
+        form.orderId.value = orderEl.dataset.orderId;
+        form.soldItemIds.value = orderEl.dataset.soldItemIds;
+        orderEl.appendChild(form);
+      }
+
+      async function markItAsShipped(e) {
+        e.preventDefault();
+        const body = JSON.stringify(formToObject(e.target))
+        setLoading(true);
+        const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
+        const res = await fetch("/api/seller/shipment", options).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (res.error) return showErrorMessage(res.error);
+        e.target.parentElement.remove();
+      }
+
+      (async () => {
+        const url = "/api/seller/orders?search=&limit=20=offset=0"
+        setLoading(true);
+        const orders = await fetch(url).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (orders.error) return showErrorMessage(orders.error);
+
+        orders.forEach(order => {
+          let soldItemIds = "";
+          const orderWrapper = orderEl.cloneNode(true);
+          order.items.forEach((item) => {
+            soldItemIds += item.id + ",";
+            const orderItem = orderItemEl.cloneNode(true);
+            orderItem.querySelector(".order-item-img>img").src = item.picture;
+
+            const orderNameEl = orderItem.querySelector(".order-item-name");
+
+            orderNameEl.href += item.productNumber;
+            orderNameEl.innerText = item.name;
+
+            const typeEL = orderItem.querySelector(".type-desc.type");
+            let el = null
+            if (Validator.isUrl(item.type)) {
+              el = document.createElement("img");
+              el.onclick = previewPicture
+              el.src = item.type;
+            }
+            else {
+              el = document.createElement("span");
+              el.innerHTML = item.type
+            }
+            typeEL.innerHTML = "";
+            typeEL.appendChild(el);
+
+            orderItem.querySelector(".type-desc.size").innerText = item.size;
+            orderItem.querySelector(".order-quantity>span").innerText = item.quantity;
+            orderWrapper.querySelector(".order-items-wrapper").appendChild(orderItem);
+          })
+
+
+          orderWrapper.querySelector(".address-info.name>dd").innerText = order.fullName;
+          orderWrapper.querySelector(".address-info.street>dd").innerText = order.street;
+          orderWrapper.querySelector(".address-info.city>dd").innerText = order.city + " " + order.postalCode;
+          orderWrapper.querySelector(".address-info.country>dd").innerText = order.state + ", " + order.country;
+          orderWrapper.querySelector(".address-info.email>dd").innerText = order.email;
+          orderWrapper.querySelector(".address-info.phone>dd").innerText = order.phone;
+          orderWrapper.querySelector(".order-date").innerText = Formatter.dateToText(order.orderDate);
+          orderWrapper.dataset.orderId = order.id;
+          orderWrapper.dataset.soldItemIds = soldItemIds;
+          orderList.appendChild(orderWrapper);
+        });
+      })()
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

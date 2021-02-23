@@ -1,0 +1,272 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Login Page")}
+
+    <style>
+      /* =============== Desktop & Notebook styles =============== */
+
+      .container.login {
+        min-height: 80vh;
+      }
+
+      .go-back-link {
+        display: none;
+      }
+
+      .forms-wrapper {
+        max-width: 450px;
+        padding: 30px;
+        margin: 15vh auto;
+        background: var(--white);
+        border-radius: 10px;
+      }
+
+      .login-heading {
+        display: flex;
+        margin-bottom: 25px;
+        text-align: center;
+      }
+
+      .login-tab-btn {
+        border: none;
+        background: none;
+        flex: auto;
+        padding: 10px;
+        font-size: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.1s ease;
+      }
+
+      .login-tab-btn.active {
+        font-weight: bold;
+        border-bottom: 1px solid var(--font);
+      }
+
+      .forms {
+        display: none;
+      }
+
+      #login-form.show,
+      #signup-form.show {
+        display: block;
+      }
+
+      .form-input {
+        display: block;
+        width: 100%;
+        margin-bottom: 20px;
+        padding: 10px;
+        font-size: 18px;
+        border: 0.1px solid var(--font);
+        border-radius: 5px;
+      }
+
+      .forms>button[type="submit"] {
+        display: block;
+        width: 100%;
+        margin-top: 10px;
+        padding: 12px;
+        font-size: 20px;
+        background: var(--dark);
+        color: var(--white);
+        text-align: center;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+      }
+
+      .forms>button[type="submit"]:hover {
+        background: var(--red);
+      }
+
+      .signup-seller-link {
+        display: inline-block;
+        text-decoration: none;
+        font-size: 17px;
+        margin: 20px 0 0 0;
+      }
+
+      .signup-seller-link:hover {
+        color: var(--blue);
+      }
+
+      #success-message {
+        display: none;
+        margin: 30vh 100px;
+        font-size: 25px;
+        text-align: center;
+        color: darkseagreen;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .root-container.login {
+          min-height: 75vh;
+        }
+
+        .container.login {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          height: 100vh;
+          background: var(--white);
+          z-index: 12;
+        }
+
+        .go-back-link {
+          display: block;
+          text-decoration: none;
+          width: 30px;
+          height: 30px;
+          position: absolute;
+          top: 30px;
+          left: 30px;
+          cursor: pointer;
+        }
+
+        .go-back-svg {
+          width: 100%;
+          height: 100%;
+          transition: 0.1s ease;
+          stroke: var(--font);
+          fill: var(--font);
+        }
+
+        .go-back-svg:hover {
+          stroke-width: 10px;
+          stroke: var(--font);
+          fill: var(--red);
+        }
+
+        .forms {
+          width: 100%;
+          margin: 0;
+          padding: 25px;
+        }
+
+        .login-heading {
+          font-size: 25px;
+        }
+
+        .form-input {
+          padding: 5px;
+        }
+
+        .forms>button[type="submit"] {
+          padding: 8px;
+          font-size: 18px;
+        }
+
+        #success-message {
+          margin: 30vh 0 0 0;
+          font-size: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container login">
+        <a onclick="window.history.back()" class="go-back-link nf" tabindex="0">
+          <svg class="go-back-svg">
+            <use href="#left-arrow-svg-symbol" />
+          </svg>
+        </a>
+        <div class="forms-wrapper">
+          <h1 class="login-heading nf" tabindex="0">
+            <button name="login-form" class="login-tab-btn nf active" onclick="showContent(event)">
+              Login
+            </button>
+            <button name="signup-form" class="login-tab-btn nf" onclick="showContent(event)">
+              JOIN
+            </button>
+          </h1>
+
+          <form onsubmit="handleLogin(event)" id="login-form" class="forms show nf" tabindex="0">
+            <input type="email" name="email" placeholder="email@example.com" class="form-input nf" required
+              value="test@kawaraa.com" />
+            <input type="password" name="password" minlength="8" placeholder="Password" class="form-input nf" required
+              value="1234567890@Aa" />
+            <button type="submit" class="nf">Login</button>
+          </form>
+
+          <form onsubmit="handleSignup(event)" id="signup-form" class="forms nf" tabindex="0">
+            <input type="email" name="email" placeholder="email@example.com" class="form-input nf" required />
+            <input type="password" name="password" minlength="8" placeholder="Password" class="form-input nf"
+              required />
+            <input type="password" name="confirmPassword" minlength="8" placeholder="Confirm Password"
+              class="form-input nf" required />
+            <button type="submit" class="nf">Create account</button>
+          </form>
+          <a href="/auth/signup" class="signup-seller-link nf">Create a seller account</a>
+        </div>
+        <p id="success-message">
+          Account has been created successfully, we sent you a confirmation link to your Email, Please
+          confirm the account.
+        </p>
+      </main>
+    </div>
+
+    <script>
+
+      function showContent({ target }) {
+        queryAll(".login-tab-btn").forEach(el => removeClass(el, "active"));
+        addClass(target, "active");
+        queryAll(".forms").forEach((el) => removeClass(el, "show"));
+        addClass(queryId(target.name), "show");
+      }
+
+      async function handleLogin(e) {
+        e.preventDefault();
+        const { email, password } = e.target;
+        try {
+          const body = JSON.stringify(formToObject(e.target));
+          const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
+          const user = await fetch("/api/auth/login", options).then(res => res.json()).catch(networkError);
+          if (user.error) return showErrorMessage(user.error);
+          window.location.replace("/");
+        } catch (error) {
+          showErrorMessage(error.message);
+        }
+      }
+
+
+      async function handleSignup(e) {
+        e.preventDefault();
+        const { email, password, confirmPassword } = e.target;
+        try {
+          if (password.value !== confirmPassword.value) throw new Error("Passwords do not match");
+          const body = JSON.stringify(formToObject(e.target));
+          const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
+          setLoading(true);
+          const user = await fetch("/api/auth/signup", options).then(res => res.json()).catch(networkError);
+          setLoading(false);
+          if (user.error) return showErrorMessage(user.error);
+          query(".forms-wrapper").style.display = "none";
+          queryId("success-message").style.display = "block";
+          setTimeout(() => window.location.replace("/"), 7000);
+        } catch (error) {
+          showErrorMessage(error.message);
+        }
+      }
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

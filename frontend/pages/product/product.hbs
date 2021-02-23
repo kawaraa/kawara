@@ -1,0 +1,564 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const search = require("../../layout/search.hbs");
+const productTypes = require("./product-types.hbs");
+
+module.exports = ({user}, {currency, rate, product}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header(!product? "" : product.name)}
+    <style>
+      .container.product-page {
+        margin-top: 50px;
+      }
+
+      .view-container {
+        display: flex;
+      }
+
+      .pictures.wrapper {}
+
+      .main-picture {
+        max-width: 450px;
+        height: 450px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .pictures.main {
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .picture-list {
+        list-style: none;
+        overflow: auto;
+        display: flex;
+      }
+
+      .picture.item {
+        overflow: hidden;
+        min-width: 65px;
+        max-width: 65px;
+        max-height: 65px;
+        margin: 7px 7px 20px 7px;
+        border-radius: 5px;
+        box-shadow: 0 0 3px 0 var(--font);
+        cursor: pointer;
+      }
+
+      .picture.item:hover,
+      .picture.item.focus {
+        box-shadow: 0 0 0 2px var(--red);
+      }
+
+      .picture.img {
+        width: 100%;
+      }
+
+      .details.wrapper {
+        flex: 6;
+        padding: 0 40px;
+      }
+
+      .details.heading {
+        font-size: 20px;
+        font-weight: normal;
+      }
+
+      .details.price {
+        font-size: 24px;
+        margin: 20px 0 5px 0;
+        font-weight: bolder;
+        color: var(--red);
+      }
+
+      .details.stars-wrapper {
+        font-size: 30px;
+      }
+
+      .details.sold {
+        font-size: 18px;
+        margin: 10px 0;
+        font-weight: bold;
+      }
+
+      .quantity.babel {
+        display: block;
+        margin: 20px 0 10px 0;
+      }
+
+      .quantity.input {
+        display: inline-block;
+        width: 60px;
+        text-align: center;
+      }
+
+      .quantity-btn {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        font-size: 19px;
+        line-height: 0;
+        text-align: center;
+        vertical-align: middle;
+        font-family: monospace;
+        border: none;
+        background: var(--red);
+        color: var(--white);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: 0.1s ease;
+      }
+
+      .quantity-btn.minus {
+        line-height: 1;
+      }
+
+      .quantity-btn:hover {
+        background: var(--dark);
+        color: var(--white);
+      }
+
+      .details.shipping {
+        margin: 20px 0 5px 0;
+        font-size: 18px;
+      }
+
+      .details.shipping-cost,
+      .shipping-country {
+        font-weight: bold;
+      }
+
+      .shipping.estimate {
+        color: gray;
+        font-size: 16px;
+      }
+
+      .shipping.time {
+        color: black;
+        font-weight: bold;
+      }
+
+      .details.btn {
+        display: inline-block;
+        font-size: 20px;
+        padding: 5px 30px;
+        border: none;
+        border-radius: 5px;
+        margin: 20px 10px 0 0;
+        cursor: pointer;
+      }
+
+      .details.buy {
+        background: var(--red);
+        color: var(--white);
+      }
+
+      .details.add {
+        background: var(--blue);
+        color: var(--white);
+      }
+
+      .details-container {
+        background: var(--white);
+        margin: 50px auto;
+        border-radius: 10px;
+      }
+
+      .details.tab-btns {
+        display: flex;
+        border-bottom: 1px solid var(--font);
+      }
+
+      .tab-btn {
+        border: none;
+        background: none;
+        flex: auto;
+        padding: 10px;
+        font-size: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.1s ease;
+      }
+
+      .tab-btn.active {
+        font-weight: bold;
+        border-bottom: 1px solid var(--font);
+      }
+
+      .tab-content {
+        display: none;
+        padding: 50px 20px;
+      }
+
+      .tab-content.show {
+        display: block;
+        animation: opacity 1s ease;
+      }
+
+      #specifications.tab-content.show {
+        display: flex;
+        flex-flow: row wrap;
+        padding-left: 30px;
+      }
+
+      .specs.item {
+        width: 50%;
+        margin: 5px 0;
+      }
+
+      .specs.title {
+        font-weight: bold;
+        margin-right: 5px;
+      }
+
+      .overview-h {
+        margin-bottom: 30px;
+        font-size: 18px;
+      }
+
+      #overview>p {
+        white-space: pre;
+        font-size: 16px;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -o-pre-wrap;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .search-wrapper {
+          display: none;
+        }
+
+        .container.product-page {
+          margin: 0;
+          padding: 0;
+        }
+
+        .view-container {
+          flex-flow: column;
+        }
+
+        .main-picture {
+          margin: auto;
+        }
+
+        .picture-list {
+          max-width: 450px;
+          margin: auto;
+        }
+
+        .picture.item {
+          min-width: 40px;
+          max-width: 40px;
+          margin: 7px;
+        }
+
+        .details.wrapper {
+          padding: 0 15px;
+        }
+
+        .details.heading {
+          font-size: 18px;
+        }
+
+        .details.price {
+          margin: 5px 0;
+          font-size: 20px;
+        }
+
+        .stars-and-sold-wrapper {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .details.stars-wrapper {
+          font-size: 12px;
+        }
+
+        .details.sold {
+          margin: 0;
+          font-size: 15px;
+        }
+
+        .quantity.babel {
+          width: 100px;
+          margin: 0;
+          font-size: 15px;
+        }
+
+        .details.quantity {
+          display: flex;
+          margin-top: 5px;
+        }
+
+        .quantity-btn {
+          margin: 0 5px;
+        }
+
+        .quantity.input {}
+
+        .quantity.in-stock {
+          flex: auto;
+          text-align: right;
+        }
+
+        .details.shipping {
+          margin: 10px 0 5px 0;
+          font-size: 15px;
+        }
+
+        .details.shipping-cost {
+          font-weight: bold;
+          color: var(--blue);
+        }
+
+        .shipping-country {
+          font-weight: bold;
+        }
+
+        .shipping.estimate {
+          font-size: 12px;
+        }
+
+        .checkout-form {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          width: 100%;
+          margin: 0;
+          display: flex;
+        }
+
+        .details.btn {
+          flex: 5;
+          margin: 0;
+          padding: 8px;
+          border-radius: 0;
+        }
+
+        .details-container {
+          margin: 50px 0;
+          border-radius: 0;
+        }
+
+        .tab-btn {
+          font-size: 18px;
+        }
+
+        .tab-content {
+          padding: 30px 20px 50px 20px;
+        }
+
+        .overview-h {
+          margin-bottom: 15px;
+          font-size: 17px;
+        }
+
+        #overview>p {
+          font-size: 15px;
+        }
+
+        #specifications.tab-content.show {
+          flex-flow: column;
+          margin-left: 30px;
+        }
+
+        .specs.item {
+          width: auto;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+
+      ${search()}
+
+      <main class="container product-page">
+        <div class="view-container">
+          <section class="pictures wrapper">
+            <div class="main-picture">
+              <img src="${product.pictures[0]}" onclick="previewPicture(event)" alt=""
+                data-picture="${product.pictures[0]}" class="pictures main" />
+            </div>
+
+            <ul class="picture-list">
+              ${product.pictures.render(p => `
+              <li class="picture item" onmouseover="showPicture(this)">
+                <img src="${p}" alt="" class="picture img" />
+              </li>
+              `)}
+            </ul>
+          </section>
+
+          <section class="details wrapper">
+            <h1 class="details heading" data-name="${product.name}">${product.name}</h1>
+            <p class="details price" data-price="${product.types[0].sizes[0].price}" data-currency="${currency}"
+              data-rate="${rate}">
+              ${product.types[0].sizes[0].price.priceToString(rate, currency)}
+            </p>
+            <div class="stars-and-sold-wrapper">
+              <div class="details stars-wrapper">
+                &#9733;&#9733;&#9733;&#9733;&#9733;
+                <span class="stars front" style="width: ${Math.round((product.stars / 5) * 100)}%;">
+                  &#9733;&#9733;&#9733;&#9733;&#9733;
+                </span>
+              </div>
+              <div class="details sold">${product.sold} Sold</div>
+            </div>
+            ${productTypes(product.types)}
+            <div class="details quantity">
+              <label class="quantity babel">Quantity:</label>
+              <button class="quantity-btn minus" onclick="updateQuantity(-1)">-</button>
+              <input value="1" name="quantity" max="${product.types[0].sizes[0].inStock}" class="quantity input" />
+              <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
+              <span class="quantity in-stock">
+                <span>${product.types[0].sizes[0].inStock}</span> in Stock</span>
+            </div>
+            <p class="details shipping" data-shipping-cost="${product.shippingCost}" data-country="${product.country}">
+              <span class="details shipping-cost">
+                ${product.shippingCost > 0 ? product.shippingCost.priceToString(rate, currency) : "Free"}
+              </span>
+              shipping to <span class="shipping-country">${product.country}</span>
+            </p>
+            <p class="shipping estimate" data-estimated-time="${product.estimatedTime}">
+              Estimated Delivery Time: <span class=" shipping time">${product.estimatedTime} days</span>
+            </p>
+            <form action="/checkout" method="POST" onsubmit="buyProduct(event)" class="checkout-form">
+              <input type="hidden" id="items-holder" name="items" value="[]">
+              <button type="button" onclick="addProduct(this)" data-product-number="${product.number}"
+                class="details btn add">Add</button>
+              <button type="submit" class="details btn buy">Buy</button>
+            </form>
+          </section>
+        </div>
+
+        <section class="details-container">
+          <div class="details tab-btns">
+            <button name="overview" onclick="showTabContent(event)" class="tab-btn nf active">
+              Overview
+            </button>
+            <button name="specifications" onclick="showTabContent(event)" class="tab-btn nf">
+              Specifications
+            </button>
+          </div>
+          <article id="overview" class="tab-content show">
+            <h3 class="overview-h">Description</h3>
+            <video src="" controls id="product-video" style="display: none;" data-url="${product.video}"></video>
+            <p>${product.description}</p>
+          </article>
+          <ul id="specifications" class="tab-content">
+            ${product.specifications.render(spec=>`
+            <li class="specs item">
+              <span class="specs title">${spec.title}:</span>
+              <span class="specs value" title="UR Sugar">${spec.description}</span>
+            </li>
+            `)}
+          </ul>
+        </section>
+      </main>
+    </div>
+
+    <script>
+      const picturesMain = query(".pictures.main");
+      const priceElement = query(".details.price");
+      const inStockElement = query(".quantity.in-stock>span");
+      const quantityElement = query("input[name=quantity]");
+      const shippingElement = query(".details.shipping");
+      const itemsHolder = queryId("items-holder");
+      const video = queryId("product-video");
+
+      picturesMain.parentElement.style.height = picturesMain.parentElement.offsetWidth + "px"
+
+      async function loadTheVideo() {
+        try {
+          const blob = await Request.fetch(video.dataset.url, "GET", "blob");
+          video.src = (URL || webkitURL).createObjectURL(blob);
+          video.style.display = "block";
+        } catch (error) {
+          video.style.display = "none";
+        }
+      }
+      loadTheVideo()
+
+      const productType = {
+        number: query(".details.btn[type=button]").dataset.productNumber,
+        name: query(".details.heading").dataset.name,
+        quantity: 1,
+        currency: priceElement.dataset.currency,
+        rate: Number.parseFloat(priceElement.dataset.rate),
+        picture: picturesMain.dataset.picture,
+        shippingCost: shippingElement.dataset.shippingCost,
+        country: shippingElement.dataset.country,
+        estimatedTime: query(".shipping.estimate").dataset.estimatedTime,
+      };
+      function getProductType() { return productType }
+      function updateProductType(product) {
+        Object.keys(product).forEach(k => productType[k] = product[k])
+      }
+
+      function showPicture(el) {
+        Array.from(el.parentElement.children).forEach(el => removeClass(el, "focus"));
+        picturesMain.src = el.children[0].src;
+        addClass(el, "focus");
+      };
+
+      function showTabContent({ target }) {
+        queryAll(".tab-btn").forEach(el => removeClass(el, "active"));
+        addClass(target, "active");
+        queryAll(".tab-content").forEach((el) => removeClass(el, "show"));
+        addClass(queryId(target.name), "show");
+      }
+
+
+      function updateQuantity(itemNum) {
+        if (getProductType().quantity + itemNum < 1) return;
+        if (getProductType().quantity + itemNum > quantityElement.max) return;
+        getProductType().quantity += itemNum;
+        quantityElement.value = getProductType().quantity;
+      }
+
+      function checkedProductType() {
+        const type = query(".type.surface-input");
+        const size = query(".size.surface-input");
+        const typeChecked = queryAll(".type.surface-input").find(el => el.checked);
+        const sizeChecked = queryAll(".size.surface-input").find(el => el.checked);
+        if (type && !typeChecked) showErrorMessage("Please select the Color / Type (!)");
+        else if (size && !sizeChecked) showErrorMessage("Please select the Size / Other (!)");
+        else return true;
+        clearTimeout(window.messageTime);
+        window.messageTime = setTimeout(showErrorMessage, 5000);
+      }
+
+      function addProduct({ dataset: { productNumber } }) {
+        getProductType().number = productNumber;
+        if (!checkedProductType()) return;
+        Cart.add(getProductType());
+      }
+
+      function buyProduct(e) {
+        if (!checkedProductType()) return e.preventDefault();
+        itemsHolder.value = JSON.stringify([getProductType()]);
+        setLoading(true);
+        e.target.submit();
+      }
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`;

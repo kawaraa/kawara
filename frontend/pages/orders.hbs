@@ -1,0 +1,416 @@
+const header = require("../layout/header.hbs");
+const navbar = require("../layout/navbar.hbs");
+const footer = require("../layout/footer.hbs");
+const { Validator, Formatter, countries } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Orders xxxx")}
+    <style>
+      .container.orders {
+        min-height: 85vh;
+      }
+
+      .container.orders>h1 {
+        margin: 30px 0;
+      }
+
+      .tabs-wrapper {
+        display: flex;
+      }
+
+      .tab-btn {
+        text-decoration: none;
+        flex: 2;
+        padding: 12px;
+        font-size: 18px;
+        text-align: center;
+        background: var(--dark);
+        color: var(--white);
+        border: none;
+        cursor: pointer;
+        transition: 0.1s ease;
+      }
+
+      .tab-btn.active {
+        background: var(--red);
+        position: relative;
+      }
+
+      .tab-btn.active:after {
+        content: "";
+        display: block;
+        border-style: solid;
+        border-width: 30px;
+        border-color: transparent transparent white transparent;
+        position: absolute;
+        bottom: -30px;
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .order-list {
+        list-style: none;
+        min-height: 75vh;
+        margin: 30px 0 60px 0;
+        padding: 20px 10px;
+        background: var(--white);
+      }
+
+      .order-wrapper {
+        position: relative;
+        background: var(--white);
+        border-radius: 10px;
+        margin: 25px 0;
+        padding: 15px;
+        box-shadow: 0 0 2px 0 var(--font);
+      }
+
+      .order-info {
+        margin-bottom: 10px;
+      }
+
+      .order-info {
+        position: relative;
+        display: flex;
+        border-bottom: 0.5px solid var(--blur);
+      }
+
+      .order-info-img {
+        overflow: hidden;
+        min-width: 100px;
+        max-width: 100px;
+        margin-right: 10px;
+      }
+
+      .order-info-img>img {
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .order-info-details {
+        flex: auto;
+        overflow: hidden;
+      }
+
+      .order-info-name {
+        display: block;
+        overflow: hidden;
+        margin: 5px 0 5px 0;
+        font-size: 17px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+      }
+
+      .order-info-name:hover {
+        color: var(--red);
+      }
+
+      .order-info-type,
+      .order-info-size {
+        display: flex;
+        align-items: center;
+      }
+
+      .order-info-size {
+        margin: 5px 0;
+      }
+
+      .type-name {
+        margin-right: 10px;
+        font-size: 15px;
+      }
+
+      .type-desc {
+        overflow: hidden;
+        display: flex;
+        max-width: 135px;
+        max-height: 60px;
+        font-size: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 3px;
+      }
+
+      .type-desc>img {
+        max-width: 30px;
+        max-height: 30px;
+        cursor: pointer;
+      }
+
+      .order-price {
+        margin-bottom: 5px;
+      }
+
+      .order-price>span,
+      .order-total>span {
+        font-size: 18px;
+        font-weight: bolder;
+        margin: 8px 0;
+        color: var(--red);
+      }
+
+      .order-quantity {
+        position: absolute;
+        bottom: 40px;
+        right: 20px;
+        font-size: 18px;
+      }
+
+      .order-total {
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+      }
+
+      .show-address-btn {
+        overflow: hidden;
+        display: block;
+        width: 25px;
+        height: 20px;
+        margin: auto;
+        font-size: 30px;
+        text-align: center;
+        line-height: 34px;
+        border: none;
+        background: none;
+        color: gray;
+        font-family: monospace;
+        cursor: pointer;
+        transition: 0.3s ease;
+      }
+
+      .show-address-btn.show {
+        transform: rotate(180deg);
+      }
+
+      .address-wrapper {
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        max-height: 0;
+        transition: 0.3s ease;
+      }
+
+      .address-wrapper.show {
+        max-height: 100px;
+      }
+
+      .address {
+        flex: 5;
+      }
+
+      .address>span {
+        display: block;
+        font-size: 12px;
+        margin: 2px 0;
+      }
+
+      .date-wrapper {
+        flex: 5;
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+      }
+
+      .order-date,
+      .shipping-date,
+      .delivery-date,
+      .shipment {
+        font-size: 15px;
+      }
+
+      .order-date>span,
+      .shipping-date>span,
+      .delivery-date>span,
+      .shipment>span {
+        display: inline-block;
+        margin-left: 5px;
+        font-weight: bold;
+        font-size: 13px;
+      }
+
+      .shipment,
+      .delivery-date {
+        display: none;
+        word-break: break-all;
+      }
+
+      .shipment>a {
+        display: inline-block;
+        color: var(--blue);
+        cursor: pointer;
+      }
+
+      .shipment>a:hover {
+        color: var(--red);
+      }
+
+      .confirm-btn-wrapper {
+        text-align: right;
+      }
+
+      .confirm-btn-wrapper>.btn {
+        padding: 2px 5px;
+        font-size: 15px;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {}
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container orders">
+        <h1 class="">Orders</h1>
+        <header class="tabs-wrapper" onclick="getOrders(event)">
+          <button class="tab-btn nf active" name="notshipped">Not Shipped</button>
+          <button class="tab-btn nf" name="shipped">Shipped</button>
+          <button class="tab-btn nf" name="delivered">Delivered</button>
+        </header>
+
+        <ul class="order-list">
+          <li class="order-wrapper">
+            <section class="order-info">
+              <div class="order-info-img"><img src="" onclick="previewPicture(event)" alt="">
+              </div>
+              <div class="order-info-details">
+                <a href="/product/" class="order-info-name">ifvuwbf wovfuyewyfpobwe fwe</a>
+                <dl class="order-info-type">
+                  <dt class="type-name">Type<span> / Color / Material</span>:</dt>
+                  <dd class="type-desc type"><img onclick="previewPicture(event)" src="" alt=""></dd>
+                </dl>
+                <dl class="order-info-size">
+                  <dt class="type-name">Size<span> / Other</span>:</dt>
+                  <dd class="type-desc size"><span>1 cm</span></dd>
+                </dl>
+                <div class="order-price"><span>€10.00</span></div>
+              </div>
+              <p class="order-quantity">Quantity: <span>1</span></p>
+              <p class="order-total">Total: <span>€10.00</span></p>
+            </section>
+            <button onclick="showAddressInfo(this)" type="button" class="show-address-btn nf">^</button>
+            <section class="address-wrapper">
+              <p class="address">
+                <span>Mister Tester</span>
+                <span>Test Street 90 2</span>
+                <span>Amsterdam 1010EE</span>
+                <span>North Holland, Netherlands</span>
+              </p>
+              <div class="date-wrapper">
+                <p class="order-date">Ordered <span>2 day ago</span></p>
+                <p class="shipping-date">shipped <span>10 hours ago</span></p>
+                <p class="delivery-date">Delivered <span></span></p>
+                <p class="shipment">Tracking Number<span>w3u4ry349bru0ni324</span><br /><a target="_blank">Carrier</a>
+                </p>
+                <div class="confirm-btn-wrapper" style="display: none;">
+                  <button onclick="confirmDelivery(this)" type="button" class="btn nf">Confirm</button>
+                </div>
+              </div>
+            </section>
+          </li>
+        </ul>
+      </main>
+    </div>
+
+    <script>
+      const orderList = query(".order-list");
+      const orderEl = orderList.children[0].cloneNode(true);
+      orderList.innerHTML = "";
+
+      ${ Validator.toString() }
+      ${ Formatter.toString() }
+
+      function showAddressInfo(btn) {
+        btn.classList.toggle("show");
+        btn.nextElementSibling.classList.toggle("show")
+      }
+
+      async function confirmDelivery(btn) {
+        const url = "/api/buyer/order?orderId=" + btn.dataset.orderId + "&itemId=" + btn.dataset.itemId;
+        setLoading(true);
+        const orders = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (orders.error) return showErrorMessage(orders.error);
+        btn.parentElement.parentElement.parentElement.parentElement.remove();
+      }
+
+      function renderOrders(order) {
+        const orderWrapper = orderEl.cloneNode(true);
+        orderWrapper.querySelector(".order-info-img>img").src = order.picture;
+
+        const nameWrapper = orderWrapper.querySelector(".order-info-name");
+        nameWrapper.innerText = order.name;
+        nameWrapper.href += order.productNumber;
+
+        const typeWrapper = orderWrapper.querySelector(".type-desc.type");
+        let el = null
+        if (!Validator.isUrl(order.type)) typeWrapper.innerHTML = order.type
+        else typeWrapper.children[0].src = order.type
+        const total = (order.price + order.shippingCost) * order.quantity;
+        orderWrapper.querySelector(".type-desc.size").innerText = order.size;
+        orderWrapper.querySelector(".order-price>span").innerText = priceToString(order.price);
+        orderWrapper.querySelector(".order-quantity>span").innerText = order.quantity;
+        orderWrapper.querySelector(".order-total>span").innerText = priceToString(total);
+
+        const addressWrapper = orderWrapper.querySelector(".address");
+        addressWrapper.children[1].innerText = order.fullName;
+        addressWrapper.children[1].innerText = order.street;
+        addressWrapper.children[1].innerText = order.city + " " + order.postalCode;
+        addressWrapper.children[1].innerText = order.state + ", " + order.country;
+
+        orderWrapper.querySelector(".order-date>span").innerText = Formatter.dateToText(order.orderDate);
+        orderWrapper.querySelector(".shipping-date>span").innerText = "No";
+
+        if (order.shippingDate) {
+          orderWrapper.querySelector(".shipping-date>span").innerText = Formatter.dateToText(order.shippingDate);
+          const shipmentWrapper = orderWrapper.querySelector(".shipment");
+          shipmentWrapper.children[0].innerText = order.trackNumber;
+          shipmentWrapper.children[1].href = order.carrier;
+          shipmentWrapper.style.display = "block";
+
+          const confirmWrapper = orderWrapper.querySelector(".confirm-btn-wrapper");
+          confirmWrapper.children[0].dataset.orderId = order.id;
+          confirmWrapper.children[0].dataset.itemId = order.itemId;
+          confirmWrapper.style.display = "block";
+          if (order.deliveryDate) {
+            orderWrapper.querySelector(".delivery-date>span").innerText = Formatter.dateToText(order.deliveryDate);
+            orderWrapper.querySelector(".delivery-date").style.display = "block";
+            confirmWrapper.style.display = "none";
+          }
+        }
+        orderList.appendChild(orderWrapper);
+      }
+
+      async function fetchOrders(query) {
+        orderList.innerHTML = "";
+        setLoading(true);
+        const orders = await fetch("/api/buyer/orders" + query).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (orders.error) return showErrorMessage(orders.error);
+        orders.forEach(renderOrders);
+      }
+
+      function getOrders({ target }) {
+        if (!target.name) return;
+        Array.from(target.parentElement.children).forEach(btn => removeClass(btn, "active"));
+        addClass(target, "active");
+        fetchOrders("?status=" + target.name + "&limit=20&offset=0&sortBy=desc");
+      }
+
+
+      fetchOrders("?status=notshipped&limit=20&offset=0&sortBy=desc");
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

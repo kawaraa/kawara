@@ -1,0 +1,135 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const adminLinks = require("./admin-links.hbs");
+const { Validator } =require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Admin Dashboard products")}
+
+    <style>
+      .products-header,
+      .product-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        padding-right: 30px;
+        font-size: 16px;
+        padding-bottom: 10px;
+        border-bottom: 0.5px solid var(--blur);
+      }
+
+      .owner,
+      .source {
+        overflow: hidden;
+        display: block;
+        width: 150px;
+        white-space: nowrap;
+        text-overflow: ellipsis
+      }
+
+      .name {
+        overflow: hidden;
+        display: block;
+        flex: auto;
+        max-width: 60%;
+        margin-right: 10px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .product-item>.btn {
+        position: absolute;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-width: 30px;
+        min-height: 30px;
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+        padding: 0;
+      }
+
+      .product-item>.btn.red {
+        background: var(--red);
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container">
+        ${adminLinks()}
+        <div class="tab-content products">
+          <h4 class="products-header">
+            <span class="owner">Owner</span><span class="name">Name</span><span class="source">Source</span>
+          </h4>
+          <ul id="product-list">
+            <li class="product-item">
+              <a href="/admin/user/" class="owner link"></a>
+              <a href="/product/" class="name link"></a>
+              <a target="_blank" class="source link">Source</a>
+              <button type="button" name="" onclick="approveProduct(this)" class="btn">&#10004;</button>
+            </li>
+          </ul>
+        </div>
+      </main>
+    </div>
+
+
+    <script>
+      const productList = queryId("product-list");
+      const productItem = productList.children[0].cloneNode(true);
+      productList.innerHTML = "";
+      ${ Validator.toString() }
+
+      async function approveProduct(btn) {
+        if (!confirm("Are you sure you want to make this product live?")) return;
+        const url = "/api/admin/product/approve/" + btn.name
+        setLoading(true);
+        const res = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (res.error) return showErrorMessage(res.error);
+        btn.parentElement.remove();
+      }
+
+      (async () => {
+        setLoading(true);
+        const products = await fetch("/api/admin/products").then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (products.error) return showErrorMessage(products.error);
+
+        products.forEach(product => {
+          const productWrapper = productItem.cloneNode(true);
+          productWrapper.children[0].innerText = product.fullName;
+          productWrapper.children[0].href += product.owner;
+          productWrapper.children[1].innerText = product.name;
+          productWrapper.children[1].href += product.number;
+          if (Validator.isUrl(product.source)) productWrapper.children[2].href = product.source;
+          else productWrapper.children[2].innerText = product.source;
+          productWrapper.children[3].name = product.number;
+          if (product.accountConfirmed < 1) {
+            productWrapper.children[3].disabled = true;
+            addClass(productWrapper.children[3], "red");
+          }
+          productList.appendChild(productWrapper)
+        });
+      })()
+
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

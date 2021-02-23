@@ -1,0 +1,310 @@
+const { Validator } = require("k-utilities");
+
+module.exports = () => `
+<style>
+  /* =============== Notebook, Laptops, Desktops, Large screens & TV styles =============== */
+  .cart-item-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--white);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    padding: 35px 15px;
+  }
+
+  .cart-box.item-list {
+    background: none;
+    list-style: none;
+    min-height: 55vh;
+    padding: 0;
+  }
+
+  .select-item {
+    margin-right: 5px;
+    cursor: pointer;
+  }
+
+  .cart-item-column.img {
+    overflow: hidden;
+    min-width: 140px;
+    max-width: 140px;
+    max-height: 200px;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+  }
+
+  .cart-item-img {
+    width: 100%;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .cart-item-column.details {
+    position: relative;
+    overflow: hidden;
+    flex: auto;
+    padding-right: 30px;
+  }
+
+  .cart-item-name {
+    display: block;
+    font-size: 18px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+
+  .cart-item-name:hover {
+    color: var(--red);
+  }
+
+  .cart-item-type {
+    display: flex;
+    align-items: center;
+    margin: 5px 0;
+    font-size: 14px;
+  }
+
+  .type-name {
+    margin-right: 10px;
+  }
+
+  .type-desc {
+    overflow: hidden;
+    display: flex;
+    font-weight: bold;
+    min-width: 50px;
+    max-width: 135px;
+    max-height: 60px;
+    font-size: 15px;
+    text-transform: uppercase;
+  }
+
+
+  .type-desc>img {
+    max-width: 30px;
+    max-height: 30px;
+    cursor: pointer;
+  }
+
+  .cart-item-price {
+    font-size: 18px;
+    font-weight: bolder;
+    margin: 8px 0;
+    color: var(--red);
+  }
+
+  .cart-item-shipping {
+    font-size: 16px;
+  }
+
+  .shipping-cost,
+  .shipping-country {
+    font-weight: bold;
+  }
+
+  .shipping-estimate {
+    color: gray;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  .shipping-time {
+    color: black;
+  }
+
+  .cart-item.delete-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20px;
+    height: 25px;
+    border: none;
+    background: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+
+  .cart-item.delete-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .cart-item.delete-svg:hover {
+    fill: var(--red);
+  }
+
+  .cart-item-quantity {
+    display: inline-block;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    font-size: 18px;
+  }
+
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {
+    .cart-item-wrapper {
+      padding: 5px;
+    }
+
+    .cart-item-column.img {
+      max-width: 100px;
+      min-width: 100px;
+    }
+
+    .cart-item-name {
+      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .cart-item-type {
+      margin: 2px 0;
+      font-size: 12px;
+    }
+
+    .type-name> :first-child {
+      display: none;
+    }
+
+    .type-desc {
+      font-size: 13px;
+    }
+
+    .type-desc>img {
+      max-width: 25px;
+      max-height: 25px;
+    }
+
+    .cart-item-price {
+      margin: 4px 0;
+      font-size: 17px;
+    }
+
+    .cart-item-shipping {
+      font-size: 12px;
+    }
+
+    .shipping-cost {
+      color: var(--blue);
+    }
+
+    .shipping-estimate {
+      font-size: 10px;
+    }
+
+    .shipping-estimate> :first-child {
+      display: none;
+    }
+
+    .cart-item.delete-btn {
+      top: 45px;
+      width: 15px;
+      height: 20px;
+    }
+
+    .cart-item.delete-svg {
+      fill: var(--red);
+    }
+
+    .cart-item-quantity {
+      bottom: 20px;
+      right: 20px;
+      font-size: 16px;
+    }
+  }
+</style>
+
+<ul class="cart-box item-list">
+  <li class="cart-item-wrapper" style="display: none;">
+    <input type="checkbox" class="select-item" onchange="selectItem(this)" />
+    <div class="cart-item-column img">
+      <img src="/" onclick="previewPicture(event)" alt="" class="cart-item-img">
+    </div>
+    <div class="cart-item-column details">
+      <a href="/product/" class="cart-item-name"></a>
+      <dl class="cart-item-type">
+        <dt class="type-name">Type<span> / Color / Material</span>:</dt>
+        <dd class="type-desc type"></dd>
+      </dl>
+      <dl class="cart-item-type">
+        <dt class="type-name">Size<span> / Other</span>:</dt>
+        <dd class="type-desc size"></dd>
+      </dl>
+      <div class="cart-item-price"></div>
+      <p class="cart-item-shipping">
+        <span class="shipping-cost"></span> shipping to <span class="shipping-country"></span>
+      </p>
+      <p class="shipping-estimate">
+        <span>Estimated</span>Delivery Time: <span class="shipping-time"></span>
+      </p>
+      <button class="cart-item delete-btn" onclick="removeItem(this.parentElement.parentElement)">
+        <svg class="cart-item delete-svg">
+          <use href="#delete-svg-symbol" />
+        </svg>
+      </button>
+    </div>
+    <span class="cart-item-quantity"></span>
+  </li>
+</ul>
+
+<script>
+  const itemList = query(".cart-box.item-list");
+  query(".cart-item-wrapper").style.display = "flex"
+  const itemEl = query(".cart-item-wrapper").cloneNode(true);
+  itemList.innerHTML = "";
+
+  ${ Validator.toString() }
+
+  function selectItem(checkbox) {
+    const itemId = checkbox.parentElement.dataset.itemId;
+    if (!checkbox.checked) selectedItems("set", selectedItems("get").filter(item => item.id !== itemId));
+    else selectedItems("set", [...selectedItems("get"), Cart.getItems().find(item => item.id === itemId)]);
+    queryId("select-all").checked = false;
+    showSummary();
+  }
+
+  function removeItem(item) {
+    Cart.remove(item.dataset.itemId);
+    selectedItems("set", selectedItems("get").filter(i => i.id !== item.dataset.itemId));
+    showSummary();
+    item.remove();
+  }
+
+  Cart.getItems().forEach(item => {
+    const itemWrapper = itemEl.cloneNode(true);
+    const days = Number.parseInt(item.estimatedTime);
+    const estimatedTime = days > 1 ? days + " days" : "24 hours"
+
+    itemWrapper.querySelector(".cart-item-img").src = item.picture;
+    itemWrapper.querySelector(".cart-item-name").href += item.number;
+    itemWrapper.querySelector(".cart-item-name").innerText = item.name;
+
+    const type = itemWrapper.querySelector(".type-desc.type");
+    itemWrapper.querySelector(".type-desc.size").innerText = item.size;
+
+    if (!Validator.isUrl(item.type)) type.innerText = item.type;
+    else {
+      const img = document.createElement("img");
+      img.src = item.type;
+      img.onclick = previewPicture;
+      type.innerHTML = "";
+      type.appendChild(img);
+    }
+    const cost = Number.parseFloat(item.shippingCost) > 0 ? priceToString(item.shippingCost) : "free"
+    itemWrapper.querySelector(".cart-item-price").innerText = priceToString(item.price);
+    itemWrapper.querySelector(".shipping-cost").innerText = cost;
+    itemWrapper.querySelector(".shipping-country").innerText = item.country;
+    itemWrapper.querySelector(".shipping-time").innerText = estimatedTime;
+    itemWrapper.querySelector(".cart-item-quantity").innerText = item.quantity;
+
+    itemWrapper.dataset.itemId = item.id;
+    itemList.appendChild(itemWrapper)
+  });
+
+</script>
+`;

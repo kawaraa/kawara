@@ -1,0 +1,125 @@
+module.exports = () => `
+<style>
+  #specifications {
+    position: relative;
+    padding-bottom: 30px;
+  }
+
+  .specification-wrapper {
+    position: relative;
+    display: flex;
+    margin: 10px 0;
+    border-bottom: 0.1px solid var(--blur);
+  }
+
+  .specification-wrapper>:first-child {
+    margin-right: 10px;
+  }
+
+  .specification-box {
+    display: flex;
+    flex: 4;
+    margin: 10px 0;
+  }
+
+  .specification-box:last-child {
+    flex: 6;
+    padding: 0 15px 0 10px;
+  }
+
+  .specification-box>label {
+    margin-right: 10px;
+  }
+
+  .specification-box>input {
+    flex: auto;
+    padding: 5px;
+    font-size: 16px;
+    border: none;
+    box-shadow: 0 0 0px 1px var(--dark);
+    border-radius: 2px;
+  }
+
+  .specification-wrapper input[type="button"] {
+    bottom: 9px;
+    right: -20px;
+  }
+
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {
+    .specification-box {
+      display: block;
+      flex: 5;
+    }
+
+    .specification-box:last-child {
+      flex: 6;
+      padding: 0 7px 0 10px;
+    }
+
+    .specification-box>label,
+    .specification-box>input {
+      display: block;
+      width: 100%;
+    }
+
+    .specification-wrapper input[type="button"] {
+      bottom: 11px;
+      right: -25px;
+    }
+  }
+</style>
+
+<div class="input-field">
+  <p>Specifications</p>
+  <div id="specifications">
+    <button type="button" onclick="addSpecification()" class="add-btn">Add Spec</button>
+    <div class="specification-wrapper">
+      <input type="button" value="+" onclick="this.parentElement.remove()" style="display: none;" />
+      <div class="specification-box">
+        <label for="specification-title">Title</label>
+        <input type="text" name="specTitle" />
+      </div>
+      <div class="specification-box">
+        <label for="specDescription">Description</label>
+        <input type="text" name="specDescription" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const specificationsWrapper = queryId("specifications");
+  const specificationEl = specificationsWrapper.children[1];
+
+  function addSpecification() {
+    if (specificationsWrapper.children.length > 15) return
+    const el = specificationEl.cloneNode(true);
+    el.children[0].style.display = "block";
+    specificationsWrapper.appendChild(el)
+  }
+
+  function extractSpecification(specification) {
+    const title = specification.querySelector("input[name=specTitle]");
+    const description = specification.querySelector("input[name=specDescription]");
+    if (!title.value) {
+      title.style.boxShadow = "0 0 0 2px red";
+      throw new Error("Invalid input 'Specification Title'");
+    }
+    if (!description.value) {
+      description.style.boxShadow = "0 0 0 2px red";
+      throw new Error("Invalid input 'Specification Description' ");
+    }
+    return { title: title.value, description: description.value }
+  }
+
+  function getSpecifications() {
+    const specifications = Array.from(specificationsWrapper.querySelectorAll(".specification-wrapper"));
+    try {
+      return JSON.stringify(specifications.map(specification => extractSpecification(specification)));
+    } catch (error) {
+      return showErrorMessage(error.message);
+    }
+  }
+</script>
+`;

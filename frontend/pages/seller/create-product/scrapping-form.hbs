@@ -1,0 +1,56 @@
+module.exports = () => `
+
+<style>
+  .scrapping-section {
+    margin-top: 30px;
+  }
+
+  #url-form {
+    max-width: 800px;
+    margin: 10px auto 30px auto;
+    display: flex;
+  }
+
+  #url-form>input[type="url"] {
+    flex: auto;
+    font-size: 16px;
+  }
+
+  #url-form>button[type="submit"] {
+    width: 100px;
+    padding: 2px;
+    font-size: 18px;
+    text-align: center;
+  }
+
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {
+    #url-form>button[type="submit"] {
+      width: 80px;
+    }
+  }
+</style>
+
+<section class="scrapping-section">
+  <h2>Add product by link</h2>
+  <form onsubmit="sendUrl(this)" id="url-form">
+    <input type="url" name="url" placeholder="https://example.com/product?productId=3456789" />
+    <button type="submit">Add</button>
+  </form>
+  <div id="url-result">
+    <p class="error"></p><a href="/product/" class="result"></a>
+  </div>
+</section>
+
+<script>
+
+  async function sendUrl({ url }) {
+    event.preventDefault();
+    url = "/api/seller/scrape-product?url=" + url.value;
+    const product = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
+    if (product.error) return showErrorMessage(product.error);
+    queryId("url-result").children[1].href += product.number;
+    queryId("url-result").children[1].innerText = "Click here to see the new product";
+  }
+</script>
+`;

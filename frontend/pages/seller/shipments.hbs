@@ -1,0 +1,354 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const sellerLinks = require("./seller-links.hbs");
+const { Validator, Formatter } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Seller dashboard shipments")}
+
+    <style>
+      .tab-content.shipments {
+        padding: 10px;
+      }
+
+      .shipment-wrapper {
+        position: relative;
+        background: var(--white);
+        border-radius: 10px;
+        margin: 25px 0;
+        padding: 15px;
+        box-shadow: 0 0 2px 0 var(--font);
+      }
+
+      .shipment-item {
+        position: relative;
+        display: flex;
+        border-bottom: 0.5px solid var(--blur);
+      }
+
+      .shipment-item-img {
+        overflow: hidden;
+        min-width: 100px;
+        max-width: 100px;
+        margin-right: 10px;
+      }
+
+      .shipment-item-img>img {
+        width: 100%;
+        cursor: pointer;
+      }
+
+      .shipment-item-details {
+        flex: auto;
+        overflow: hidden;
+      }
+
+      .shipment-item-name {
+        display: block;
+        overflow: hidden;
+        margin: 5px 0 5px 0;
+        font-size: 17px;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-decoration: none;
+      }
+
+      .shipment-item-name:hover {
+        color: var(--red);
+      }
+
+      .shipment-item-type,
+      .shipment-item-size {
+        display: flex;
+        align-items: center;
+      }
+
+      .shipment-item-size {
+        margin-top: 5px;
+      }
+
+      .type-name {
+        margin-right: 10px;
+        font-size: 15px;
+      }
+
+      .type-desc {
+        overflow: hidden;
+        display: flex;
+        max-width: 135px;
+        max-height: 60px;
+        font-size: 15px;
+        font-weight: bold;
+        text-transform: uppercase;
+        border-radius: 3px;
+      }
+
+      .type-desc.size,
+      .type-desc>span {
+        font-size: 15px;
+        padding: 2px 3px;
+      }
+
+      .type-desc>img {
+        max-width: 30px;
+        max-height: 30px;
+        cursor: pointer;
+      }
+
+
+      .shipment-quantity {
+        position: absolute;
+        bottom: 20px;
+        right: 20px;
+        font-size: 18px;
+      }
+
+      .shipment-shipping-info {
+        display: flex;
+        align-items: center;
+        margin-top: 15px;
+      }
+
+      .shipment-shipping-info>p {
+        min-width: 175px;
+        width: 175px;
+        text-align: center;
+      }
+
+      .address {
+        flex: auto;
+        display: flex;
+        flex-flow: row wrap;
+      }
+
+      .address-info {
+        display: flex;
+        display: flex;
+        width: 50%;
+        margin: 3px 0;
+      }
+
+      .address-info>dt {
+        margin-right: 5px;
+        min-width: 75px;
+        font-weight: bold;
+      }
+
+      .order-date,
+      .shipment-date {
+        display: inline-block;
+        width: 48%;
+        font-size: 15px;
+        margin: 15px 0 0 0;
+      }
+
+      .shipment-date {
+        text-align: right;
+      }
+
+      .order-date>span,
+      .shipment-date>span {
+        font-weight: bold;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .shipment-item-img {
+          min-width: 75px;
+          max-width: 75px;
+        }
+
+        .shipment-item-details {
+          padding-bottom: 4px;
+        }
+
+        .shipment-item-name {
+          font-size: 15px;
+        }
+
+        .type-name {
+          font-size: 15px;
+        }
+
+        .type-name>span {
+          display: none;
+        }
+
+        .type-desc>img {
+          max-width: 25px;
+          max-height: 25px;
+        }
+
+        .shipment-quantity {
+          bottom: 15px;
+          right: 15px;
+          font-size: 15px;
+        }
+
+        .shipment-shipping-info {
+          display: block;
+        }
+
+        .shipment-shipping-info>p {
+          width: initial;
+          margin-bottom: 5px;
+          font-size: 16px;
+          font-weight: bold;
+        }
+
+        .address {
+          flex-flow: column;
+        }
+
+        .address-info {
+          width: 100%;
+        }
+
+        .order-date,
+        .shipment-date {
+          display: block;
+          width: initial;
+          text-align: left;
+        }
+
+        .shipment-date {
+          margin-top: 3px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container">
+        ${sellerLinks()}
+
+        <ul class="tab-content shipments">
+          <li class="shipment-wrapper">
+            <section class="shipment-items-wrapper">
+              <article class="shipment-item">
+                <div class="shipment-item-img"><img src="" onclick="previewPicture(event)" alt="">
+                </div>
+                <div class="shipment-item-details">
+                  <a href="/product/" class="shipment-item-name">ifvuwbf wovfuyewyfpobwe fwe</a>
+                  <dl class="shipment-item-type">
+                    <dt class="type-name">Type<span> / Color / Material</span>:</dt>
+                    <dd class="type-desc type">
+                      <img src="">
+                    </dd>
+                  </dl>
+                  <dl class="shipment-item-size">
+                    <dt class="type-name">Size<span> / Other</span>:</dt>
+                    <dd class="type-desc size"><span>1 cm</span></dd>
+                  </dl>
+                </div>
+                <p class="shipment-quantity">Quantity: <span>1</span></p>
+              </article>
+            </section>
+            <section class="shipment-shipping-info">
+              <p>Shipping to:</p>
+              <div class="address">
+                <dl class="address-info name">
+                  <dt>Name: </dt>
+                  <dd>Mister Tester</dd>
+                </dl>
+                <dl class="address-info street">
+                  <dt>Street: </dt>
+                  <dd>Test Street 90 2</dd>
+                </dl>
+                <dl class="address-info city">
+                  <dt>City: </dt>
+                  <dd>Amsterdam 1010EE</dd>
+                </dl>
+                <dl class="address-info country">
+                  <dt>Country: </dt>
+                  <dd>North Holland, Netherlands</dd>
+                </dl>
+                <dl class="address-info email">
+                  <dt>Email: </dt>
+                  <dd>test@kawaraa.com</dd>
+                </dl>
+                <dl class="address-info phone">
+                  <dt>Phone: </dt>
+                  <dd>+31646349555</dd>
+                </dl>
+              </div>
+            </section>
+            <p class="order-date">Ordered <span></span></p>
+            <p class="shipment-date">shipped <span></span></p>
+          </li>
+        </ul>
+      </main>
+    </div>
+
+    <script>
+      const shipmentList = query(".tab-content.shipments");
+      const shipmentEl = query(".shipment-wrapper").cloneNode(true);
+      const shipmentItemEl = query(".shipment-item").cloneNode(true);
+      shipmentList.innerHTML = "";
+      shipmentEl.querySelector(".shipment-items-wrapper").innerHTML = "";
+
+      ${ Validator.toString() }
+      ${ Formatter.toString() }
+
+      (async () => {
+        setLoading(true);
+        const shipments = await fetch("/api/seller/shipments").then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (shipments.error) return showErrorMessage(shipments.error);
+
+        shipments.forEach(shipment => {
+          const shipmentWrapper = shipmentEl.cloneNode(true);
+          shipment.items.forEach((item) => {
+            const shipmentItem = shipmentItemEl.cloneNode(true);
+            shipmentItem.querySelector(".shipment-item-img>img").src = item.picture;
+
+            const shipmentNameEl = shipmentItem.querySelector(".shipment-item-name");
+
+            shipmentNameEl.href += item.productNumber;
+            shipmentNameEl.innerText = item.name;
+
+            const typeEL = shipmentItem.querySelector(".type-desc.type");
+            let el = null
+            if (Validator.isUrl(item.type)) {
+              el = document.createElement("img");
+              el.onclick = previewPicture
+              el.src = item.type;
+            }
+            else {
+              el = document.createElement("span");
+              el.innerHTML = item.type
+            }
+            typeEL.innerHTML = "";
+            typeEL.appendChild(el);
+
+            shipmentItem.querySelector(".type-desc.size").innerText = item.size;
+            shipmentItem.querySelector(".shipment-quantity>span").innerText = item.quantity;
+            shipmentWrapper.querySelector(".shipment-items-wrapper").appendChild(shipmentItem);
+          })
+
+          shipmentWrapper.querySelector(".address-info.name>dd").innerText = shipment.fullName;
+          shipmentWrapper.querySelector(".address-info.street>dd").innerText = shipment.street;
+          shipmentWrapper.querySelector(".address-info.city>dd").innerText = shipment.city + " " + shipment.postalCode;
+          shipmentWrapper.querySelector(".address-info.country>dd").innerText = shipment.state + ", " + shipment.country;
+          shipmentWrapper.querySelector(".address-info.email>dd").innerText = shipment.email;
+          shipmentWrapper.querySelector(".address-info.phone>dd").innerText = shipment.phone;
+          shipmentWrapper.querySelector(".order-date>span").innerText = Formatter.dateToText(shipment.orderDate);
+          shipmentWrapper.querySelector(".shipment-date>span").innerText = Formatter.dateToText(shipment.shippingDate);
+          shipmentList.appendChild(shipmentWrapper);
+        });
+      })()
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

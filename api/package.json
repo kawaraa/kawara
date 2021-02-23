@@ -1,0 +1,39 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "This is the api gateway for Kawara",
+  "main": "app.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "npx nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kawaraa/kawara.git/api"
+  },
+  "homepage": "https://github.com/kawaraa/kawara#readme",
+  "bugs": {
+    "url": "https://github.com/kawaraa/kawara/issues"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^5.7.4",
+    "cheerio": "^1.0.0-rc.5",
+    "cookie": "^0.4.0",
+    "express": "^4.17.1",
+    "formidable": "^1.2.2",
+    "jsonwebtoken": "^8.5.1",
+    "k-utilities": "^1.0.8",
+    "mysql": "^2.18.1",
+    "node-fetch": "^2.6.1",
+    "nodemailer": "^6.4.10",
+    "paypal-rest-sdk": "^1.8.1",
+    "puppeteer": "^5.5.0",
+    "stripe": "^8.134.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}

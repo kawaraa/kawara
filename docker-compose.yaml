@@ -1,0 +1,66 @@
+version: "3"
+
+services:
+  database:
+    container_name: sql-database
+    build: ./database/
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: root-psw
+      MYSQL_USER: "client"
+      MYSQL_PASSWORD: "client-psw"
+    restart: always
+    tty: true
+
+  api:
+    container_name: api
+    build: ./api/
+    ports:
+      - 3001:3001
+    volumes:
+      - ./api:/api
+    command: npm run dev
+    depends_on:
+      - database
+    restart: always
+    tty: true
+
+  frontend:
+    container_name: frontend
+    build: ./frontend/
+    ports:
+      - 3000:3000
+    volumes:
+      - ./frontend:/frontend
+    command: npm run dev
+    depends_on:
+      - database
+    restart: always
+    tty: true
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8081:80
+    environment:
+      PMA_HOST: database
+    depends_on:
+      - database
+    restart: always
+    tty: true
+
+  proxy:
+    container_name: reverse-proxy
+    build: ./reverse-proxy/
+    ports:
+      - 8080:8080
+    volumes:
+      - ./frontend/public:/home/www
+    depends_on:
+      - frontend
+      - phpmyadmin
+      - api
+    restart: always
+    tty: true

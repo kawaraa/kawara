@@ -1,0 +1,191 @@
+module.exports = (user) => `
+<div class="outer-container">
+  <style>
+    .outer-container {
+      background: var(--white);
+      box-shadow: 0 0 2px 0 var(--font);
+    }
+
+    footer.container {
+      padding: 30px 5px 50px 5px;
+      margin-top: 30px;
+    }
+
+    .footer-row {
+      display: flex;
+      margin: 20px 0 40px 0;
+    }
+
+    .footer.logo {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .footer-payment-methods {
+      flex: auto;
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: center;
+    }
+
+    .payment-method {
+      height: 25px;
+      margin: 0 5px;
+    }
+
+    .payment-logo {
+      height: 100%;
+    }
+
+    .footer-columns {
+      display: flex;
+    }
+
+    .column {
+      list-style: none;
+      flex: auto;
+    }
+
+    .column-heading {
+      font-size: 18px;
+      margin-bottom: 15px;
+    }
+
+    .legal-wrapper {
+      padding: 0 0 15px 0;
+    }
+
+    .legal-link {
+      text-decoration: none;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .legal-link:hover {
+      color: var(--blue);
+    }
+
+    .legal-copyright {
+      color: gray;
+    }
+
+    .footer-link {
+      display: inline-block;
+      text-decoration: none;
+      margin: 8px 0;
+      color: var(--dark);
+    }
+
+    .column-item.social-media {
+      display: flex;
+    }
+
+    .media {
+      width: 25px;
+      height: 25px;
+      margin: 0 3px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .media-logo {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* =============== Mobile, IPads & Tablet styles =============== */
+    @media screen and (max-width: 850px) {
+      .footer-row {
+        margin: 0;
+      }
+
+      .payment-method {
+        height: 18px;
+      }
+
+      .column {
+        flex: 1;
+      }
+
+      .legal-copyright {
+        font-size: 14px;
+      }
+
+      .column-heading {
+        font-size: 14px;
+      }
+
+      .media {
+        width: 20px;
+        height: 20px;
+      }
+
+      .footer-link {
+        margin: 5px 0;
+      }
+    }
+  </style>
+  <footer class="container">
+    <div class="footer-row">
+      <a href="/" class="footer navbar logo link no-focus" tabindex="0">
+        <span class="logo e">E</span>
+        <span class="logo letters">asy</span>
+        <span class="logo g">G</span>
+        <span class="logo letters">et</span>
+        <span class="logo s">S</span>
+        <span class="logo letters">hop</span>
+      </a>
+      <div class="footer-payment-methods">
+        <div class="payment-method"><img src="/image/visa-card-logo.png" alt="" class="payment-logo" /></div>
+        <div class="payment-method"><img src="/image/maestro-card-logo.png" alt="" class="payment-logo" /></div>
+        <div class="payment-method"><img src="/image/master-card-logo.png" alt="" class="payment-logo" /></div>
+        <div class="payment-method"><img src="/image/american-express-logo.png" alt="" class="payment-logo" /></div>
+        <div class="payment-method"><img src="/image/paypal-logo.png" alt="" class="payment-logo" /></div>
+      </div>
+    </div>
+    <div class="footer-columns">
+      <div class="column">
+        <div class="legal-wrapper">
+          <a href="/terms-and-conditions" class="legal-link">Terms and conditions</a>
+        </div>
+        <div class="legal-wrapper">
+          <a href="/privacy-policy" class="legal-link">Privacy Policy</a>
+        </div>
+        <div class="legal-wrapper">
+          <a href="/privacy-policy#cookie-policy" class="legal-link">Cookie Policy</a>
+        </div>
+        <p class="legal-copyright">Copyright &#169; EasyGetShop.</p>
+      </div>
+      <ul class="column">
+        <h6 class="column-heading">Support</h6>
+        <!-- <li class="column-item social-media">
+          <a class="media" href="https://www.facebook.com/xxx" rel="nofollow" target="_blank">
+            <img src="/image/facebook-logo.png" alt="" class="media-logo" />
+          </a>
+          <a class="media" href="https://m.me/xxx" target="_blank">
+            <img src="/image/facebook-messenger-logo.png" alt="" class="media-logo" />
+          </a>
+          <a class="media" href="https://wa.me/3164567887" target="_blank">
+            <img src="/image/whatsapp-logo.png" alt="" class="media-logo" />
+          </a>
+        </li> -->
+        <li class="column-item"><a href="/contact" class="footer-link">Contact</a></li>
+        <li class="column-item"><a href="/about" class="footer-link">About</a></li>
+        <li class="column-item"><a href="/qa" class="footer-link nf" tabindex="0">Q&#38;A</a></li>
+        <li class="column-item"><a href="/seller/orders" class="footer-link nf" tabindex="0">Seller</a></li>
+      </ul>
+      </ul>
+      <ul class="column">
+        <h4 class="column-heading">Site map</h4>
+        <li class="column-item"><a href="/" class="footer-link">Home</a></li>
+        <li class="column-item"><a href="/category?name=Health-Beauty" class="footer-link">Beauty</a></li>
+        <li class="column-item"> <a href="/category?name=Jewelry-Watches" class="footer-link">Jewelry</a></li>
+        <li class="column-item"><a href="/category?name=Sports" class="footer-link">Sports</a></li>
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => setLoading(false));
+  </script>
+</div>
+`;

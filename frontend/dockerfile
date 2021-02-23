@@ -1,0 +1,9 @@
+FROM node:lts-alpine
+
+COPY . /frontend
+
+WORKDIR /frontend
+
+CMD npm install
+
+# RUN npm run dev

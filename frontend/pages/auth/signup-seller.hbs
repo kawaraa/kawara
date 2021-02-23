@@ -1,0 +1,290 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const { countries } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Create seller account")}
+
+    <style>
+      .go-back-link {
+        display: none;
+      }
+
+      .create-seller-form {
+        max-width: 700px;
+        margin: 30px auto;
+        padding: 30px 20px;
+        background: var(--white);
+        border-radius: 10px;
+      }
+
+      .create-seller-h {
+        text-align: center;
+      }
+
+      .field-wrapper {
+        display: flex;
+        flex-flow: row;
+      }
+
+      .input-field {
+        flex: 5;
+        margin: 15px 10px;
+      }
+
+      .input-field>label {
+        margin-bottom: 8px;
+      }
+
+      .input-field>label,
+      .input-field>input,
+      .input-field>textarea {
+        display: block;
+        width: 100%;
+        font-size: 18px;
+        color: var(--font);
+      }
+
+      .input-field>input,
+      .input-field>textarea {
+        padding: 8px;
+        border: none;
+        box-shadow: 0 0 2px 0 var(--font);
+        border-radius: 3px;
+      }
+
+      .input-field>textarea {
+        resize: none;
+        height: 120px;
+      }
+
+      #country {
+        cursor: not-allowed;
+      }
+
+      .submit-btn-wrapper {
+        text-align: right;
+        margin: 25px 15px 0 0;
+      }
+
+      .btn.submit {
+        display: inline-block;
+        padding: 10px 20px;
+      }
+
+      #success-message {
+        display: none;
+        margin: 30vh 100px;
+        font-size: 25px;
+        text-align: center;
+        color: darkseagreen;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .root-container.create-seller {
+          min-height: 75vh;
+        }
+
+        .container.create-seller {
+          overflow: auto;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          width: 100%;
+          height: 100vh;
+          background: var(--white);
+          z-index: 12;
+        }
+
+        .go-back-link {
+          display: block;
+          text-decoration: none;
+          width: 30px;
+          height: 30px;
+          position: absolute;
+          top: 20px;
+          left: 20px;
+        }
+
+        .go-back-svg {
+          width: 100%;
+          height: 100%;
+          transition: 0.1s;
+          stroke: var(--font);
+          fill: var(--font);
+        }
+
+        .go-back-svg:hover {
+          stroke-width: 10px;
+          stroke: var(--font);
+          fill: var(--red);
+        }
+
+        .create-seller-form {
+          padding: 30px 10px 100px 10px;
+        }
+
+        .create-seller-h {
+          margin-bottom: 10px;
+          font-size: 25px;
+        }
+
+        .field-wrapper {
+          display: flex;
+          flex-flow: column;
+        }
+
+        .input-field {
+          margin: 10px;
+        }
+
+        .input-field>label {
+          padding: 0;
+          font-size: 17px;
+        }
+
+        .input-field>input,
+        .input-field>textarea {
+          padding: 5px;
+          font-size: 17px;
+        }
+
+        .submit-btn-wrapper {
+          margin: 25px 5px 0 5px;
+        }
+
+        .btn.submit {
+          padding: 8px 15px;
+          font-size: 17px;
+          width: 100%;
+        }
+
+        #success-message {
+          margin: 30vh 0 0 0;
+          font-size: 20px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container create-seller">
+      <main class="container create-seller">
+        <a onclick="window.history.back()" class="go-back-link nf" tabindex="0">
+          <svg class="go-back-svg">
+            <use href="#left-arrow-svg-symbol" />
+          </svg>
+        </a>
+        <form action="/api/auth/create-seller" method="POST" class="create-seller-form" onsubmit="handleSubmit(event)">
+          <h1 class="create-seller-h">Create a seller account</h1>
+          <div class="field-wrapper">
+            <div class="input-field">
+              <label for="email">Email</label>
+              <input type="email" name="email" required id="email" class=" nf" tabindex="0" value="test@kawaraa.com" />
+            </div>
+            <div class="input-field">
+              <label for="phone">Phone</label>
+              <input type="tel" name="phone" minlength="8" maxlength="15" required id="phone" class=" nf" tabindex="0"
+                value="+31647899227" />
+            </div>
+          </div>
+          <div class="field-wrapper">
+            <div class="input-field">
+              <label for="password">Password</label>
+              <input type="password" name="password" min="8" required id="password" class=" nf" tabindex="0" />
+            </div>
+            <div class="input-field">
+              <label for="confirm-password">Confirm Password</label>
+              <input type="password" name="confirmPassword" min="8" required id="confirm-password" class=" nf"
+                tabindex="0" />
+            </div>
+          </div>
+          <div class="field-wrapper">
+            <div class="input-field">
+              <label for="first-name">First Name</label>
+              <input type="firstName" name="firstName" min="1" max="20" required id="first-name" class=" nf"
+                tabindex="0" value="Mister" />
+            </div>
+            <div class="input-field">
+              <label for="last-name">Last Name</label>
+              <input type="lastName" name="lastName" min="3" max="20" required id="last-name" class=" nf" tabindex="0"
+                value="Tester" />
+            </div>
+          </div>
+          <div class="field-wrapper">
+            <div class="input-field">
+              <label for="country">Country</label>
+              <input type="text" value="${countries[user.country][0]}" disabled id="country" class=" nf" tabindex="0" />
+            </div>
+            <div class="input-field">
+              <label for="state">State / Province</label>
+              <input type="text" name="state" min="2" max="85" required value="Test state" />
+            </div>
+            <div class="input-field">
+              <label for="city">City</label>
+              <input type="city" name="city" min="2" max="85" required id="city" class=" nf" tabindex="0"
+                value="Tester" />
+            </div>
+          </div>
+          <div class="field-wrapper">
+            <div class="input-field">
+              <label for="postal-code">Postal Code</label>
+              <input type="postalCode" name="postalCode" min="4" max="10" required id="postal-code" class=" nf"
+                tabindex="0" value="1010EE" />
+            </div>
+            <div class="input-field">
+              <label for="street">Street + Apartment</label>
+              <input type="street" name="street" min="5" max="150" required id="street" class=" nf" tabindex="0"
+                value="Test street" />
+            </div>
+          </div>
+          <div class="input-field">
+            <label for="about">About</label>
+            <textarea name="about" id="about"
+              placeholder="Tell the customers somethings about your store or your products" class=" nf" tabindex="0"
+              required>I sell very heigh quality product</textarea>
+          </div>
+          <div class="submit-btn-wrapper">
+            <button type="submit" class="btn submit">Create</button>
+          </div>
+        </form>
+        <p id="success-message">
+          Account has been created successfully, we sent you a confirmation link to your Email, Please
+          confirm the account.
+        </p>
+      </main>
+    </div>
+
+    <script>
+      async function handleSubmit(e) {
+        e.preventDefault();
+        try {
+          const data = formToObject(e.target)
+          if (data.password !== data.confirmPassword) throw new Error("Passwords do not match");
+          const options = { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) };
+          const res = await fetch("/api/auth/signup/seller", options).then(res => res.json()).catch(networkError);
+          if (res.error) return showErrorMessage(res.error);
+          query(".create-seller-form").style.display = "none";
+          queryId("success-message").style.display = "block";
+          setTimeout(() => window.location.replace("/"), 7000);
+        } catch (error) {
+          showErrorMessage(error.message);
+        }
+      }
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

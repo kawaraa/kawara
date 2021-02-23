@@ -1,0 +1,105 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const adminLinks = require("./admin-links.hbs");
+const { Formatter } = require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Admin Dashboard accounts")}
+
+    <style>
+      .account-form {
+        margin: 10px 0 30px 0;
+      }
+
+      .accounts-header,
+      .account-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+        padding-right: 30px;
+        font-size: 16px;
+        padding-bottom: 10px;
+        border-bottom: 0.5px solid var(--blur);
+      }
+
+      .tab-content>h2 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+
+      .name,
+      .created-date,
+      .confirmed {
+        overflow: hidden;
+        flex: 3;
+        white-space: nowrap;
+        text-overflow: ellipsis
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container accounts">
+        ${adminLinks()}
+        <div class="tab-content accounts">
+          <form class="account-form" onchange="fetchAccounts('type='+this.type.value)">
+            <label for="seller"><input type="radio" name="type" value="seller" checked />Seller</label>
+            <label for="seller"><input type="radio" name="type" value="buyer" />Buyer</label>
+          </form>
+
+          <h4 class="accounts-header">
+            <span class="name">Name</span><span class="created-date">Created</span><span
+              class="confirmed">Confirmed</span>
+          </h4>
+
+          <ul id="account-list">
+            <li class="account-item">
+              <a href="/admin/user/" class="name link">qdfq</a>
+              <span class="created-date">fqf</span>
+              <span class="confirmed">fqf</span>
+            </li>
+          </ul>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      const accountList = queryId("account-list");
+      const accountItem = accountList.children[0].cloneNode(true);
+
+      ${ Formatter.toString() }
+
+      async function fetchAccounts(query) {
+        accountList.innerHTML = "";
+        setLoading(true);
+        const accounts = await fetch("/api/admin/accounts?" + query).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (accounts.error) return showErrorMessage(accounts.error);
+
+        accounts.forEach(account => {
+          const accountWrapper = accountItem.cloneNode(true);
+          accountWrapper.children[0].href += account.id;
+          accountWrapper.children[0].innerText = account.fullName;
+          accountWrapper.children[1].innerText = Formatter.dateToText(account.created);
+          accountWrapper.children[2].innerText = account.confirmed < 1 ? "No" : "Yes";
+          accountList.appendChild(accountWrapper)
+        });
+      }
+
+      fetchAccounts("type=seller");
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

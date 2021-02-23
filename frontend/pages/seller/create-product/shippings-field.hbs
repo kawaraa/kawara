@@ -1,0 +1,141 @@
+module.exports = (user, countries) => `
+<style>
+  #shippings {
+    position: relative;
+    padding-bottom: 40px;
+  }
+
+  .shipping-wrapper>input[type="button"] {
+    bottom: 1px;
+    right: -25px;
+  }
+
+  .shipping-box {
+    flex: auto;
+  }
+
+  .shipping-box:nth-child(3) {
+    min-width: 130px;
+    margin: 0 20px;
+  }
+
+  .shipping-box>label {
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .shipping-box>input,
+  .shipping-box>select {
+    display: block;
+    width: 100%;
+    padding: 5px;
+    font-size: 16px;
+    border: none;
+    box-shadow: 0 0 0px 1px var(--dark);
+    border-radius: 2px;
+  }
+
+  .shipping-wrapper {
+    position: relative;
+    display: flex;
+    margin: 15px 15px 0 0;
+  }
+
+  /* =============== Mobile, IPads & Tablet styles =============== */
+  @media screen and (max-width: 850px) {
+    .shipping-wrapper {
+      flex-flow: row wrap;
+      margin: 15px 0;
+    }
+
+    .shipping-wrapper>input[type="button"] {
+      top: 0;
+      right: -8px;
+    }
+
+    .shipping-box {
+      margin-bottom: 10px;
+    }
+
+    .shipping-box:nth-child(2) {
+      width: 100%;
+    }
+
+    .shipping-box:nth-child(3) {
+      max-width: 50%;
+      margin: 0;
+    }
+
+    .shipping-box:nth-child(4) {
+      max-width: 50%;
+      margin: 0 0 0 7px;
+    }
+  }
+</style>
+
+<div class="input-field">
+  <p>Shippings:</p>
+  <div id="shippings">
+    <button type="button" onclick="addShipping()" class="add-btn">Add Shipping</button>
+
+    <div class="shipping-wrapper">
+      <input type="button" value="+" onclick="this.parentElement.remove()" style="display: none;" />
+      <div class="shipping-box">
+        <label for="country">Country</label>
+        <select name="country" class="country">
+          ${countries.render((key, value)=>`
+          <option value="${key}" ${user.country===key?"selected" :""}>${value[0]}</option>
+          `)}
+        </select>
+      </div>
+      <div class="shipping-box">
+        <label for="estimated-time">Estimated Time</label>
+        <input type="number" min="1" max="5" name="estimatedTime" class="estimated-time" />
+      </div>
+      <div class="shipping-box">
+        <label for="cost">Cost</label>
+        <input type="number" min="0" name="cost" class="cost" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const shippingsWrapper = queryId("shippings");
+  const shippingsEl = shippingsWrapper.children[1];
+
+  function addShipping() {
+    const el = shippingsEl.cloneNode(true);
+    el.children[0].style.display = "block";
+    shippingsWrapper.appendChild(el)
+  }
+
+  function extractShipping(shipping) {
+    const country = shipping.querySelector("select[name=country]");
+    const estimatedTime = shipping.querySelector("input[name=estimatedTime]");
+    const cost = shipping.querySelector("input[name=cost]");
+    if (!country.value) {
+      country.style.boxShadow = "0 0 0 2px red";
+      throw new Error("Invalid input 'Country'");
+    }
+    if (!estimatedTime.value || Number.isNaN(Number.parseInt(estimatedTime.value))) {
+      estimatedTime.style.boxShadow = "0 0 0 2px red";
+      throw new Error("Invalid input 'Shipping Time' must be the number of the shipping days");
+    }
+    if (!cost.value || Number.isNaN(Number.parseInt(cost.value))) {
+      cost.style.boxShadow = "0 0 0 2px red";
+      throw new Error("Invalid input 'Shipping Cost' must be number");
+    }
+    return { country: country.value, estimatedTime: estimatedTime.value, cost: cost.value }
+  }
+
+  function getShippings() {
+    const shippings = Array.from(shippingsWrapper.querySelectorAll(".shipping-wrapper"));
+    try {
+      return JSON.stringify(shippings.map(shipping => extractShipping(shipping)));
+    } catch (error) {
+      return showErrorMessage(error.message);
+    }
+  }
+</script>
+`;

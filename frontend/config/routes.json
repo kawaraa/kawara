@@ -1,0 +1,137 @@
+[
+  {
+    "method": "get",
+    "path": "/",
+    "filePath": "/home/home.js"
+  },
+  {
+    "method": "get",
+    "path": "/category",
+    "filePath": "/category/category.js"
+  },
+  {
+    "method": "get",
+    "path": "/product/:number",
+    "filePath": "/product/product.js"
+  },
+  {
+    "method": "get",
+    "path": "/search",
+    "filePath": "/search/search.js"
+  },
+  {
+    "method": "get",
+    "path": "/shopping-cart",
+    "filePath": "/shopping-cart/cart.hbs"
+  },
+  {
+    "method": "post",
+    "path": "/checkout",
+    "filePath": "/checkout/checkout.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/checkout/complete",
+    "filePath": "/checkout/complete.js"
+  },
+  {
+    "method": "get",
+    "path": "/contact",
+    "filePath": "/contact.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/about",
+    "filePath": "/about.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/qa",
+    "filePath": "/qa/qa.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/terms-and-conditions",
+    "filePath": "/terms-and-conditions.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/privacy-policy",
+    "filePath": "/privacy-policy.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/orders",
+    "filePath": "/orders.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/account",
+    "filePath": "/account/account.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/admin/accounts",
+    "filePath": "/admin/accounts.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/admin/banks",
+    "filePath": "/admin/banks.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/admin/products",
+    "filePath": "/admin/products.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/admin/orders",
+    "filePath": "/admin/orders.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/admin/sales",
+    "filePath": "/admin/sales.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/admin/payouts",
+    "filePath": "/admin/payouts.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/auth/login",
+    "filePath": "/auth/login.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/auth/signup",
+    "filePath": "/auth/signup-seller.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/seller/create-product",
+    "filePath": "/seller/create-product/create-product.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/seller/products",
+    "filePath": "/seller/products.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/seller/orders",
+    "filePath": "/seller/orders.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/seller/shipments",
+    "filePath": "/seller/shipments.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/seller/sales",
+    "filePath": "/seller/sales/balance.hbs"
+  }
+]

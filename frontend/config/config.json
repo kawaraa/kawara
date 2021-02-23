@@ -1,0 +1,27 @@
+{
+  "publicDir": "/public",
+  "deleteProductConfirmation": "Note: Deleting this product will also permanently delete all the data of this product. example of the data that will be deleted are, the number of stars and people recommendations.\n 𝐀𝐫𝐞 𝐲𝐨𝐮 𝐬𝐮𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨 𝐭𝐡𝐢𝐬?",
+  "deleteAccountConfirmation": "Note: Deleting your account will also permanently delete all the products and all the data.\n 𝐀𝐫𝐞 𝐲𝐨𝐮 𝐬𝐮𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨 𝐭𝐡𝐢𝐬?",
+  "categories": {
+    "other": "Other",
+    "womenswear": "Women's Wear",
+    "menswear": "Men's Wear",
+    "shoes": "Shoes",
+    "luggage-bags": "Luggage & Bags",
+    "watches": "Watches",
+    "jewelry-accessories": "Jewelry & Accessories",
+    "sports": "Sports",
+    "mother-kids": "Mother & Kids",
+    "toys-hobbies": "Toys & Hobbies",
+    "health-beauty": "Health & Beauty",
+    "computers": "Computers",
+    "cellphones-telecommunications": "Cellphones & Telecommunications",
+    "office-supplies": "Office & Supplies",
+    "consumer-electronics": "Consumer & Electronics",
+    "automobiles-motorcycles-bicycles": "Automobiles & Motorcycles Bicycles",
+    "home-garden": "Home & Garden",
+    "home-improvement": "Home Improvement",
+    "home-appliances": "Home Appliances",
+    "pets": "Pets"
+  }
+}
