@@ -30,6 +30,7 @@ class AuthResolver {
 
   async createSeller({ user: { ip, country }, body }, response) {
     try {
+      console.log(ip);
       const account = new CreateSellerAccountCommand({ ...body });
       const { id, type, email, firstName, lastName } = account;
       const fullName = firstName + " " + lastName;
@@ -43,6 +44,7 @@ class AuthResolver {
       response.cookie("userToken", token, this.config);
       response.json({ success: true });
     } catch (error) {
+      console.log(error);
       response.clearCookie("userToken");
       response.status(400).end(CustomError.toJson(error));
     }

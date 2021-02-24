@@ -33,6 +33,7 @@ const BuyerResolver = require("./infrastructure/resolver/buyer-resolver");
 const MailHandler = require("./application/handler/mail-handler");
 const ScrapeHandler = require("./application/handler/scrape-handler");
 const MysqlDatabaseBackupCron = require("./infrastructure/factory/mysql-database-backup-cron");
+const RestoreMysqlDatabaseBackup = require("./infrastructure/factory/restore-mysql-database-backup");
 
 module.exports = (router) => {
   // Providers
@@ -88,6 +89,7 @@ module.exports = (router) => {
 
   router.use("*", (request, response) => response.status(404).end('{"error":"Not Found(!)"}'));
 
-  new MysqlDatabaseBackupCron(storageProvider).schedule();
+  // new MysqlDatabaseBackupCron(storageProvider).schedule();
+  // new RestoreMysqlDatabaseBackup(storageProvider).run();
   return router;
 };

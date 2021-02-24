@@ -25,7 +25,7 @@ class MysqlDatabaseBackupCron {
     dbStream.stdout
       .pipe(storageStream)
       .on("finish", () => console.log(`Finished backing up ${database} database successfully.`))
-      .on("error", (error) => console.error(`Failed backing up ${database} database: `, error));
+      .on("error", (error) => console.error(`Failed to backup ${database} database: `, error));
   }
 }
 
