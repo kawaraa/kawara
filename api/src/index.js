@@ -88,6 +88,6 @@ module.exports = (router) => {
 
   router.use("*", (request, response) => response.status(404).end('{"error":"Not Found(!)"}'));
 
-  // new MysqlDatabaseBackupCron(storageProvider).schedule();
+  new MysqlDatabaseBackupCron(storageProvider).schedule();
   return router;
 };
