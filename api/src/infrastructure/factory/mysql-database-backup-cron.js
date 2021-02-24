@@ -7,29 +7,36 @@ class MysqlDatabaseBackupCron {
   }
   async schedule() {
     try {
+      await Promise.all(this.config.databases.map((database) => this.backupDatabase(database)));
+      setTimeout(this.schedule, this.period);
+    } catch (error) {
+      console.error("Error: ", error);
+    }
+  }
+  backupDatabase(database) {
+    return new Promise((resolve, reject) => {
       const storageStream = this.storageProvider.storage
-        .file(this.config.backupFileName)
+        .file(this.config.databaseFileName.replace("xxx", database))
         .createWriteStream({ resumable: false });
 
       const dbStream = this.spawn("mysqldump", [
         `-u${this.config.user}`,
         `-p${this.config.password}`,
         "--databases",
-        "user",
-        "feeds",
-        "archive",
-        "portfolio",
+        database,
       ]);
 
       dbStream.stdout
         .pipe(storageStream)
-        .on("finish", () => console.log("Finished backing up database successfully."))
-        .on("error", (error) => console.error("Failed backing up database: ", error));
-
-      setTimeout(this.schedule, this.period);
-    } catch (error) {
-      console.error("Error: ", error);
-    }
+        .on("finish", () => {
+          console.log(`Finished backing up ${database} database successfully.`);
+          resolve();
+        })
+        .on("error", (error) => {
+          console.error(`Failed backing up ${database} database: `, error);
+          reject();
+        });
+    });
   }
 }
 

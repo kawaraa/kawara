@@ -1,6 +1,15 @@
 {
   "publicDir": "/frontend/public",
   "fee": 1.5,
+  "mysqlDatabaseBackupCron": {
+    "days": 2,
+    "databaseFileName": "kawara_xxx.sql",
+    "databases": [
+      "user",
+      "store",
+      "archive"
+    ]
+  },
   "createProductHandler": {
     "domain": "https://storage.googleapis.com/media-bucket-0/",
     "fileError": "Not supported file type (!)"
