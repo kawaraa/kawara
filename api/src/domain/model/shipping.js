@@ -12,7 +12,7 @@ class Shipping {
     this.country = value;
   }
   set _estimatedTime(value) {
-    if (Validator.isNumber(value, 1)) this.estimatedTime = Number.parseInt(value);
+    if (Validator.isNumber(value, 1, 7)) this.estimatedTime = Number.parseInt(value);
     else throw new Error("Invalid input 'Estimated Time' must be positive number (!)");
   }
   set _cost(value) {

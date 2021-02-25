@@ -1,7 +1,7 @@
 const { CustomError } = require("k-utilities");
 const SearchCriteria = require("../../domain/model/search-criteria");
 const BankConfirmationAmounts = require("../../domain/model/bank-confirmation-amounts");
-const ConfirmItemCommand = require("../../domain/command/confirm-item-command");
+const ConfirmOrderDeliveryCommand = require("../../domain/command/confirm-order-delivery-command");
 
 class BuyerResolver {
   constructor(server, firewall, adminRepository) {
@@ -22,6 +22,7 @@ class BuyerResolver {
     this.server.put("/admin/bank", this.setConfirmationAmounts.bind(this));
     this.server.get("/admin/products", this.getProducts.bind(this));
     this.server.get("/admin/orders", this.geOrders.bind(this));
+    this.server.get("/admin/orders/reminder-email", this.sendReminderEmails.bind(this));
     this.server.post("/admin/order/item", this.confirmItemDelivery.bind(this));
     this.server.get("/admin/sales", this.getSales.bind(this));
     this.server.post("/admin/product/approve/:number", this.approveProduct.bind(this));
@@ -75,9 +76,19 @@ class BuyerResolver {
       response.status(400).end(CustomError.toJson(error));
     }
   }
-  async confirmItemDelivery({ query }, response) {
+  async sendReminderEmails(request, response) {
     try {
-      await this.adminRepository.confirmItemDelivery(new ConfirmItemCommand(query));
+      console.log("Hello from sendReminderEmails");
+      // todos: send an Email to reminder the customers to confirm the item delivery
+      // this can be a handler that query all the items that has been shipped more than 5 days
+      response.json({ success: true });
+    } catch (error) {
+      response.status(400).end(CustomError.toJson(error));
+    }
+  }
+  async confirmItemDelivery({ query: { user, item } }, response) {
+    try {
+      await this.adminRepository.confirmItemDelivery(new ConfirmOrderDeliveryCommand(user, item));
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

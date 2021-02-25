@@ -1,0 +1,72 @@
+const header = require("../layout/header.hbs");
+const navbar = require("../layout/navbar.hbs");
+const footer = require("../layout/footer.hbs");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Confirm account Email")}
+    <style>
+      .container.confirm {
+        min-height: 90vh;
+      }
+
+      .heading {
+        display: none;
+        text-align: center;
+        font-size: 30px;
+        margin-top: 25vh;
+      }
+
+      .heading.success {
+        color: var(--green);
+      }
+
+      .heading.error {
+        color: var(--red);
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {}
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container confirm">
+
+        <h1 class="heading success">Hi!<br /><span>Your account has been confirmed, you will be redirected to the home
+            page width a few seconds</span> .</h1>
+        <h1 class="heading error">Failed!<br /><span></span></h1>
+      </main>
+    </div>
+    <script>
+      const successEl = query(".heading.success");
+      const errorEl = query(".heading.error");
+
+      (async () => {
+        setLoading(true);
+        const response = await fetch("/api/auth" + window.location.pathname).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (response.error) {
+          errorEl.children[1].innerHTML = response.error;
+          successEl.style.display = "none";
+          errorEl.style.display = "block";
+        } else {
+          successEl.style.display = "block";
+          errorEl.style.display = "none";
+          setTimeout(() => window.location.href = "/", 4000);
+        }
+      })()
+
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

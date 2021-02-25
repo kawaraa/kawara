@@ -8,7 +8,7 @@ CREATE TABLE `account` (
   `password` VARCHAR(250) NOT NULL,
   `firstName` VARCHAR(20) NULL,
   `lastName` VARCHAR(20) NULL,
-  `created` TIMESTAMP NOT NULL,
+  `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `about` VARCHAR(250) NULL,
   `confirmed` TINYINT DEFAULT 0,
   PRIMARY KEY(`id`)
@@ -38,8 +38,8 @@ CREATE TABLE `bank` (
   `bic` VARCHAR(11) NULL,
   `confirmationAmount1` INT NULL,
   `confirmationAmount2` INT NULL,
-  `status` ENUM('initial', 'pending', 'confirmed') NOT NULL,
-  `created` TIMESTAMP NOT NULL,
+  `status` ENUM('initial', 'pending', 'confirmed') DEFAULT 'initial',
+  `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `note` VARCHAR(250) NULL,
   PRIMARY KEY(`owner`)
 );
@@ -51,8 +51,8 @@ CREATE TABLE `contact` (
   `name` VARCHAR(40) NOT NULL,
   `subject` VARCHAR(50) NULL,
   `message` VARCHAR(250) NOT NULL,
-  `solved` TINYINT NOT NULL,
-  `created` TIMESTAMP NOT NULL,
+  `solved` TINYINT DEFAULT 0,
+  `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `note` VARCHAR(250) NULL,
   PRIMARY KEY(`id`)
 );
@@ -68,7 +68,7 @@ CREATE TABLE `product` (
   `video` VARCHAR(250) NULL,
   `description` TEXT NOT NULL,
   `source` TEXT NOT NULL,
-  `created` TIMESTAMP NOT NULL,
+  `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `reviewed` TINYINT DEFAULT 0,
   PRIMARY KEY(`number`)
 );
@@ -123,8 +123,8 @@ CREATE TABLE `order` (
   `paymentMethod` ENUM('card', 'ideal', 'paypal') NOT NULL,
   `total` INT NOT NULL,
   `currency` ENUM('USD', 'EUR') NOT NULL,
-  `orderDate` TIMESTAMP NOT NULL,
-  `completed` TINYINT NOT NULL,
+  `orderDate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `completed` TINYINT DEFAULT 0,
   `note` VARCHAR(250) NULL,
   PRIMARY KEY(`id`)
 );
@@ -149,7 +149,7 @@ CREATE TABLE `shipment` (
   `orderId` VARCHAR(250) NOT NULL,
   `carrier` VARCHAR(250) NOT NULL,
   `trackNumber` VARCHAR(100) NOT NULL,
-  `shippingDate` TIMESTAMP NOT NULL,
+  `shippingDate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `deliveryDate` TIMESTAMP NULL,
   `note` VARCHAR(250) NULL,
   PRIMARY KEY(`id`)
@@ -158,7 +158,7 @@ CREATE TABLE `shipment` (
 CREATE TABLE `sale` (
   `owner` VARCHAR(250) NOT NULL,
   `soldItemId` VARCHAR(250) NOT NULL,
-  `payout` INT NOT NULL,
+  `payout` INT DEFAULT 0,
   `payoutDate` TIMESTAMP NULL,
   PRIMARY KEY(`owner`, `soldItemId`)
 );
@@ -170,7 +170,7 @@ USE `archive`;
 CREATE TABLE `report` (
   `id` VARCHAR(250) NOT NULL UNIQUE,
   `type` ENUM('payment', 'shipment', 'return', 'general') NOT NULL,
-  `date` TIMESTAMP NOT NULL,
+  `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `description` TEXT NOT NULL,
   PRIMARY KEY(`id`)
 );

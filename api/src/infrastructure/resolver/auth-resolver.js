@@ -21,7 +21,7 @@ class AuthResolver {
     this.server.get("/auth/exchange-rates", this.getExchangeRates.bind(this));
     this.server.post("/auth/signup/seller", this.createSeller.bind(this));
     this.server.post("/auth/signup", this.createBuyer.bind(this));
-    // this.server.get("/auth/signup/confirm/:token", this.confirmAccount.bind(this));
+    this.server.get("/auth/confirm-account/:token", this.confirmAccount.bind(this));
     // this.server.post("/auth/password/", this.updatePassword.bind(this));
     this.server.use("/auth/check-user-state", this.checkUserState.bind(this));
     this.server.post("/auth/login", this.onLogin.bind(this));
@@ -30,21 +30,19 @@ class AuthResolver {
 
   async createSeller({ user: { ip, country }, body }, response) {
     try {
-      console.log(ip);
       const account = new CreateSellerAccountCommand({ ...body });
       const { id, type, email, firstName, lastName } = account;
       const fullName = firstName + " " + lastName;
       const address = new UpdateAddressCommand({ ...body, owner: id, country, fullName });
-      await this.accountRepository.updateAddress(address);
       await this.accountRepository.createAccount(account);
+      await this.accountRepository.updateAddress(address);
       const userInfo = new User({ ip, id, type, email, displayName: fullName });
       const token = this.firewall.createToken(userInfo);
       if (!token) return response.status(500).end(CustomError.toJson());
-      // const result = await this.mailHandler.sendConfirmationByEmail(email, token);
+      const result = await this.mailHandler.sendAccountConfirmationEmail(firstName, email, token);
       response.cookie("userToken", token, this.config);
       response.json({ success: true });
     } catch (error) {
-      console.log(error);
       response.clearCookie("userToken");
       response.status(400).end(CustomError.toJson(error));
     }
@@ -58,11 +56,21 @@ class AuthResolver {
       const userInfo = new User({ ip, id, type, email, displayName: firstName + " " + lastName });
       const token = this.firewall.createToken(userInfo);
       if (!token) return response.status(500).end(CustomError.toJson());
-      // const result = await this.mailHandler.sendConfirmationLink(email, token);
+      const result = await this.mailHandler.sendAccountConfirmationEmail(firstName, email, token);
       response.cookie("userToken", token, this.config);
       response.json({ success: true });
     } catch (error) {
       response.clearCookie("userToken");
+      response.status(400).end(CustomError.toJson(error));
+    }
+  }
+
+  async confirmAccount({ user, params }, response) {
+    try {
+      const user = this.firewall.parseToken(params.token);
+      await this.accountRepository.confirmAccount(user);
+      response.json({ success: true });
+    } catch (error) {
       response.status(400).end(CustomError.toJson(error));
     }
   }
@@ -75,7 +83,9 @@ class AuthResolver {
       const user = new User({ ip: ip, ...account, displayName: account.firstName + " " + account.lastName });
       const token = await this.firewall.createToken(user);
       if (!token) return response.status(500).end(CustomError.toJson());
-      // if (account.confirmed < 1) await this.mailHandler.sendConfirmationLink(account.email, token);
+      if (account.confirmed == 0) {
+        await this.mailHandler.sendAccountConfirmationEmail(account.firstName, email, token);
+      }
       response.cookie("userToken", token, this.config);
       response.json({ success: true });
     } catch (error) {

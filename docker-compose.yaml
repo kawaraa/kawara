@@ -35,7 +35,7 @@ services:
       - ./frontend:/frontend
     command: npm run dev
     depends_on:
-      - database
+      - api
     restart: always
     tty: true
 

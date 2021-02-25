@@ -21,7 +21,7 @@ class CheckoutResolver {
     this.server.post("/checkout/ideal", this.createIdealPaymentIntent.bind(this));
     this.server.post("/checkout/paypal", this.createPaypalPaymentIntent.bind(this));
     this.server.get("/checkout/complete", this.confirmPayment.bind(this));
-    this.paypal.configure(this.config.paypal); // mode: "sandbox" Or "live"
+    this.paypal.configure(this.config.paypal);
   }
 
   async createCardPaymentIntent({ user, body: { shipping, items } }, response) {
@@ -84,7 +84,6 @@ class CheckoutResolver {
 
       response.json({ clientSecret: client_secret });
     } catch (error) {
-      console.log(error);
       response.status(400).end(CustomError.toJson(error));
     }
   }
@@ -107,7 +106,7 @@ class CheckoutResolver {
         transactions: [
           {
             amount: { currency, total: total / 100 },
-            description: `Bought ${items.length} items from xxxx.`,
+            description: `Bought ${items.length} items from Kawara.`,
           },
         ],
       };
@@ -126,7 +125,7 @@ class CheckoutResolver {
       response.status(400).end(CustomError.toJson(error));
     }
   }
-  async confirmPayment({ query }, response) {
+  async confirmPayment({ user, query }, response) {
     try {
       const { payment_intent, paymentId, PayerID } = query;
       if (!payment_intent && !paymentId) throw new Error("Failed to confirm Payment, please try again (!)");
@@ -135,24 +134,24 @@ class CheckoutResolver {
         const intent = await this.stripe.paymentIntents.retrieve(payment_intent);
         if (!intent.charges.data[0].paid) throw new Error("Failed to confirm Payment, please try again (!)");
         // console.log(intent.charges.data[0].status); //success or failed
-        await this.checkoutRepository.confirmPayment(payment_intent);
+        const order = await this.checkoutRepository.confirmPayment(payment_intent);
+        this.mailHandler.sendOrderConfirmationEmail({ ...order, ...user });
         return response.json({ success: true });
       }
 
-      const { total } = await this.checkoutRepository.getPayment(paymentId);
-      if (!total) Error("Failed to confirm Payment, please try again (!)");
+      const order = await this.checkoutRepository.getOrder(paymentId);
+      if (!order.total) Error("Failed to confirm Payment, please try again (!)");
 
       const paymentObject = {
         payer_id: PayerID,
-        transactions: [{ amount: { currency: this.config.currency, total: total / 100 } }],
+        transactions: [{ amount: { currency: this.config.currency, total: order.total / 100 } }],
       };
 
       const payment = await this.confirmPaypalPayment(paymentId, JSON.stringify(paymentObject));
       await this.checkoutRepository.confirmPayment(paymentId);
-
+      this.mailHandler.sendOrderConfirmationEmail({ ...order, ...user });
       response.json({ success: true });
     } catch (error) {
-      console.log(error);
       response.status(400).end(CustomError.toJson(error));
     }
   }

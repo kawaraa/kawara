@@ -272,8 +272,11 @@ module.exports = ({user}) => `
           const data = formToObject(e.target)
           if (data.password !== data.confirmPassword) throw new Error("Passwords do not match");
           const options = { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) };
+          setLoading(true);
           const res = await fetch("/api/auth/signup/seller", options).then(res => res.json()).catch(networkError);
+          setLoading(false);
           if (res.error) return showErrorMessage(res.error);
+          document.body.scrollIntoView(true)
           query(".create-seller-form").style.display = "none";
           queryId("success-message").style.display = "block";
           setTimeout(() => window.location.replace("/"), 7000);

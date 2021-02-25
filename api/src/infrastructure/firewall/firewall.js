@@ -76,10 +76,14 @@ class Firewall {
     return !this.rates.USD ? currInfo : { symbol: "$", code: "USD", rate: this.rates.USD };
   }
   async updateExchangeRates() {
-    const url = "https://api.exchangeratesapi.io/latest?base=EUR";
-    const exchangeInfo = await this.fetch(url).then((res) => res.json());
-    if (exchangeInfo.rates) this.rates = { ...exchangeInfo.rates };
-    setTimeout(() => this.updateExchangeRates(), 1000 * 60 * 60 * 24);
+    try {
+      const url = "https://api.exchangeratesapi.io/latest?base=EUR";
+      const exchangeInfo = await this.fetch(url).then((res) => res.json());
+      if (exchangeInfo.rates) this.rates = { ...exchangeInfo.rates };
+      setTimeout(() => this.updateExchangeRates(), 1000 * 60 * 60 * 24);
+    } catch (error) {
+      console.log("\n\nXXX Failed to fetch the Exchange Rate XXX\n\n");
+    }
   }
 }
 

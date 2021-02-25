@@ -75,6 +75,7 @@ module.exports = (router) => {
     sellerRepository,
     accountRepository,
     storageProvider,
+    mailHandler,
     scrapeHandler
   );
   const buyerResolver = new BuyerResolver(router, firewall, buyerRepository);

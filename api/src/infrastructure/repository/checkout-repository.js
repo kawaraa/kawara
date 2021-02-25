@@ -44,13 +44,20 @@ class CheckoutRepository {
 
   async confirmPayment(orderId) {
     await this.mySqlProvider.query(`UPDATE store.order SET completed = 1 WHERE id = ?`, orderId);
+    return this.getOrder(orderId);
   }
   async setPaymentError(orderId, error) {
     await this.mySqlProvider.query(`UPDATE store.order SET note = ? WHERE id = ?`, [error, orderId]);
   }
-  async getPayment(orderId) {
-    const result = await this.mySqlProvider.query(`SELECT total FROM store.order WHERE id = ?`, orderId);
-    return result[0];
+
+  async getOrder(orderId) {
+    let query = `SELECT t1.total, t2.fullName, t2.street, t2.city, t2.postalCode, t2.state, t2.country, t2.email FROM store.order t1 JOIN user.address t2 ON t2.id = t1.addressId WHERE t1.id = ?`;
+    const orderResult = await this.mySqlProvider.query(query, orderId);
+
+    query = `SELECT name, picture, productNumber, quantity, type, size, price, shippingCost, (price + shippingCost) * quantity AS total FROM store.soldItem WHERE orderId = ?`;
+    orderResult[0].items = await this.mySqlProvider.query(query, orderId);
+
+    return orderResult[0];
   }
 }
 

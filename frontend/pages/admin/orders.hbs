@@ -280,6 +280,7 @@ module.exports = ({user}) => `
                 <label for="desc">DESC<input type="radio" name="sortBy" value="DESC" id="desc" /></label>
               </div>
             </label>
+            <button onclick="handleReminder()" type="button">Remind Customers</button>
           </form>
           <ul class="order-list">
             <li class="order-wrapper">
@@ -440,7 +441,14 @@ module.exports = ({user}) => `
         });
       }
 
-      fetchOrders("?shipped=&sortBy=asc")
+      fetchOrders("?shipped=&sortBy=asc");
+
+      async function handleReminder() {
+        setLoading(true);
+        const res = await fetch("/api/admin/orders/reminder-email").then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (res.error) return showErrorMessage(res.error);
+      }
     </script>
 
     ${footer(user)}

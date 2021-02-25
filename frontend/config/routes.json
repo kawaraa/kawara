@@ -61,6 +61,26 @@
   },
   {
     "method": "get",
+    "path": "/auth/signup",
+    "filePath": "/auth/signup-seller.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/seller/create-product",
+    "filePath": "/seller/create-product/create-product.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/confirm-account/:token",
+    "filePath": "/confirm-account.hbs"
+  },
+  {
+    "method": "get",
+    "path": "/customer/confirm-order-delivery",
+    "filePath": "/customer/confirm-order-delivery.hbs"
+  },
+  {
+    "method": "get",
     "path": "/orders",
     "filePath": "/orders.hbs"
   },
@@ -103,16 +123,6 @@
     "method": "get",
     "path": "/auth/login",
     "filePath": "/auth/login.hbs"
-  },
-  {
-    "method": "get",
-    "path": "/auth/signup",
-    "filePath": "/auth/signup-seller.hbs"
-  },
-  {
-    "method": "get",
-    "path": "/seller/create-product",
-    "filePath": "/seller/create-product/create-product.hbs"
   },
   {
     "method": "get",

@@ -1,3 +1,5 @@
+const { CustomError } = require("k-utilities");
+
 class BuyerRepository {
   constructor(mySqlProvider) {
     this.mySqlProvider = mySqlProvider;
@@ -16,15 +18,16 @@ class BuyerRepository {
     return this.mySqlProvider.query(query, [owner, limit, offset]);
   }
 
-  async confirmItemDelivery({ owner, itemId, orderId, deliveryDate }) {
-    let query = `SELECT t1.shipmentId, t2.owner AS productOwner FROM store.soldItem t1 JOIN store.product t2 ON t1.productNumber = t2.number JOIN store.order t3 ON t1.orderId = t3.id WHERE t1.id = ? AND t3.id = ? AND t3.owner = ?`;
-    const itemResult = await this.mySqlProvider.query(query, [itemId, orderId, owner]);
-    const { shipmentId, productOwner } = itemResult[0];
+  async confirmItemDelivery({ buyerId, itemId, deliveryDate }) {
+    let query = `SELECT t2.owner, t3.shipmentId, t4.deliveryDate FROM store.soldItem t1 JOIN store.product t2 ON t2.number = t1.productNumber JOIN store.order t3 ON t3.id = t1.orderId JOIN store.shipment t4 ON t4.id = t1.shipmentId WHERE t1.id = ? AND t3.owner = ?`;
+    const itemResult = await this.mySqlProvider.query(query, [itemId, buyerId]);
+    if (!itemResult[0]) throw new CustomError("Unauthorized operation");
+    if (itemResult[0].deliveryDate) throw new CustomError("The items delivery is already confirmed");
 
     query = `UPDATE store.shipment SET deliveryDate = ? WHERE id = ?`;
-    await this.mySqlProvider.query(query, [deliveryDate, shipmentId]);
+    await this.mySqlProvider.query(query, [deliveryDate, itemResult[0].shipmentId]);
 
-    const sale = { owner: productOwner, soldItemId: itemId, payout: 0, payoutDate: null };
+    const sale = { owner: itemResult[0].owner, soldItemId: itemId, payout: 0, payoutDate: null };
 
     await this.mySqlProvider.query(`INSERT INTO store.sale SET ?`, sale);
   }

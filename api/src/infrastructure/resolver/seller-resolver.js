@@ -5,12 +5,13 @@ const UpdateQuantityCommand = require("../../domain/command/update-quantity-comm
 const CreateShipmentCommand = require("../../domain/command/create-shipment-command");
 
 class SellerResolver {
-  constructor(server, firewall, sellerRepository, accountRepository, storageProvider, scrapeHandler) {
+  constructor(server, firewall, sellerRepo, accountRepo, storageProvider, mailHandler, scrapeHandler) {
     this.server = server;
     this.firewall = firewall;
-    this.sellerRepository = sellerRepository;
-    this.accountRepository = accountRepository;
+    this.sellerRepository = sellerRepo;
+    this.accountRepository = accountRepo;
     this.storageProvider = storageProvider;
+    this.mailHandler = mailHandler;
     this.scrapeHandler = scrapeHandler;
     this.errorMessage = env.sellerResolver;
   }
@@ -68,7 +69,8 @@ class SellerResolver {
   async createShipment({ user, body }, response) {
     try {
       body.productsOwner = user.id;
-      await this.sellerRepository.createShipment(new CreateShipmentCommand(body));
+      const shipment = await this.sellerRepository.createShipment(new CreateShipmentCommand(body));
+      this.mailHandler.sendShipmentEmail(shipment);
       response.json({ success: true });
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));

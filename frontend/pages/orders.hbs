@@ -8,7 +8,7 @@ module.exports = ({user}) => `
 <html lang="en">
 
   <head>
-    ${header("Orders xxxx")}
+    ${header("Orders Kawara")}
     <style>
       .container.orders {
         min-height: 85vh;
@@ -334,7 +334,7 @@ module.exports = ({user}) => `
       }
 
       async function confirmDelivery(btn) {
-        const url = "/api/buyer/order?orderId=" + btn.dataset.orderId + "&itemId=" + btn.dataset.itemId;
+        const url = "/api/buyer/order?item=" + btn.dataset.itemId;
         setLoading(true);
         const orders = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
         setLoading(false);
@@ -377,7 +377,6 @@ module.exports = ({user}) => `
           shipmentWrapper.style.display = "block";
 
           const confirmWrapper = orderWrapper.querySelector(".confirm-btn-wrapper");
-          confirmWrapper.children[0].dataset.orderId = order.id;
           confirmWrapper.children[0].dataset.itemId = order.itemId;
           confirmWrapper.style.display = "block";
           if (order.deliveryDate) {

@@ -15,6 +15,17 @@ class AccountRepository {
     await this.mySqlProvider.query("INSERT INTO user.account SET ?", account);
   }
 
+  async confirmAccount({ id, email }) {
+    let query = "SELECT * FROM user.account WHERE id = ? AND email = ?";
+    const userResult = await this.mySqlProvider.query(query, [id, email]);
+
+    if (!userResult[0]) throw new CustomError("Please make sure you are clicking the right link");
+    if (userResult[0].confirmed == 1) throw new CustomError(this.config.accountConfirmationError);
+
+    query = "UPDATE user.account SET confirmed = 1 WHERE id = ? AND email = ?";
+    await this.mySqlProvider.query(query, [id, email]);
+  }
+
   async getAccountByOwner(owner) {
     let query = `SELECT firstName, lastName, email, about, type, confirmed FROM user.account WHERE id=?`;
 
@@ -39,10 +50,6 @@ class AccountRepository {
     }
     const result = await this.mySqlProvider.query(query, password ? [email, password] : [email]);
     return result[0];
-  }
-
-  async confirmAccount(id) {
-    await this.mySqlProvider.query("UPDATE user.account SET confirmed=? WHERE id=?", [1, id]);
   }
 
   async updatePassword({ id, oldPassword, password }) {

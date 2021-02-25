@@ -1,0 +1,65 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Confirm order delivery on Kawara")}
+    <style>
+      .container.confirm-order {
+        min-height: 85vh;
+      }
+
+      .heading {
+        text-align: center;
+        margin: 100px 0 30px 0;
+      }
+
+      .para {
+        font-size: 18px;
+        line-height: 35px;
+        text-align: center;
+      }
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .container.confirm-order {
+          padding: 0 10px;
+        }
+
+        .heading {
+          margin-top: 50px;
+          font-size: 28px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+
+      <main class="container confirm-order">
+        <h1 class="heading">Your order has been confirmed.</h1>
+        <h2>Thanks for your letting us know!</h2>
+        <p class="para">
+          We are very curious about your opinion about Kawara.<br />
+          Please tell us how are you satisfied with us.
+
+        </p>
+      </main>
+    </div>
+
+    <script>
+      console.log(window.location.pathname);
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`

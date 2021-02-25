@@ -1,7 +1,7 @@
 "use strict";
 const { CustomError } = require("k-utilities");
 const SearchCriteria = require("../../domain/model/search-criteria");
-const ConfirmItemCommand = require("../../domain/command/confirm-item-command");
+const ConfirmOrderDeliveryCommand = require("../../domain/command/confirm-order-delivery-command");
 
 class BuyerResolver {
   constructor(server, firewall, buyerRepository) {
@@ -25,9 +25,9 @@ class BuyerResolver {
       response.status(400).end(CustomError.toJson(error));
     }
   }
-  async confirmItemDelivery({ user: { id }, query }, response) {
+  async confirmItemDelivery({ user: { id }, query: { item } }, response) {
     try {
-      await this.buyerRepository.confirmItemDelivery(new ConfirmItemCommand({ ...query, owner: id }));
+      await this.buyerRepository.confirmItemDelivery(new ConfirmOrderDeliveryCommand(id, item));
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

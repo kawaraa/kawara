@@ -115,10 +115,18 @@ class SellerRepository {
     const res = await this.mySqlProvider.query(query, [productsOwner, shipment.orderId]);
     if (!res[0]) throw new Error("Unauthorized operation (!)");
 
-    await this.mySqlProvider.query(`INSERT INTO store.shipment SET ?`, shipment);
+    await this.mySqlProvider.query(`REPLACE INTO store.shipment SET ?`, shipment);
 
     query = `UPDATE store.soldItem SET shipmentId = ? WHERE id IN (?)`;
     await this.mySqlProvider.query(query, [shipment.id, soldItemIds]);
+
+    query = `SELECT t1.id, t1.carrier, t1.trackNumber, t2.owner AS userId, t3.fullName, t3.street, t3.city, t3.postalCode, t3.state, t3.country, t3.email FROM store.shipment t1 JOIN store.order t2 ON t2.id = t1.orderId JOIN user.address t3 ON t3.id = t2.addressId WHERE t1.id = ?`;
+    const shipmentResult = await this.mySqlProvider.query(query, shipment.id);
+
+    query = `SELECT productNumber, name, picture, type, size, quantity FROM store.soldItem WHERE shipmentId = ?`;
+    shipmentResult[0].items = await this.mySqlProvider.query(query, shipment.id);
+
+    return shipmentResult[0];
   }
 
   async getNotShippedOrders({ sellerId, limit, offset, searchText, sortBy }) {

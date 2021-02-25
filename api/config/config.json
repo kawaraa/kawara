@@ -10,6 +10,7 @@
     "confirmationError": "Sorry you can't do this action, first you need to confirm your account by confirming your Email Address. \n We have sent you an confirmation link to your Email, please confirm your Email and try again (!)"
   },
   "accountRepository": {
+    "accountConfirmationError": "Your account has already been confirmed",
     "notShippedItemError": "Sorry you can't delete your account. \nYou still have orders are not shipped yet (!)",
     "notDeliveredItemError": "Sorry you can't delete your account. \nYou still have orders are not delivered yet (!)",
     "periodError": "Sorry you can't delete your account. \nYou can only delete it after 15 days of the last delivered order. \nTry again after xxx days (!)",

@@ -295,6 +295,7 @@ module.exports = ({user, body}) => `
       .type-desc>img {
         max-width: 30px;
         max-height: 30px;
+        border-radius: 3px;
         cursor: pointer;
       }
 
@@ -444,7 +445,7 @@ module.exports = ({user, body}) => `
               </div>
               <div class="input-field">
                 <label for="email">Email</label>
-                <input type="email" name="email" required id="email" value="test@kawaraa.com" />
+                <input type="email" name="email" required id="email" />
               </div>
               <div class="input-field">
                 <label for="phone">Phone Number</label>
@@ -676,8 +677,12 @@ module.exports = ({user, body}) => `
         options.body = JSON.stringify({ items, shipping: { ...shipping, email: email.value, } });
 
         if (paymentMethod.value === "card") {
+          if (!Validator.isString(bankHolder.value, 4, 20)) {
+            bankHolder.style.boxShadow = "0 0 0 2px red";
+            return setLoading(false);
+          }
 
-          const { clientSecret, error } = await fetch("/api/checkout/card", options).then((res) => res.json());
+          const { clientSecret, error } = await fetch("/api/checkout/card", options).then((res) => res.json()).catch(networkError);
           if (error) return setLoading(false) + showErrorMessage(error);
           const response = await stripe.confirmCardPayment(clientSecret, { payment_method, receipt_email, shipping });
           setLoading(false);
@@ -691,8 +696,11 @@ module.exports = ({user, body}) => `
           errorEl.innerText = "Something wrong happened, Please try again!";
 
         } else if (paymentMethod.value === "idealBank") {
-
-          const { clientSecret, error } = await fetch("/api/checkout/ideal", options).then((res) => res.json());
+          if (!Validator.isString(bankHolder.value, 4, 20)) {
+            bankHolder.style.boxShadow = "0 0 0 2px red";
+            return setLoading(false);
+          }
+          const { clientSecret, error } = await fetch("/api/checkout/ideal", options).then((res) => res.json()).catch(networkError);
           if (error) return setLoading(false) + showErrorMessage(error);
           payment_method = { ideal, billing_details: { name: bankHolder.value, email: email.value } };
           stripe.confirmIdealPayment(clientSecret, { payment_method, return_url });
@@ -700,7 +708,7 @@ module.exports = ({user, body}) => `
 
         } else if (paymentMethod.value === "paypal") {
 
-          const { redirectLink, error } = await fetch("/api/checkout/paypal", options).then((res) => res.json());
+          const { redirectLink, error } = await fetch("/api/checkout/paypal", options).then((res) => res.json()).catch(networkError);
           if (error) return setLoading(false) + showErrorMessage(error);
           if (!redirectLink) return setLoading(false) + showErrorMessage("Something wrong went, please try again!");
           window.location.replace(redirectLink);
