@@ -16,7 +16,7 @@ class ProductResolver {
     this.server.get("/product/collection", this.getProductCollection.bind(this));
     this.server.get("/product/category", this.getProductsByCategory.bind(this));
     this.server.get("/product/:number", this.getProductByNumber.bind(this));
-    // this.server.post("/product/rate-product", this.firewall.authRequired, this.rateProduct.bind(this));
+    this.server.post("/product/rate", this.rateProduct.bind(this));
   }
 
   async getProductsBySearchQuery({ query, user: { country, currency, rate } }, response) {
@@ -43,7 +43,6 @@ class ProductResolver {
       const collections = await this.productRepository.getCollection(country);
       response.json({ currency, rate, collections });
     } catch (error) {
-      console.log(error);
       response.status(500).end(CustomError.toJson(error));
     }
   }
@@ -59,9 +58,9 @@ class ProductResolver {
       response.status(400).end(CustomError.toJson(error));
     }
   }
-  async rateProduct({ query, country }, response) {
+  async rateProduct({ query: { user, shipment, item, rate, stars }, country }, response) {
     try {
-      await this.productRepository.rateProduct(new StarRating(query));
+      await this.productRepository.rateProduct(new StarRating(user, shipment || item, rate || stars));
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

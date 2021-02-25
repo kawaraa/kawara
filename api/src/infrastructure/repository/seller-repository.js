@@ -70,7 +70,7 @@ class SellerRepository {
     query = `DELETE FROM store.subCategory WHERE productNumber = ?`;
     await this.mySqlProvider.query(query, [productNumber, owner]);
 
-    query = `DELETE FROM store.starRating WHERE productNumber = ?`;
+    query = `DELETE FROM store.starRating WHERE item = ?`;
     await this.mySqlProvider.query(query, [productNumber, owner]);
   }
 

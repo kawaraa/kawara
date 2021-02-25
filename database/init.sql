@@ -98,7 +98,7 @@ CREATE TABLE `shipping` (
 
 CREATE TABLE `starRating` (
   `user` VARCHAR(100) NOT NULL,
-  `productNumber` VARCHAR(250) NOT NULL,
+  `item` VARCHAR(250) NOT NULL,
   `stars` DECIMAL(3, 2) NOT NULL,
   PRIMARY KEY(`user`, `productNumber`)
 );

@@ -147,7 +147,7 @@ class AccountRepository {
     const balance = await this.mySqlProvider.query(query, id);
     if (balance[0] && balance[0].balance > 0) throw new Error(this.config.balanceRemainError);
 
-    query = `DELETE FROM store.starRating WHERE productNumber IN (SELECT number from store.product WHERE owner = ? )`;
+    query = `DELETE FROM store.starRating WHERE item IN (SELECT number from store.product WHERE owner = ? )`;
     await this.mySqlProvider.query(query, id);
 
     query = `DELETE FROM store.subCategory WHERE productNumber IN (SELECT number from store.product WHERE owner = ? )`;

@@ -711,8 +711,8 @@ module.exports = ({user, body}) => `
           const { redirectLink, error } = await fetch("/api/checkout/paypal", options).then((res) => res.json()).catch(networkError);
           if (error) return setLoading(false) + showErrorMessage(error);
           if (!redirectLink) return setLoading(false) + showErrorMessage("Something wrong went, please try again!");
-          window.location.replace(redirectLink);
-          // window.location.href = redirectLink;
+          // window.location.replace(redirectLink);
+          window.location.href = redirectLink;
           items.forEach(item => Cart.remove(item.id));
         } else {
           showErrorMessage("Please select a payment method!");

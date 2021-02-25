@@ -13,21 +13,119 @@ module.exports = ({user}) => `
         min-height: 85vh;
       }
 
-      .heading {
-        text-align: center;
+      .go-back-link {
+        display: block;
+        text-decoration: none;
+        width: 40px;
+        height: 40px;
+        position: absolute;
+        top: 100px;
+        left: 40px;
+        cursor: pointer;
+      }
+
+      .go-back-svg {
+        width: 100%;
+        height: 100%;
+        stroke-width: 50px;
+        stroke: var(--font);
+        fill: var(--font);
+        transition: 0.1s ease;
+      }
+
+      .go-back-svg:hover {
+        stroke-width: 10px;
+        stroke: var(--font);
+        fill: var(--red);
+      }
+
+      .success-wrapper {
+        display: none;
+      }
+
+      .success-wrapper>h1 {
         margin: 100px 0 30px 0;
+        font-size: 25px;
+        text-align: center;
+        color: var(--green);
+      }
+
+      .success-wrapper>h2 {
+        text-align: center;
+        margin-bottom: 15px;
+        font-size: 25px;
       }
 
       .para {
         font-size: 18px;
-        line-height: 35px;
+        line-height: 30px;
         text-align: center;
+      }
+
+      .rating-questions {
+        max-width: 500px;
+        margin: 30px auto;
+      }
+
+      .rating-questions>h5 {
+        font-size: 20px;
+      }
+
+      .star-rating-wrapper {
+        display: inline-block;
+        position: relative;
+        font-size: 40px;
+        color: gray;
+      }
+
+      .star-rating-front {
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        color: orange;
+      }
+
+      .star-rating-range {
+        overflow: hidden;
+        position: absolute;
+        top: 10%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 80%;
+        cursor: pointer;
+        opacity: 0;
+        z-index: 2;
+      }
+
+      h2.thanks {
+        display: none;
+        margin: 30px 0;
+        font-size: 25px;
+        text-align: center;
+      }
+
+      .error-wrapper {
+        margin: 100px 0 30px 0;
+        font-size: 25px;
+        text-align: center;
+        color: var(--red);
       }
 
       /* =============== Mobile, IPads & Tablet styles =============== */
       @media screen and (max-width: 850px) {
         .container.confirm-order {
           padding: 0 10px;
+        }
+
+        .go-back-link {
+          width: 30px;
+          height: 30px;
+          top: 80px;
+          left: 30px;
         }
 
         .heading {
@@ -44,18 +142,72 @@ module.exports = ({user}) => `
     <div class="root-container">
 
       <main class="container confirm-order">
-        <h1 class="heading">Your order has been confirmed.</h1>
-        <h2>Thanks for your letting us know!</h2>
-        <p class="para">
-          We are very curious about your opinion about Kawara.<br />
-          Please tell us how are you satisfied with us.
+        <a href="/" class="go-back-link nf" tabindex="0">
+          <svg class="go-back-svg">
+            <use href="#left-arrow-svg-symbol" />
+          </svg>
+        </a>
 
-        </p>
+        <section class="success-wrapper">
+          <h1>Your order has been confirmed.</h1>
+          <h2>Thanks for your letting us know that you received the order!</h2>
+          <p class="para">
+            We are very curious about your opinion about Kawara.<br />
+            Please don't forget to give your feedback.
+          </p>
+
+          <article class="rating-questions">
+            <h5>How are you satisfied with us?</h5>
+            <div class="star-rating-wrapper">
+              &#9733;&#9733;&#9733;&#9733;&#9733;
+              <input oninput="setRate(this)" onchange="postRate(this)" type="range" min="0" max="5" step="0.1" value="3"
+                name="/api/customer/rate-us" class="star-rating-range">
+              <span class="star-rating-front">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+            <h5>How are you satisfied with the product?</h5>
+            <div class="star-rating-wrapper">
+              &#9733;&#9733;&#9733;&#9733;&#9733;
+              <input oninput="setRate(this)" onchange="postRate(this)" type="range" min="0" max="5" step="0.1" value="3"
+                name="/api/product/rate" class="star-rating-range">
+              <span class="star-rating-front">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+          </article>
+          <h2 class="thanks">Thanks for giving your feedback!.</h2>
+        </section>
+        <p class="error-wrapper"></p>
       </main>
     </div>
 
     <script>
-      console.log(window.location.pathname);
+      const successWrapper = query(".success-wrapper");
+      const errorWrapper = query(".error-wrapper");
+
+      function setRate(input) {
+        if (input.dataset.rated) return;
+        input.nextElementSibling.style.width = Math.round(input.value / 5 * 100) + "%";
+      }
+      async function postRate(input) {
+        if (input.dataset.rated) return;
+        const url = input.name + window.location.search + "&rate=" + input.value;
+        const res = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
+        if (res.error) showErrorMessage(res.error);
+        input.dataset.rated = "true";
+        errorWrapper.style.display = "none";
+        query("h2.thanks").style.display = "block";
+      }
+
+      (async (user) => {
+        if (user) return window.location.href = "/";
+        const { pathname, search } = window.location;
+        setLoading(true);
+        const res = await fetch("/api" + pathname + search).then(res => res.json()).catch(networkError)
+        setLoading(false);
+        if (!res.error) return successWrapper.style.display = "block";
+        errorWrapper.style.display = "block";
+        errorWrapper.innerText = res.error;
+
+      })("${user.id || ''}");
+
     </script>
 
     ${footer(user)}
