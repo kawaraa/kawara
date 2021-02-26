@@ -477,7 +477,7 @@ module.exports = ({user, body}) => `
             <div class="box row personal">
               <div class="input-field">
                 <label for="full-name">Full Name</label>
-                <input type="text" name="fullName" min="5" max="40" required id="full-name" value="Mister Tester" />
+                <input type="text" name="fullName" min="5" max="40" required id="full-name" />
               </div>
               <div class="input-field">
                 <label for="email">Email</label>
@@ -485,7 +485,7 @@ module.exports = ({user, body}) => `
               </div>
               <div class="input-field">
                 <label for="phone">Phone Number</label>
-                <input type="tel" name="phone" id="phone" placeholder="+1234567890" value="+31646349556" />
+                <input type="tel" name="phone" id="phone" placeholder="+1234567890" />
               </div>
             </div>
             <h3 class="box h">Address</h3>
@@ -500,29 +500,29 @@ module.exports = ({user, body}) => `
               </div>
               <div class="input-field">
                 <label for="state">State / Province / Region</label>
-                <input type="text" name="state" min="2" max="85" required value="Test state" />
+                <input type="text" name="state" min="2" max="85" required />
               </div>
               <div class="input-field">
                 <label for="city">City / Town</label>
-                <input type="city" name="city" min="2" max="85" required id="city" value="Test city" />
+                <input type="city" name="city" min="2" max="85" required id="city" />
               </div>
             </div>
             <div class="box row street">
               <div class="input-field">
                 <label for="postal-code">Zip / Postal Code</label>
-                <input type="text" name="postalCode" min="4" max="10" required id="postal-code" value="1010EE" />
+                <input type="text" name="postalCode" min="4" max="10" required id="postal-code" />
               </div>
               <div class="input-field">
                 <label for="street">Street</label>
-                <input type="text" name="street" min="2" max="150" required id="street" value="Test street" />
+                <input type="text" name="street" min="2" max="150" required id="street"  />
               </div>
               <div class="input-field">
                 <label for="house-number">House Number</label>
-                <input type="text" name="houseNumber" id="house-number" value="10" />
+                <input type="text" name="houseNumber" id="house-number" />
               </div>
               <div class="input-field">
                 <label for="addition">Addition (Optional)</label>
-                <input type="text" name="addition" id="addition" value="" value="A" />
+                <input type="text" name="addition" id="addition"  />
               </div>
             </div>
           </section>
