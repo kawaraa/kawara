@@ -26,7 +26,7 @@ const routes = require("./config/routes.json");
     const server = http.createServer(app);
 
     const firewall = new Firewall(cookie, jwt, fetch, notFoundPage);
-
+    app.disable("x-powered-by");
     app.set("trust proxy", true);
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));

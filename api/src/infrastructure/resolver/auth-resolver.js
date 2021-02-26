@@ -14,6 +14,9 @@ class AuthResolver {
     this.accountRepository = accountRepository;
     this.mailHandler = mailHandler;
     this.config = env.FIREWALL.cookieOption;
+    this.ips = {};
+    this.getBlockingPeriod = () => Date.now() + 1000 * 60 * 60;
+    this.blockingError = `Sorry, for security purpose, you are blocked from logging in, you can try again after 30 minutes`;
   }
 
   resolve() {
@@ -78,8 +81,10 @@ class AuthResolver {
   async onLogin({ user: { ip }, body }, response) {
     try {
       const { email, password } = new LoginInfo(body);
+      this.checkLoginAttempts(ip);
       const account = await this.accountRepository.checkAccount(email, password);
       if (!account) throw new CustomError("Incorrect combination of Username / Password");
+      delete this.ips[ip];
       const user = new User({ ip: ip, ...account, displayName: account.firstName + " " + account.lastName });
       const token = await this.firewall.createToken(user);
       if (!token) return response.status(500).end(CustomError.toJson());
@@ -102,6 +107,15 @@ class AuthResolver {
   }
   getExchangeRates(request, response) {
     response.json(this.firewall.rates);
+  }
+  checkLoginAttempts(ip) {
+    if (!this.ips[ip]) this.ips[ip] = { times: 1, date: this.getBlockingPeriod() };
+    else this.ips[ip].times += 1;
+
+    if (this.ips[ip].times > 10 && Date.now() < this.ips[ip].date) throw new CustomError(this.blockingError);
+    else if (this.ips[ip].times > 10 && Date.now() > this.ips[ip].date) {
+      this.ips[ip] = { times: 1, date: this.getBlockingPeriod() };
+    }
   }
 }
 

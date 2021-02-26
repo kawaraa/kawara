@@ -9,6 +9,7 @@ const getApiRouter = require("./src/index.js");
     const app = express();
     const server = http.createServer(app);
 
+    app.disable("x-powered-by");
     app.set("trust proxy", true);
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
