@@ -27,9 +27,9 @@ class ContactResolver {
       response.status(400).end(CustomError.toJson(error));
     }
   }
-  async confirmOrderDelivery({ query: { user, shipment } }, response) {
+  async confirmOrderDelivery({ query: { user, sold } }, response) {
     try {
-      await this.customerRepository.confirmOrderDelivery(new ConfirmOrderDeliveryCommand(user, shipment));
+      await this.customerRepository.confirmOrderDelivery(new ConfirmOrderDeliveryCommand(user, sold));
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

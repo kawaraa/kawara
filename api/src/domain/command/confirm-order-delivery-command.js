@@ -1,9 +1,9 @@
 const { Formatter } = require("k-utilities");
 
 class ConfirmOrderDeliveryCommand {
-  constructor(owner, item) {
+  constructor(owner, soldItemId) {
     this.buyerId = owner || "";
-    this.itemId = item;
+    this.itemId = soldItemId;
     this.deliveryDate = Formatter.dateToString(new Date());
   }
 }

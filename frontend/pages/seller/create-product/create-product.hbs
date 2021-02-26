@@ -168,7 +168,7 @@ module.exports = ({user}) => `
           <button type="submit" class="submit btn">Create</button>
 
           <div id="manual-result">
-            <p class="error"></p><a href="/product/" class="result"></a>
+            <p class="error"></p><a href="" class="result"></a>
           </div>
         </form>
       </main>
@@ -207,7 +207,7 @@ module.exports = ({user}) => `
           if (product.error) return showErrorMessage(product.error);
           e.target.reset();
 
-          queryId("manual-result").children[1].href += product.number;
+          queryId("manual-result").children[1].href = "/product/" + product.number;
           queryId("manual-result").children[1].innerText = "Click here to see the new product";
         } catch (error) {
           setLoading(false);

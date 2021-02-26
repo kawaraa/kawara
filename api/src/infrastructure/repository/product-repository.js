@@ -15,7 +15,15 @@ class ProductRepository {
   }
 
   async rateProduct(starRating) {
-    await this.mySqlProvider.query(`REPLACE INTO store.starRating SET ?`, starRating);
+    let query = `SELECT productNumber FROM store.soldItem WHERE shipmentId = ? GROUP BY productNumber`;
+    const soldItems = await this.mySqlProvider.query(query, starRating.item);
+    if (!soldItems[0]) await this.mySqlProvider.query(`REPLACE INTO store.starRating SET ?`, starRating);
+    else {
+      const marks = (arr) => "(?),".repeat(arr.length).slice(0, -1);
+      const values = soldItems.map(({ productNumber }) => [starRating.user, productNumber, starRating.stars]);
+      query = `REPLACE INTO store.starRating VALUES ${marks(values)}`;
+      await this.mySqlProvider.query(query, values);
+    }
   }
 
   async getProductByNumber(productNumber, user) {

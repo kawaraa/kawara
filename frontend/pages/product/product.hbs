@@ -22,6 +22,7 @@ module.exports = ({user}, {currency, rate, product}) => `
       .pictures.wrapper {}
 
       .main-picture {
+        overflow: hidden;
         max-width: 450px;
         height: 450px;
         display: flex;
@@ -391,7 +392,8 @@ module.exports = ({user}, {currency, rate, product}) => `
         <div class="view-container">
           <section class="pictures wrapper">
             <div class="main-picture">
-              <img src="${product.pictures[0]}" onclick="previewPicture(event)" alt=""
+              <img src="${product.pictures[0]}" onclick="previewPicture(event)"
+                onload="this.parentElement.style.height = this.parentElement.offsetWidth + 'px';" alt=""
                 data-picture="${product.pictures[0]}" class="pictures main" />
             </div>
 
@@ -481,7 +483,6 @@ module.exports = ({user}, {currency, rate, product}) => `
       const itemsHolder = queryId("items-holder");
       const video = queryId("product-video");
 
-      picturesMain.parentElement.style.height = picturesMain.parentElement.offsetWidth + "px"
 
       async function loadTheVideo() {
         try {

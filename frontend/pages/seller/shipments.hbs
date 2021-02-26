@@ -108,13 +108,13 @@ module.exports = ({user}) => `
         font-size: 18px;
       }
 
-      .shipment-shipping-info {
+      .shipment-info {
         display: flex;
         align-items: center;
         margin-top: 15px;
       }
 
-      .shipment-shipping-info>p {
+      .shipment-info>p {
         min-width: 175px;
         width: 175px;
         text-align: center;
@@ -190,11 +190,11 @@ module.exports = ({user}) => `
           font-size: 15px;
         }
 
-        .shipment-shipping-info {
+        .shipment-info {
           display: block;
         }
 
-        .shipment-shipping-info>p {
+        .shipment-info>p {
           width: initial;
           margin-bottom: 5px;
           font-size: 16px;
@@ -232,27 +232,25 @@ module.exports = ({user}) => `
 
         <ul class="tab-content shipments">
           <li class="shipment-wrapper">
-            <section class="shipment-items-wrapper">
-              <article class="shipment-item">
-                <div class="shipment-item-img"><img src="" onclick="previewPicture(event)" alt="">
-                </div>
-                <div class="shipment-item-details">
-                  <a href="/product/" class="shipment-item-name">ifvuwbf wovfuyewyfpobwe fwe</a>
-                  <dl class="shipment-item-type">
-                    <dt class="type-name">Type<span> / Color / Material</span>:</dt>
-                    <dd class="type-desc type">
-                      <img src="">
-                    </dd>
-                  </dl>
-                  <dl class="shipment-item-size">
-                    <dt class="type-name">Size<span> / Other</span>:</dt>
-                    <dd class="type-desc size"><span>1 cm</span></dd>
-                  </dl>
-                </div>
-                <p class="shipment-quantity">Quantity: <span>1</span></p>
-              </article>
-            </section>
-            <section class="shipment-shipping-info">
+            <article class="shipment-item">
+              <div class="shipment-item-img"><img src="" onclick="previewPicture(event)" alt="">
+              </div>
+              <div class="shipment-item-details">
+                <a href="/product/" class="shipment-item-name">ifvuwbf wovfuyewyfpobwe fwe</a>
+                <dl class="shipment-item-type">
+                  <dt class="type-name">Type<span> / Color / Material</span>:</dt>
+                  <dd class="type-desc type">
+                    <img src="">
+                  </dd>
+                </dl>
+                <dl class="shipment-item-size">
+                  <dt class="type-name">Size<span> / Other</span>:</dt>
+                  <dd class="type-desc size"><span>1 cm</span></dd>
+                </dl>
+              </div>
+              <p class="shipment-quantity">Quantity: <span>1</span></p>
+            </article>
+            <section class="shipment-info">
               <p>Shipping to:</p>
               <div class="address">
                 <dl class="address-info name">
@@ -291,9 +289,7 @@ module.exports = ({user}) => `
     <script>
       const shipmentList = query(".tab-content.shipments");
       const shipmentEl = query(".shipment-wrapper").cloneNode(true);
-      const shipmentItemEl = query(".shipment-item").cloneNode(true);
       shipmentList.innerHTML = "";
-      shipmentEl.querySelector(".shipment-items-wrapper").innerHTML = "";
 
       ${ Validator.toString() }
       ${ Formatter.toString() }
@@ -306,33 +302,29 @@ module.exports = ({user}) => `
 
         shipments.forEach(shipment => {
           const shipmentWrapper = shipmentEl.cloneNode(true);
-          shipment.items.forEach((item) => {
-            const shipmentItem = shipmentItemEl.cloneNode(true);
-            shipmentItem.querySelector(".shipment-item-img>img").src = item.picture;
+          shipmentWrapper.querySelector(".shipment-item-img>img").src = shipment.picture;
 
-            const shipmentNameEl = shipmentItem.querySelector(".shipment-item-name");
+          const shipmentNameEl = shipmentWrapper.querySelector(".shipment-item-name");
 
-            shipmentNameEl.href += item.productNumber;
-            shipmentNameEl.innerText = item.name;
+          shipmentNameEl.href += shipment.productNumber;
+          shipmentNameEl.innerText = shipment.name;
 
-            const typeEL = shipmentItem.querySelector(".type-desc.type");
-            let el = null
-            if (Validator.isUrl(item.type)) {
-              el = document.createElement("img");
-              el.onclick = previewPicture
-              el.src = item.type;
-            }
-            else {
-              el = document.createElement("span");
-              el.innerHTML = item.type
-            }
-            typeEL.innerHTML = "";
-            typeEL.appendChild(el);
+          const typeEL = shipmentWrapper.querySelector(".type-desc.type");
+          let el = null
+          if (Validator.isUrl(shipment.type)) {
+            el = document.createElement("img");
+            el.onclick = previewPicture
+            el.src = shipment.type;
+          }
+          else {
+            el = document.createElement("span");
+            el.innerHTML = shipment.type
+          }
+          typeEL.innerHTML = "";
+          typeEL.appendChild(el);
 
-            shipmentItem.querySelector(".type-desc.size").innerText = item.size;
-            shipmentItem.querySelector(".shipment-quantity>span").innerText = item.quantity;
-            shipmentWrapper.querySelector(".shipment-items-wrapper").appendChild(shipmentItem);
-          })
+          shipmentWrapper.querySelector(".type-desc.size").innerText = shipment.size;
+          shipmentWrapper.querySelector(".shipment-quantity>span").innerText = shipment.quantity;
 
           shipmentWrapper.querySelector(".address-info.name>dd").innerText = shipment.fullName;
           shipmentWrapper.querySelector(".address-info.street>dd").innerText = shipment.street;

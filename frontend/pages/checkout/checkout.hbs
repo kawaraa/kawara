@@ -44,6 +44,38 @@ module.exports = ({user, body}) => `
         color: black;
       }
 
+      .saved-addresses-wrapper {
+        display: flex;
+        flex-flow: row wrap;
+        margin-top: 10px;
+      }
+
+      .saved-address {
+        position: relative;
+        margin: 0 10px 10px 0;
+        padding: 3px;
+        font-size: 12px;
+        box-shadow: 0 0 0 1px var(--dark);
+        border-radius: 5px;
+      }
+
+      .saved-address.active {
+        box-shadow: 0 0 0 2px var(--red);
+
+      }
+
+      .saved-address>input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+
       .box.row {
         margin-right: 25px;
         display: flex;
@@ -437,6 +469,10 @@ module.exports = ({user, body}) => `
           <input type="hidden" name="payment_intent" value="">
           <section class="checkout box">
             <h2 class="checkout h">Shipping Information</h2>
+            <h3 class="box h">Saved Addresses</h3>
+            <div class="saved-addresses-wrapper">
+              <label class="saved-address"><span></span><input type="radio" name="address" /></label>
+            </div>
             <h3 class="box h">Personal Information</h3>
             <div class="box row personal">
               <div class="input-field">
@@ -574,6 +610,8 @@ module.exports = ({user, body}) => `
     <script>
       const stripe = Stripe("${stripePublicKey}");
       const paymentInfoWrapper = queryId("payment-info-wrapper");
+      const savedAddressesWrapper = query(".saved-addresses-wrapper");
+      const savedAddressEl = savedAddressesWrapper.children[0].cloneNode(true);
       const paypalPayment = queryId("paypal-payment");
       const errorEl = queryId("card-errors");
       const paymentMethodBtns = queryAll("input[name=paymentMethod]");
@@ -581,8 +619,9 @@ module.exports = ({user, body}) => `
       const stripeElement = stripe.elements();
       const return_url = window.location.origin + "/checkout/complete";
       const items = ${ body.items };
-
       ${ Validator.toString() }
+
+      savedAddressesWrapper.innerHTML = "";
 
       const cardStyle = {
         base: {
@@ -619,6 +658,20 @@ module.exports = ({user, body}) => `
       });
 
       function handleChange({ target }) {
+        if (target.name == "address") {
+          const { fullName, street, city, postalCode, state, country, email, phone } = target.dataset;
+          target.form.fullName.value = fullName;
+          target.form.street.value = street;
+          target.form.city.value = city;
+          target.form.postalCode.value = postalCode;
+          target.form.state.value = state;
+          target.form.country.value = country;
+          target.form.email.value = email;
+          target.form.phone.value = phone;
+          queryAll(".saved-address").forEach(el => removeClass(el, "active"));
+          addClass(target.parentElement, "active")
+          return;
+        };
         if (target.name != "paymentMethod") return;
         payButton.disabled = true;
 
@@ -719,6 +772,27 @@ module.exports = ({user, body}) => `
         }
       }
 
+
+      (async () => {
+        setLoading(true);
+        const addresses = await fetch("/api/buyer/address").then((res) => res.json()).catch(() => { });
+        setLoading(false);
+        if (addresses.error) return;
+        addresses.forEach(({ fullName, street, city, postalCode, state, country, email, phone }) => {
+          const savedAddressItem = savedAddressEl.cloneNode(true);
+          const content = fullName + ",<br/>" + street + ",<br/>" + city + " " + postalCode + ",<br/>" + state + ", " + country + "<br/>" + email + "<br/>" + phone;
+          savedAddressItem.children[0].innerHTML = content;
+          savedAddressItem.children[1].dataset.fullName = fullName;
+          savedAddressItem.children[1].dataset.street = street;
+          savedAddressItem.children[1].dataset.city = city;
+          savedAddressItem.children[1].dataset.postalCode = postalCode;
+          savedAddressItem.children[1].dataset.state = state;
+          savedAddressItem.children[1].dataset.country = country;
+          savedAddressItem.children[1].dataset.email = email;
+          savedAddressItem.children[1].dataset.phone = phone;
+          savedAddressesWrapper.appendChild(savedAddressItem)
+        })
+      })()
     </script>
 
     ${footer(user)}

@@ -14,8 +14,7 @@ class SellerRepository {
     await this.mySqlProvider.query(query, values);
 
     let specs = specifications.map(({ title, description }) => [number, title, description]);
-    query = `INSERT INTO store.specification (productNumber, title, description) VALUES ${marks(specs)}`;
-
+    query = `INSERT INTO store.specification VALUES ${marks(specs)}`;
     await this.mySqlProvider.query(query, specs);
 
     const typesValues = [];
@@ -23,11 +22,10 @@ class SellerRepository {
       sizes.forEach(({ size, price, inStock }) => typesValues.push([number, type, size, price, inStock]));
     });
 
-    query = `INSERT INTO store.type (productNumber, type, size, price, inStock) VALUES ${marks(typesValues)}`;
-    await this.mySqlProvider.query(query, typesValues);
+    await this.mySqlProvider.query(`INSERT INTO store.type VALUES ${marks(typesValues)}`, typesValues);
 
     const shippings = product.shippings.map(({ country, estimatedTime, cost }) => {
-      query = `INSERT INTO store.shipping (productNumber, country, estimatedTime, cost) VALUES `;
+      query = `INSERT INTO store.shipping  VALUES `;
       return [number, country, estimatedTime, cost];
     });
     await this.mySqlProvider.query(query + marks(shippings), shippings);
@@ -106,54 +104,42 @@ class SellerRepository {
   }
 
   async createShipment(shipment) {
-    const productsOwner = shipment.productsOwner;
-    const soldItemIds = shipment.soldItemIds;
-    delete shipment.productsOwner;
-    delete shipment.soldItemIds;
+    let query = `SELECT t1.orderId, t1.id FROM store.soldItem t1 JOIN store.product t2 ON t2.number = t1.productNumber WHERE t1.id = ? AND t2.owner = ?`;
+    const itemResult = await this.mySqlProvider.query(query, [shipment.itemId, shipment.productOwner]);
+    if (!itemResult[0]) throw new Error("Unauthorized operation (!)");
 
-    let query = `SELECT number FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber WHERE owner = ? And t2.orderId = ?`;
-    const res = await this.mySqlProvider.query(query, [productsOwner, shipment.orderId]);
-    if (!res[0]) throw new Error("Unauthorized operation (!)");
+    query = `UPDATE store.soldItem SET shipmentId = ? WHERE id = ?`;
+    await this.mySqlProvider.query(query, [shipment.id, shipment.itemId]);
 
+    delete shipment.productOwner;
+    delete shipment.itemId;
+    shipment.orderId = itemResult[0].orderId;
     await this.mySqlProvider.query(`REPLACE INTO store.shipment SET ?`, shipment);
 
-    query = `UPDATE store.soldItem SET shipmentId = ? WHERE id IN (?)`;
-    await this.mySqlProvider.query(query, [shipment.id, soldItemIds]);
+    query = `SELECT t1.carrier, t1.trackNumber, t2.owner AS userId, t3.fullName, t3.street, t3.city, t3.postalCode, t3.state, t3.country, t3.email, t4.id AS itemId, t4.productNumber, t4.name, t4.picture, t4.type, t4.size, t4.quantity FROM store.shipment t1 JOIN store.order t2 ON t2.id = t1.orderId JOIN user.address t3 ON t3.id = t2.addressId JOIN store.soldItem t4 ON t4.shipmentId = t1.id WHERE t1.id = ? AND t4.id = ?`;
 
-    query = `SELECT t1.id, t1.carrier, t1.trackNumber, t2.owner AS userId, t3.fullName, t3.street, t3.city, t3.postalCode, t3.state, t3.country, t3.email FROM store.shipment t1 JOIN store.order t2 ON t2.id = t1.orderId JOIN user.address t3 ON t3.id = t2.addressId WHERE t1.id = ?`;
-    const shipmentResult = await this.mySqlProvider.query(query, shipment.id);
-
-    query = `SELECT productNumber, name, picture, type, size, quantity FROM store.soldItem WHERE shipmentId = ?`;
-    shipmentResult[0].items = await this.mySqlProvider.query(query, shipment.id);
+    const shipmentResult = await this.mySqlProvider.query(query, [shipment.id, itemResult[0].id]);
 
     return shipmentResult[0];
   }
 
-  async getNotShippedOrders({ sellerId, limit, offset, searchText, sortBy }) {
-    let search = !searchText ? "" : `AND t2.name LIKE %${searchText}%`;
-    let query = `SELECT t1.owner, t1.id AS id, t1.orderDate, t2.fullName, t2.street, t2.city, t2.postalCode, t2.state, t2.country, t2.email, t2.phone FROM store.order t1 JOIN user.address t2 ON t2.id= t1.addressId WHERE t1.id IN (SELECT t2.orderId FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber WHERE t1.owner = ? AND t2.shipmentId IS NULL ${search}) AND t1.completed = 1 ORDER BY t1.orderDate ${sortBy} LIMIT ? OFFSET ?`;
+  async getOrders({ sellerId, limit, offset, searchText, sortBy }) {
+    let search = !searchText ? "" : `AND t4.name LIKE %${searchText}%`;
+    let query = `SELECT t1.id, t1.orderDate, t2.fullName, t2.street, t2.city, t2.postalCode, t2.state, t2.country, t2.email, t2.phone FROM store.order t1 JOIN user.address t2 ON t2.id = t1.addressId JOIN store.soldItem t3 ON t3.orderId = t1.id JOIN store.product t4 ON t4.number = t3.productNumber WHERE t1.completed = 1 AND t3.shipmentId IS NULL AND t4.owner = ? ${search} GROUP BY t1.id ORDER BY t1.orderDate ${sortBy} LIMIT ? OFFSET ?`;
 
     const orders = await this.mySqlProvider.query(query, [sellerId, limit, offset]);
 
-    query = `SELECT t1.owner AS sellerId, t2.id, t2.name, t2.picture, t2.productNumber, t2.quantity, t2.type, t2.size FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber WHERE t1.owner = ? AND t2.shipmentId IS NULL AND t2.orderId = ?`;
+    query = `SELECT id, name, picture, productNumber, quantity, type, size FROM store.soldItem WHERE shipmentId IS NULL AND orderId = ?`;
 
-    await Promise.all(
-      orders.map(async (odr) => (odr.items = await this.mySqlProvider.query(query, [sellerId, odr.id])))
-    );
+    await Promise.all(orders.map(async (o) => (o.items = await this.mySqlProvider.query(query, o.id))));
     return orders;
   }
 
-  async getShippedOrders({ sellerId, limit, offset, searchText, sortBy }) {
-    const search = !searchText ? "" : `AND t3.name LIKE %${searchText}%`;
-    let query = `SELECT t1.owner, t1.id, t1.orderDate, t2.fullName, t2.street, t2.city, t2.postalCode, t2.state, t2.country, t2.email, t2.phone, t5.shippingDate, t5.carrier, t5.trackNumber FROM store.order t1 JOIN user.address t2 ON t2.id = t1.addressId JOIN store.soldItem t3 ON t3.orderId = t1.id JOIN store.product t4 ON t4.number = t3.productNumber JOIN store.shipment t5 ON t5.id = t3.shipmentId WHERE t4.owner = ? AND t1.completed = 1 AND t5.deliveryDate IS NULL ${search} ORDER BY t5.shippingDate ${sortBy} LIMIT ? OFFSET ?`;
+  async getShipments({ sellerId, limit, offset, searchText, sortBy }) {
+    const search = !searchText ? "" : `AND t2.name LIKE %${searchText}%`;
+    let query = `SELECT t1.shippingDate, t1.carrier, t1.trackNumber, t3.orderDate, t4.fullName, t4.street, t4.city, t4.postalCode, t4.state, t4.country, t4.email, t4.phone, t2.id, t2.name, t2.picture, t2.productNumber, t2.quantity, t2.type, t2.size FROM store.shipment t1 JOIN store.soldItem t2 ON t2.shipmentId = t1.id JOIN store.order t3 ON t3.id = t2.orderId JOIN user.address t4 ON t4.id = t3.addressId JOIN store.product t5 ON t5.number = t2.productNumber WHERE t1.deliveryDate IS NULL AND t3.completed = 1 AND t5.owner = ? ${search} GROUP BY t1.id ORDER BY t1.shippingDate ${sortBy} LIMIT ? OFFSET ?`;
 
-    const orders = await this.mySqlProvider.query(query, [sellerId, limit, offset]);
-    query = `SELECT t1.owner AS sellerId, t2.id, t2.name, t2.picture, t2.productNumber, t2.quantity, t2.type, t2.size FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber JOIN store.shipment t3 ON t3.id = t2.shipmentId WHERE t1.owner = ? AND t2.orderId = ?`;
-
-    await Promise.all(
-      orders.map(async (odr) => (odr.items = await this.mySqlProvider.query(query, [sellerId, odr.id])))
-    );
-    return orders;
+    return await this.mySqlProvider.query(query, [sellerId, limit, offset]);
   }
 
   async getSellerBalance(sellerId) {

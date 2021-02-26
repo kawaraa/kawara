@@ -27,7 +27,7 @@ class AdminRepository {
     return await this.mySqlProvider.query(query, [limit, offset]);
   }
 
-  async notShippedOrders({ limit, offset, searchText, sortBy }) {
+  async getOrders({ limit, offset, searchText, sortBy }) {
     const search = !searchText ? "" : `AND t2.name LIKE %${searchText}%`;
     let query = `SELECT t1.owner, t1.id AS id, t1.orderDate, t2.fullName, t2.street, t2.city, t2.postalCode, t2.state, t2.country, t2.email, t2.phone FROM store.order t1 JOIN user.address t2 ON t2.id= t1.addressId WHERE t1.id IN (SELECT t2.orderId FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber WHERE t2.shipmentId IS NULL ${search}) AND t1.completed = 1 ORDER BY t1.orderDate ${sortBy} LIMIT ? OFFSET ?`;
 
@@ -39,25 +39,24 @@ class AdminRepository {
     return orders;
   }
 
-  async shippedOrders({ limit, offset, searchText, sortBy }) {
-    const search = !searchText ? "" : `AND t3.name LIKE %${searchText}%`;
-    let query = `SELECT t1.owner, t1.id AS id, t1.orderDate, t2.fullName, t2.street, t2.city, t2.postalCode, t2.state, t2.country, t2.email, t2.phone, t4.shippingDate, t4.carrier, t4.trackNumber FROM store.order t1 JOIN user.address t2 ON t2.id = t1.addressId JOIN store.soldItem t3 ON t3.orderId = t1.id JOIN store.shipment t4 ON t4.id = t3.shipmentId WHERE t4.deliveryDate IS NULL ${search} AND t1.completed = 1 ORDER BY t4.shippingDate ${sortBy} LIMIT ? OFFSET ?`;
+  async getShipments({ limit, offset, searchText, sortBy }) {
+    const search = !searchText ? "" : `AND t2.name LIKE %${searchText}%`;
+    let query = `SELECT t1.shippingDate, t1.carrier, t1.trackNumber, t2.id AS itemId, t2.name, t2.picture, t2.productNumber, t2.quantity, t2.type, t2.size, t3.owner AS buyerId, t3.orderDate, t4.fullName, t4.street, t4.city, t4.postalCode, t4.state, t4.country, t4.email, t4.phone, t5.owner AS sellerId FROM store.shipment t1 JOIN store.soldItem t2 ON t2.shipmentId = t1.id JOIN store.order t3 ON t3.id = t2.orderId JOIN user.address t4 ON t4.id = t3.addressId JOIN store.product t5 ON t5.number = t2.productNumber WHERE t3.completed = 1 AND t1.deliveryDate IS NULL ${search} GROUP BY t1.id ORDER BY t1.shippingDate ${sortBy} LIMIT ? OFFSET ?`;
 
-    const orders = await this.mySqlProvider.query(query, [limit, offset]);
-
-    query = `SELECT t1.owner AS sellerId, t2.id, t2.name, t2.picture, t2.productNumber, t2.quantity, t2.type, t2.size FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber JOIN store.shipment t3 ON t3.id = t2.shipmentId WHERE t2.orderId = ?`;
-
-    await Promise.all(orders.map(async (odr) => (odr.items = await this.mySqlProvider.query(query, odr.id))));
-    return orders;
+    return await this.mySqlProvider.query(query, [limit, offset]);
   }
-
+  async cancelItem(itemID = d) {
+    console.log("todos: cancel the item ");
+  }
   async confirmItemDelivery({ itemId, deliveryDate }) {
     let query = `SELECT t2.owner, t1.shipmentId, t4.deliveryDate FROM store.soldItem t1 JOIN store.product t2 ON t2.number = t1.productNumber JOIN store.order t3 ON t3.id = t1.orderId JOIN store.shipment t4 ON t4.id = t1.shipmentId WHERE t1.id = ?`;
     const itemResult = await this.mySqlProvider.query(query, itemId);
 
+    if (!itemResult[0]) throw new CustomError("Invalid input 'Item ID'");
+    if (itemResult[0].deliveryDate) throw new CustomError("The items delivery is already confirmed");
+
     query = `UPDATE store.shipment SET deliveryDate = ? WHERE id = ?`;
     await this.mySqlProvider.query(query, [deliveryDate, itemResult[0].shipmentId]);
-    if (itemResult[0].deliveryDate) throw new CustomError("The items delivery is already confirmed");
 
     const sale = { owner: itemResult[0].owner, soldItemId: itemId, payout: 0, payoutDate: null };
 

@@ -28,10 +28,8 @@ class CheckoutRepository {
       let v = [id, orderId, null, productNumber, name, picture, type, size, price, shippingCost, quantity];
       soldItemValues.push(v);
     });
-
-    const query = `INSERT INTO store.soldItem (id, orderId, shipmentId, productNumber, name, picture, type, size, price, shippingCost, quantity) VALUES`;
-
-    await this.mySqlProvider.query(query + marks(soldItemValues), soldItemValues);
+    const query = `INSERT INTO store.soldItem VALUES ${marks(soldItemValues)}`;
+    await this.mySqlProvider.query(query, soldItemValues);
   }
 
   async createAddress(address) {

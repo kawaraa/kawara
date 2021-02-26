@@ -104,9 +104,18 @@ module.exports = ({user}) => `
 
       .order-quantity {
         position: absolute;
-        bottom: 20px;
+        bottom: 45px;
         right: 20px;
-        font-size: 18px;
+        font-size: 17px;
+      }
+
+      .ship-it.btn {
+        display: inline-block;
+        position: absolute;
+        bottom: 5px;
+        right: 20px;
+        padding: 3px 7px;
+        font-size: 16px;
       }
 
       .order-shipping {
@@ -147,21 +156,12 @@ module.exports = ({user}) => `
         font-weight: bold;
       }
 
-      .ship-it.btn {
-        display: inline-block;
-        position: absolute;
-        bottom: 15px;
-        right: 15px;
-        padding: 4px 10px;
-      }
-
       .shipment-info-form {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        padding: 30px;
         background: var(--white);
         border-radius: 10px;
       }
@@ -169,7 +169,7 @@ module.exports = ({user}) => `
       .shipment-info-form>div {
         display: flex;
         max-width: 600px;
-        margin: 25px auto 0 auto;
+        margin: 0 auto 5px auto;
       }
 
       .shipment-info-form> :last-child {
@@ -192,8 +192,8 @@ module.exports = ({user}) => `
       .shipment-info-form>.cancel-btn {
         overflow: hidden;
         position: absolute;
-        top: 20px;
-        right: 20px;
+        top: 0;
+        right: 0;
         width: 25px;
         height: 25px;
         border-radius: 50%;
@@ -282,7 +282,7 @@ module.exports = ({user}) => `
         }
 
         .ship-it.btn {
-          font-size: 16px;
+          font-size: 14px;
         }
 
         .shipment-info-form {
@@ -331,6 +331,7 @@ module.exports = ({user}) => `
                   </dl>
                 </div>
                 <p class="order-quantity">Quantity: <span>1</span></p>
+                <button type="button" class="ship-it btn" onclick="showForm(this.parentElement)">Ship it</button>
               </article>
             </section>
             <section class="order-shipping">
@@ -363,11 +364,9 @@ module.exports = ({user}) => `
               </div>
             </section>
             <p class="order-date"></p>
-            <button type="button" class="ship-it btn" onclick="showForm(this.parentElement)">Ship it</button>
           </li>
           <form class="shipment-info-form" onsubmit="markItAsShipped(event)">
-            <input type="hidden" name="orderId" />
-            <input type="hidden" name="soldItemIds" />
+            <input type="hidden" name="itemId" />
             <div>
               <label for="carrier">Carrier Website</label>
               <input type="url" name="carrier" id="carrier" />
@@ -394,11 +393,10 @@ module.exports = ({user}) => `
       ${ Validator.toString() }
       ${ Formatter.toString() }
 
-      function showForm(orderEl) {
+      function showForm(orderWrapper) {
         form.reset();
-        form.orderId.value = orderEl.dataset.orderId;
-        form.soldItemIds.value = orderEl.dataset.soldItemIds;
-        orderEl.appendChild(form);
+        form.itemId.value = orderWrapper.dataset.itemId;
+        orderWrapper.appendChild(form);
       }
 
       async function markItAsShipped(e) {
@@ -409,7 +407,8 @@ module.exports = ({user}) => `
         const res = await fetch("/api/seller/shipment", options).then(res => res.json()).catch(networkError);
         setLoading(false);
         if (res.error) return showErrorMessage(res.error);
-        e.target.parentElement.remove();
+        if (e.target.parentElement.parentElement.children[1]) e.target.parentElement.remove();
+        else e.target.parentElement.parentElement.parentElement.remove();
       }
 
       (async () => {
@@ -420,11 +419,10 @@ module.exports = ({user}) => `
         if (orders.error) return showErrorMessage(orders.error);
 
         orders.forEach(order => {
-          let soldItemIds = "";
           const orderWrapper = orderEl.cloneNode(true);
           order.items.forEach((item) => {
-            soldItemIds += item.id + ",";
             const orderItem = orderItemEl.cloneNode(true);
+            orderItem.dataset.itemId = item.id;
             orderItem.querySelector(".order-item-img>img").src = item.picture;
 
             const orderNameEl = orderItem.querySelector(".order-item-name");
@@ -459,8 +457,6 @@ module.exports = ({user}) => `
           orderWrapper.querySelector(".address-info.email>dd").innerText = order.email;
           orderWrapper.querySelector(".address-info.phone>dd").innerText = order.phone;
           orderWrapper.querySelector(".order-date").innerText = Formatter.dateToText(order.orderDate);
-          orderWrapper.dataset.orderId = order.id;
-          orderWrapper.dataset.soldItemIds = soldItemIds;
           orderList.appendChild(orderWrapper);
         });
       })()

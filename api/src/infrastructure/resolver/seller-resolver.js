@@ -68,7 +68,7 @@ class SellerResolver {
   }
   async createShipment({ user, body }, response) {
     try {
-      body.productsOwner = user.id;
+      body.productOwner = user.id;
       const shipment = await this.sellerRepository.createShipment(new CreateShipmentCommand(body));
       this.mailHandler.sendShipmentEmail(shipment);
       response.json({ success: true });
@@ -89,17 +89,18 @@ class SellerResolver {
   async getOrders({ user, query }, response) {
     try {
       query = { ...new SearchCriteria(query), sellerId: user.id };
-      const orders = await this.sellerRepository.getNotShippedOrders(query);
+      const orders = await this.sellerRepository.getOrders(query);
       orders.forEach((order) => (order.country = countries[order.country.toUpperCase()][0]));
       response.json(orders);
     } catch (error) {
+      console.log(error);
       response.status(400).end(CustomError.toJson(error));
     }
   }
   async getShipments({ user, query }, response) {
     try {
       query = { ...new SearchCriteria(query), sellerId: user.id };
-      const shipments = await this.sellerRepository.getShippedOrders(query);
+      const shipments = await this.sellerRepository.getShipments(query);
       shipments.forEach((shipment) => (shipment.country = countries[shipment.country.toUpperCase()][0]));
       response.json(shipments);
     } catch (error) {

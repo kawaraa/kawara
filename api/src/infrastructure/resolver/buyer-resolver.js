@@ -12,10 +12,19 @@ class BuyerResolver {
 
   resolve() {
     this.server.use("/buyer", this.firewall.checkRequestInfo, this.firewall.authRequired);
+    this.server.get("/buyer/address", this.getAddresses.bind(this));
     this.server.get("/buyer/orders", this.getOrders.bind(this));
     this.server.post("/buyer/order", this.confirmItemDelivery.bind(this));
   }
 
+  async getAddresses({ user }, response) {
+    try {
+      const addresses = await this.buyerRepository.getAddresses(user.id);
+      response.json(addresses);
+    } catch (error) {
+      response.status(400).end(CustomError.toJson(error));
+    }
+  }
   async getOrders({ user, query }, response) {
     try {
       query = { ...new SearchCriteria(query), owner: user.id, status: (query.status + "").toLowerCase() };
