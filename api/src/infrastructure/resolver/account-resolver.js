@@ -7,11 +7,11 @@ const UpdatePaypalCommand = require("../../domain/command/update-paypal-command"
 const BankConfirmationAmounts = require("../../domain/model/bank-confirmation-amounts");
 
 class AccountResolver {
-  constructor(server, firewall, accountRepository, productRepository) {
+  constructor(server, firewall, accountRepository, deleteAccountHandler) {
     this.server = server;
     this.firewall = firewall;
     this.accountRepository = accountRepository;
-    this.productRepository = productRepository;
+    this.deleteAccountHandler = deleteAccountHandler;
     this.isConfirmed = this.checkAccountConfirmation.bind(this);
     this.config = env.accountResolver;
   }
@@ -30,14 +30,12 @@ class AccountResolver {
     this.server.put("/account/seller/bank", this.confirmBank.bind(this));
     this.server.delete("/account/seller/bank", this.removeBank.bind(this));
     this.server.delete("/account", this.isConfirmed, this.deleteAccount.bind(this));
-    this.server.post("/account/rate-product", this.rateProduct.bind(this));
   }
 
   async checkAccountConfirmation({ user }, response, next) {
     try {
-      const accounts = await this.accountRepository.checkAccount(null, null, user.id);
-      if (accounts.confirmed > 0) return next();
-      response.status(400).json({ error: this.config.confirmationError });
+      if (await this.accountRepository.isAccountConfirmed(user.id)) return next();
+      response.status(400).end(CustomError.toJson(this.config.confirmationError));
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
     }
@@ -100,7 +98,6 @@ class AccountResolver {
       await this.accountRepository.updateBank(command);
       response.send({ success: true });
     } catch (error) {
-      console.log(error);
       response.status(400).end(CustomError.toJson(error));
     }
   }
@@ -132,15 +129,7 @@ class AccountResolver {
   }
   async deleteAccount({ user, body }, response) {
     try {
-      await this.accountRepository.deleteAccount({ id: user.id, password: body.password });
-      response.send({ success: true });
-    } catch (error) {
-      response.status(400).end(CustomError.toJson(error));
-    }
-  }
-  async rateProduct({ query, country }, response) {
-    try {
-      await this.productRepository.rateProduct(new StarRating(query));
+      await this.deleteAccountHandler.deleteAccount({ id: user.id, password: body.password });
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

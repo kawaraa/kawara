@@ -39,7 +39,7 @@ module.exports = ({user}) => `
 
       .seller,
       .sold,
-      .sales,
+      .sale,
       .fee,
       .payout {
         width: 150px;
@@ -95,11 +95,11 @@ module.exports = ({user}) => `
       <main class="container payouts">
         ${adminLinks()}
         <div class="tab-content payouts">
-          <h2>Issue these payouts on the first and 15th of every month.</h2>
+          <h2>You will see only the sales that has been 20 days shipped.</h2>
           <h4 class="payouts-header">
             <span class="seller">Seller</span>
             <span class="sold">Sold</span>
-            <span class="sales">Sales</span>
+            <span class="sale">Sales</span>
             <span class="fee">Fee</span>
             <span class="payout">Payout</span>
           </h4>
@@ -109,7 +109,7 @@ module.exports = ({user}) => `
               <p class="sales-wrapper" onclick="showBankInfo(this.nextElementSibling)">
                 <a href="/admin/user/" class="seller link"></a>
                 <span class="sold"></span>
-                <span class="sales"></span>
+                <span class="sale"></span>
                 <span class="fee"></span>
                 <span class="payout"></span>
               </p>
@@ -161,7 +161,7 @@ module.exports = ({user}) => `
         sellerEl.src += payout.sellerId;
         sellerEl.innerText = payout.sellerName;
         wrapper.querySelector(".sold").innerText = payout.sold;
-        wrapper.querySelector(".sales").innerText = priceToString(payout.sales);
+        wrapper.querySelector(".sale").innerText = priceToString(payout.sales);
         wrapper.querySelector(".fee").innerText = priceToString(payout.fee);
         wrapper.querySelector(".payout").innerText = priceToString(payout.payout);
         if (payout.bank) {

@@ -30,25 +30,26 @@ class AccountRepository {
     let query = `SELECT firstName, lastName, email, about, type, confirmed FROM user.account WHERE id=?`;
 
     const accountResult = await this.mySqlProvider.query(query, owner);
-    if (!accountResult[0]) throw new Error("Unauthorized operation (!)");
+    if (!accountResult[0]) throw new CustomError("Unauthorized operation");
 
     query = `SELECT id, fullName, street, city, postalCode, state, country, email, phone FROM user.address WHERE owner=?`;
     accountResult[0].addresses = await this.mySqlProvider.query(query, owner);
 
     return accountResult[0];
   }
+  async isAccountConfirmed(idOrEmail) {
+    let query = `SELECT confirmed FROM user.account WHERE id = ? || email = ?`;
+    const result = await this.mySqlProvider.query(query, [idOrEmail, idOrEmail]);
+    return result[0] && result[0].confirmed > 0;
+  }
 
-  async checkAccount(email, password, id) {
-    if (id) {
-      const result = await this.mySqlProvider.query(`SELECT confirmed FROM user.account WHERE id = ?`, id);
-      return result[0];
-    }
+  async checkAccount(email, password) {
     let query = `SELECT * FROM user.account WHERE email = ?`;
     if (password) {
       password = this.hashing.hash(password);
       query += " AND password = ?";
     }
-    const result = await this.mySqlProvider.query(query, password ? [email, password] : [email]);
+    const result = await this.mySqlProvider.query(query, password ? [email, password] : email);
     return result[0];
   }
 
@@ -118,56 +119,6 @@ class AccountRepository {
     const bankResult = await this.mySqlProvider.query(query, owner);
     if (bankResult[0]) throw new CustomError("You can't update or delete payment method while it's pending");
     await this.mySqlProvider.query(`DELETE FROM user.bank WHERE owner = ?`, owner);
-  }
-
-  async deleteAccount({ id, password }) {
-    password = this.hashing.hash(password);
-
-    let query = `SELECT * FROM user.account WHERE id = ? AND password =?`;
-    const result = await this.mySqlProvider.query(query, id);
-    if (!result[0]) throw new Error("Invalid input 'Password' (!)");
-
-    query = `SELECT t1.number FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber WHERE t1.owner = ? AND t2.shipmentId IS NULL`;
-    const notShippedItems = await this.mySqlProvider.query(query, id);
-    if (notShippedItems[0]) throw new Error(this.config.notShippedItemError);
-
-    query = `SELECT t3.deliveryDate FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber JOIN store.shipment t3 ON t3.orderId = t2.orderId WHERE t1.owner = ? AND t3.deliveryDate IS NULL`;
-    const notDeliveredItems = await this.mySqlProvider.query(query, id);
-    if (notDeliveredItems[0]) throw new Error(this.config.notDeliveredItemError);
-
-    query = `SELECT t3.deliveryDate FROM store.product t1 JOIN store.soldItem t2 ON t1.number = t2.productNumber JOIN store.shipment t3 ON t3.orderId = t2.orderId WHERE t1.owner = ? ORDER BY t3.deliveryDate DESC LIMIT 1 OFFSET 0`;
-    const deliveredItems = await this.mySqlProvider.query(query, id);
-    if (deliveredItems[0]) {
-      const date = deliveredItems[0].deliveryDate;
-      const days = Math.round((Date.now() - Date.parse(date)) / 1000 / 60 / 60 / 24);
-      if (days < 15) throw new Error(this.config.periodError.replace("xxx", 15 - days));
-    }
-
-    query = `SELECT SUM(price) + SUM(shippingCost) AS balance FROM store.sale WHERE owner = ? AND payout = 0`;
-    const balance = await this.mySqlProvider.query(query, id);
-    if (balance[0] && balance[0].balance > 0) throw new Error(this.config.balanceRemainError);
-
-    query = `DELETE FROM store.starRating WHERE item IN (SELECT number from store.product WHERE owner = ? )`;
-    await this.mySqlProvider.query(query, id);
-
-    query = `DELETE FROM store.subCategory WHERE productNumber IN (SELECT number from store.product WHERE owner = ? )`;
-    await this.mySqlProvider.query(query, id);
-
-    query = `DELETE FROM store.category WHERE productNumber IN (SELECT number from store.product WHERE owner = ? )`;
-    await this.mySqlProvider.query(query, id);
-
-    query = `DELETE FROM store.shipping WHERE productNumber IN (SELECT number from store.product WHERE owner = ? )`;
-    await this.mySqlProvider.query(query, id);
-
-    query = `DELETE FROM store.specification WHERE productNumber IN (SELECT number from store.product WHERE owner = ? )`;
-    await this.mySqlProvider.query(query, id);
-
-    query = `DELETE FROM store.type WHERE productNumber IN (SELECT number from store.product WHERE owner = ? )`;
-    await this.mySqlProvider.query(query, id);
-
-    await this.mySqlProvider.query(`DELETE FROM store.product WHERE owner = ?`, id);
-    await this.mySqlProvider.query(`DELETE FROM store.address WHERE owner = ?`, id);
-    await this.mySqlProvider.query(`DELETE FROM store.account WHERE id = ?`, id);
   }
 
   parseBankNote(note) {

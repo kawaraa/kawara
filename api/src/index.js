@@ -31,6 +31,7 @@ const SellerResolver = require("./infrastructure/resolver/seller-resolver");
 const BuyerResolver = require("./infrastructure/resolver/buyer-resolver");
 
 const MailHandler = require("./application/handler/mail-handler");
+const DeleteAccountAndProductHandler = require("./application/handler/delete-account-and-product-handler");
 const ScrapeHandler = require("./application/handler/scrape-handler");
 const MysqlDatabaseBackupCron = require("./infrastructure/factory/mysql-database-backup-cron");
 const RestoreMysqlDatabaseBackup = require("./infrastructure/factory/restore-mysql-database-backup");
@@ -52,12 +53,13 @@ module.exports = (router) => {
 
   // // Handlers
   const mailHandler = new MailHandler(nodemailer);
+  const deleteAccountHandler = new DeleteAccountAndProductHandler(mySqlProvider, storageProvider);
   const scrapeHandler = new ScrapeHandler(fetch, cheerio);
 
   // // Resolvers
   const customerResolver = new CustomerResolver(router, firewall, customerRepository);
   const authResolver = new AuthResolver(router, firewall, accountRepository, mailHandler);
-  const accountResolver = new AccountResolver(router, firewall, accountRepository, productRepository);
+  const accountResolver = new AccountResolver(router, firewall, accountRepository, deleteAccountHandler);
   const adminResolver = new AdminResolver(router, firewall, adminRepository);
   // const userResolver = new UserResolver(router, firewall, accountRepository);
   const productResolver = new ProductResolver(router, firewall, productRepository);
@@ -73,7 +75,7 @@ module.exports = (router) => {
     router,
     firewall,
     sellerRepository,
-    accountRepository,
+    deleteAccountHandler,
     storageProvider,
     mailHandler,
     scrapeHandler

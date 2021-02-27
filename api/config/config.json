@@ -7,18 +7,21 @@
   },
   "passwordError": "Password must be at least 8 Characters / Numbers, 1 special characters / symbols, 1 number and 1 capital letter",
   "accountResolver": {
-    "confirmationError": "Sorry you can't do this action, first you need to confirm your account by confirming your Email Address. \n We have sent you an confirmation link to your Email, please confirm your Email and try again (!)"
+    "confirmationError": "Sorry you can't do this action, first you need to confirm your account by confirming your Email Address. \n We have sent you an confirmation link to your Email, please confirm your Email and try again"
   },
   "accountRepository": {
     "accountConfirmationError": "Your account has already been confirmed",
-    "notShippedItemError": "Sorry you can't delete your account. \nYou still have orders are not shipped yet (!)",
-    "notDeliveredItemError": "Sorry you can't delete your account. \nYou still have orders are not delivered yet (!)",
-    "periodError": "Sorry you can't delete your account. \nYou can only delete it after 15 days of the last delivered order. \nTry again after xxx days (!)",
-    "balanceRemainError": "Sorry you can't delete your account. \nYou still have money in you account, please wait until you receive you money then try agin (!)",
     "bankConfirmError": "The amounts are not correct, Please be careful You have only 3 attempts, and now You have only xxx",
     "bankBlockingError": "You have tried many times, for security issue you have to wait wait 3 days and try again"
   },
   "sellerResolver": "In order to create a product first you need to confirm your account. We send you an confirmation link to you Email Address, Please confirm your account first",
+  "DeleteAccountAndProductHandler": {
+    "domain": "https://storage.googleapis.com/media-bucket-0/",
+    "notShippedItemError": "Sorry you can't delete your account. \nYou still have orders are not shipped yet",
+    "notDeliveredItemError": "Sorry you can't delete your account. \nYou still have orders are not delivered yet",
+    "deleteProductPeriodError": "Sorry you can't delete this product. \nYou can only delete it after you receive the payout. \nTry again after you receive the payouts",
+    "balanceRemainError": "Sorry you can't delete your account. \nYou still have money in you account, please wait until you receive you money then try agin"
+  },
   "categories": {
     "other": "Other",
     "womenswear": "Women's Wear",

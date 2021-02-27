@@ -514,7 +514,7 @@ module.exports = ({user, body}) => `
               </div>
               <div class="input-field">
                 <label for="street">Street</label>
-                <input type="text" name="street" min="2" max="150" required id="street"  />
+                <input type="text" name="street" min="2" max="150" required id="street" />
               </div>
               <div class="input-field">
                 <label for="house-number">House Number</label>
@@ -522,7 +522,7 @@ module.exports = ({user, body}) => `
               </div>
               <div class="input-field">
                 <label for="addition">Addition (Optional)</label>
-                <input type="text" name="addition" id="addition"  />
+                <input type="text" name="addition" id="addition" />
               </div>
             </div>
           </section>
@@ -621,7 +621,7 @@ module.exports = ({user, body}) => `
       const items = ${ body.items };
       ${ Validator.toString() }
 
-      savedAddressesWrapper.innerHTML = "";
+      savedAddressesWrapper.innerHTML = "Looks like you don't have any saved address yet.";
 
       const cardStyle = {
         base: {
@@ -711,7 +711,6 @@ module.exports = ({user, body}) => `
         if (!Validator.isString(city.value, 2, 85)) return city.style.boxShadow = "0 0 0 2px red";
         if (!Validator.isString(postalCode.value, 4, 10)) return postalCode.style.boxShadow = "0 0 0 2px red";
         if (!Validator.isString(street.value, 5, 130)) return street.style.boxShadow = "0 0 0 2px red";
-        if (!Validator.isString(houseNumber.value, 0, 20)) return houseNumber.style.boxShadow = "0 0 0 2px red";
 
         const address = {
           country: country.value,
@@ -778,6 +777,7 @@ module.exports = ({user, body}) => `
         const addresses = await fetch("/api/buyer/address").then((res) => res.json()).catch(() => { });
         setLoading(false);
         if (addresses.error) return;
+        savedAddressesWrapper.innerHTML = "";
         addresses.forEach(({ fullName, street, city, postalCode, state, country, email, phone }) => {
           const savedAddressItem = savedAddressEl.cloneNode(true);
           const content = fullName + ",<br/>" + street + ",<br/>" + city + " " + postalCode + ",<br/>" + state + ", " + country + "<br/>" + email + "<br/>" + phone;

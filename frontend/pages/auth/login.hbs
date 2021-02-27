@@ -244,15 +244,11 @@ module.exports = ({user}) => `
       async function handleLogin(e) {
         e.preventDefault();
         const { email, password } = e.target;
-        try {
-          const body = JSON.stringify(formToObject(e.target));
-          const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
-          const user = await fetch("/api/auth/login", options).then(res => res.json()).catch(networkError);
-          if (user.error) return showErrorMessage(user.error);
-          window.location.replace("/");
-        } catch (error) {
-          showErrorMessage(error.message);
-        }
+        const body = JSON.stringify(formToObject(e.target));
+        const options = { method: "POST", headers: { "Content-Type": "application/json" }, body };
+        const user = await fetch("/api/auth/login", options).then(res => res.json()).catch(networkError);
+        if (user.error) return showErrorMessage(user.error);
+        window.location.replace("/");
       }
 
 

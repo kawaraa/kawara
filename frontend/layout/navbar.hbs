@@ -336,8 +336,8 @@ module.exports = (user) => `
         <li><a href="/seller/orders" class="user-drop-menu-item nf" tabindex="0">Seller</a></li>
         `}
 
-        <li><a href="/account" class="user-drop-menu-item nf" tabindex="0">Account</a></li>
         <li><a href="/orders" class="user-drop-menu-item nf" tabindex="0">Orders</a></li>
+        <li><a href="/account" class="user-drop-menu-item nf" tabindex="0">Account</a></li>
 
         ${user.type !== "admin" ? "": `
         <li><a href="/admin/products" class="user-drop-menu-item nf" tabindex="0">Admin</a></li>

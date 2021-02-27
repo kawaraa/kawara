@@ -1,7 +1,7 @@
 CREATE DATABASE IF NOT EXISTS `user`;
 USE `user`;
 
-CREATE TABLE `account` (
+CREATE TABLE IF NOT EXISTS `account` (
   `id` VARCHAR(250),
   `type` ENUM('seller', 'buyer') NOT NULL,
   `email` VARCHAR(100) NOT NULL UNIQUE,
@@ -14,7 +14,7 @@ CREATE TABLE `account` (
   PRIMARY KEY(`id`)
 );
 
-CREATE TABLE `address` (
+CREATE TABLE IF NOT EXISTS `address` (
   `id` VARCHAR(250),
   `owner` VARCHAR(250) NOT NULL,
   `fullName` VARCHAR(40) NULL,
@@ -28,7 +28,7 @@ CREATE TABLE `address` (
   PRIMARY KEY(`id`)
 );
 
-CREATE TABLE `bank` (
+CREATE TABLE IF NOT EXISTS `bank` (
   `owner` VARCHAR(250) NOT NULL,
   `country` VARCHAR(2) NOT NULL,
   `type` ENUM('bank', 'paypal') NOT NULL,
@@ -44,7 +44,7 @@ CREATE TABLE `bank` (
   PRIMARY KEY(`owner`)
 );
 
-CREATE TABLE `contact` (
+CREATE TABLE IF NOT EXISTS `contact` (
   `id` VARCHAR(250) NOT NULL,
   `email` VARCHAR(100) NOT NULL,
   `country` VARCHAR(2) NULL,
@@ -60,7 +60,7 @@ CREATE TABLE `contact` (
 CREATE DATABASE IF NOT EXISTS `store`;
 USE `store`;
 
-CREATE TABLE `product` (
+CREATE TABLE IF NOT EXISTS `product` (
   `owner` VARCHAR(250) NOT NULL,
   `number` VARCHAR(250) NOT NULL,
   `name` VARCHAR(250) NOT NULL,
@@ -73,7 +73,7 @@ CREATE TABLE `product` (
   PRIMARY KEY(`number`)
 );
 
-CREATE TABLE `type` (
+CREATE TABLE IF NOT EXISTS `type` (
   `productNumber` VARCHAR(250) NOT NULL,
   `type` TEXT NOT NULL,
   `size` VARCHAR(250) NOT NULL,
@@ -81,14 +81,14 @@ CREATE TABLE `type` (
   `inStock` INT NOT NULL
 );
 
-CREATE TABLE `specification` (
+CREATE TABLE IF NOT EXISTS `specification` (
   `productNumber` VARCHAR(250) NOT NULL,
   `title` VARCHAR(30) NOT NULL,
   `description` VARCHAR(30) NOT NULL,
   PRIMARY KEY(`productNumber`, `title`)
 );
 
-CREATE TABLE `shipping` (
+CREATE TABLE IF NOT EXISTS `shipping` (
   `productNumber` VARCHAR(250) NOT NULL,
   `country` VARCHAR(2) NOT NULL,
   `estimatedTime` TINYINT NOT NULL,
@@ -96,27 +96,27 @@ CREATE TABLE `shipping` (
    PRIMARY KEY(`productNumber`, `country`)
 );
 
-CREATE TABLE `starRating` (
+CREATE TABLE IF NOT EXISTS `starRating` (
   `user` VARCHAR(100) NOT NULL,
   `item` VARCHAR(250) NOT NULL,
   `stars` DECIMAL(3, 2) NOT NULL,
   PRIMARY KEY(`user`, `item`)
 );
 
-CREATE TABLE `category` (
+CREATE TABLE IF NOT EXISTS `category` (
   `productNumber` VARCHAR(250) NOT NULL,
   `name` VARCHAR(50) NOT NULL,
   PRIMARY KEY(`productNumber`, `name`)
 );
 
-CREATE TABLE `subCategory` (
+CREATE TABLE IF NOT EXISTS `subCategory` (
   `productNumber` VARCHAR(250) NOT NULL,
   `category` VARCHAR(50) NOT NULL,
   `name` VARCHAR(50) NOT NULL,
   PRIMARY KEY(`productNumber`, `name`)
 );
 
-CREATE TABLE `order` (
+CREATE TABLE IF NOT EXISTS `order` (
   `id` VARCHAR(250) NOT NULL,
   `owner` VARCHAR(250) NOT NULL,
   `addressId` VARCHAR(250) NOT NULL,
@@ -129,7 +129,7 @@ CREATE TABLE `order` (
   PRIMARY KEY(`id`)
 );
 
-CREATE TABLE `soldItem` (
+CREATE TABLE IF NOT EXISTS `soldItem` (
   `id` VARCHAR(250) NOT NULL,
   `orderId` VARCHAR(250) NOT NULL,
   `shipmentId` VARCHAR(250) NULL,
@@ -144,7 +144,7 @@ CREATE TABLE `soldItem` (
    PRIMARY KEY(`id`)
 );
   
-CREATE TABLE `shipment` (
+CREATE TABLE IF NOT EXISTS `shipment` (
   `id` VARCHAR(250) NOT NULL,
   `orderId` VARCHAR(250) NOT NULL,
   `carrier` VARCHAR(250) NOT NULL,
@@ -155,7 +155,7 @@ CREATE TABLE `shipment` (
   PRIMARY KEY(`id`)
 );
 
-CREATE TABLE `sale` (
+CREATE TABLE IF NOT EXISTS `sale` (
   `owner` VARCHAR(250) NOT NULL,
   `soldItemId` VARCHAR(250) NOT NULL,
   `payout` INT DEFAULT 0,
@@ -167,7 +167,7 @@ CREATE TABLE `sale` (
 CREATE DATABASE IF NOT EXISTS `archive`;
 USE `archive`;
 
-CREATE TABLE `report` (
+CREATE TABLE IF NOT EXISTS `report` (
   `id` VARCHAR(250) NOT NULL UNIQUE,
   `type` ENUM('payment', 'shipment', 'return', 'general') NOT NULL,
   `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -175,14 +175,16 @@ CREATE TABLE `report` (
   PRIMARY KEY(`id`)
 );
 
-CREATE TABLE `deleted` (
+CREATE TABLE IF NOT EXISTS `deleted` (
   `id` VARCHAR(250),
   `table` VARCHAR(250) NOT NULL,
   `content` TEXT NOT NULL,
   PRIMARY KEY(`id`)
 );
 
--- To suport arabic language run the following commands
+ALTER TABLE store.product ADD FULLTEXT(`name`);
+
+-- To suport arabic language if not supported, run the following commands
 -- ALTER TABLE `product` MODIFY column `description` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
 -- ALTER TABLE `customer` MODIFY column `about` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;
 -- ALTER TABLE `order` MODIFY column `note` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;

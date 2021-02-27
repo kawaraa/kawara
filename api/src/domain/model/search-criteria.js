@@ -4,7 +4,7 @@ class SearchCriteria {
   constructor(query) {
     this._limit = query.limit; // Limit per page
     this._offset = query.offset; // the start of the limit
-    this._search = query.search;
+    this._search = query.text || query.search;
     this._sortBy = query.sortBy || query.sortby;
   }
 

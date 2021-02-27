@@ -35,6 +35,7 @@ class CheckoutResolver {
 
       const total = items.reduce((init, item) => init + (item.price + item.shippingCost) * item.quantity, 0);
       const address = new UpdateAddressCommand({ ...shipping, ...shipping.address, owner: user.id });
+      const addressId = await this.checkoutRepository.createAddress(address);
 
       const { id, client_secret } = await this.stripe.paymentIntents.create({
         amount: total,
@@ -45,10 +46,9 @@ class CheckoutResolver {
 
       items.forEach((item) => (item.orderId = id));
 
-      const order = new CreateOrderCommand(address.owner, address.id, id, "card", total, currency);
+      const order = new CreateOrderCommand(address.owner, addressId, id, "card", total, currency);
 
       await this.checkoutRepository.createSoldItems(items);
-      await this.checkoutRepository.createAddress(address);
       await this.checkoutRepository.createOrder(order);
 
       response.json({ clientSecret: client_secret });
@@ -66,6 +66,7 @@ class CheckoutResolver {
 
       const total = items.reduce((init, item) => init + (item.price + item.shippingCost) * item.quantity, 0);
       const address = new UpdateAddressCommand({ ...shipping, ...shipping.address, owner: user.id });
+      const addressId = await this.checkoutRepository.createAddress(address);
 
       const { id, client_secret } = await this.stripe.paymentIntents.create({
         amount: total,
@@ -76,10 +77,9 @@ class CheckoutResolver {
 
       items.forEach((item) => (item.orderId = id));
 
-      const order = new CreateOrderCommand(address.owner, address.id, id, "ideal", total, currency);
+      const order = new CreateOrderCommand(address.owner, addressId, id, "ideal", total, currency);
 
       await this.checkoutRepository.createSoldItems(items);
-      await this.checkoutRepository.createAddress(address);
       await this.checkoutRepository.createOrder(order);
 
       response.json({ clientSecret: client_secret });
@@ -98,6 +98,7 @@ class CheckoutResolver {
 
       const total = items.reduce((init, item) => init + (item.price + item.shippingCost) * item.quantity, 0);
       const address = new UpdateAddressCommand({ ...shipping, ...shipping.address, owner: user.id });
+      const addressId = await this.checkoutRepository.createAddress(address);
 
       const paymentObject = {
         intent: "sale",
@@ -114,10 +115,9 @@ class CheckoutResolver {
 
       items.forEach((item) => (item.orderId = payment.id));
 
-      const order = new CreateOrderCommand(address.owner, address.id, payment.id, "paypal", total, currency);
+      const order = new CreateOrderCommand(address.owner, addressId, payment.id, "paypal", total, currency);
 
       await this.checkoutRepository.createSoldItems(items);
-      await this.checkoutRepository.createAddress(address);
       await this.checkoutRepository.createOrder(order);
 
       response.json({ redirectLink: payment.links.find((link) => link.rel === "approval_url").href });

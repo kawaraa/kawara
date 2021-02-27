@@ -5,11 +5,11 @@ const UpdateQuantityCommand = require("../../domain/command/update-quantity-comm
 const CreateShipmentCommand = require("../../domain/command/create-shipment-command");
 
 class SellerResolver {
-  constructor(server, firewall, sellerRepo, accountRepo, storageProvider, mailHandler, scrapeHandler) {
+  constructor(server, firewall, sellerRepo, deleteProHandler, storageProvider, mailHandler, scrapeHandler) {
     this.server = server;
     this.firewall = firewall;
     this.sellerRepository = sellerRepo;
-    this.accountRepository = accountRepo;
+    this.deleteProductHandler = deleteProHandler;
     this.storageProvider = storageProvider;
     this.mailHandler = mailHandler;
     this.scrapeHandler = scrapeHandler;
@@ -33,8 +33,8 @@ class SellerResolver {
 
   async createProduct(request, response) {
     try {
-      const account = await this.accountRepository.checkAccount(null, null, request.user.id);
-      if (account.confirmed < 1) throw new CustomError(this.errorMessage);
+      const confirmed = await this.sellerRepository.isAccountConfirmed(request.user.id);
+      if (!confirmed) throw new CustomError(this.errorMessage);
       const handler = new CreateProductHandler(this.sellerRepository, this.storageProvider);
       const product = await handler.handle(request, response);
       response.json(product);
@@ -60,7 +60,7 @@ class SellerResolver {
   }
   async deleteProduct({ user, params }, response) {
     try {
-      await this.sellerRepository.delete(params.number, user.id);
+      await this.deleteProductHandler.deleteProduct(user.id, params.number);
       response.json({ success: true });
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
@@ -109,7 +109,7 @@ class SellerResolver {
   }
   async getBalance({ user }, response) {
     try {
-      const balance = await this.sellerRepository.getSellerBalance(user.id);
+      const balance = await this.sellerRepository.getBalance(user.id);
       response.json(balance);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
@@ -117,7 +117,7 @@ class SellerResolver {
   }
   async getSales({ user }, response) {
     try {
-      const sales = await this.sellerRepository.getSellerSales(user.id);
+      const sales = await this.sellerRepository.getSales(user.id);
       response.json(sales);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
@@ -126,7 +126,7 @@ class SellerResolver {
   async getSalesHistory({ user, query }, response) {
     try {
       query = { ...new SearchCriteria(query), owner: user.id };
-      const salesHistory = await this.sellerRepository.getSellerSalesHistory(query);
+      const salesHistory = await this.sellerRepository.getSalesHistory(query);
       response.json(salesHistory);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

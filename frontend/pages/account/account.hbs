@@ -66,6 +66,7 @@ module.exports = ({user}) => `
 
       .addresses.show {
         display: flex;
+        flex-flow: row wrap;
       }
 
       .addresses>.btn {
@@ -83,6 +84,7 @@ module.exports = ({user}) => `
         padding: 20px 20px 40px 20px;
         background: var(--white);
         border-radius: 10px;
+        max-width: 50%;
       }
 
       .address-wrapper:last-child {
@@ -195,6 +197,14 @@ module.exports = ({user}) => `
         margin: 20px auto;
         font-size: 20px;
         background: var(--red);
+      }
+
+
+      /* =============== Mobile, IPads & Tablet styles =============== */
+      @media screen and (max-width: 850px) {
+        .address-wrapper {
+          max-width: 100%;
+        }
       }
     </style>
   </head>
@@ -390,8 +400,9 @@ module.exports = ({user}) => `
 
       async function handleDeleteAccount() {
         if (!confirm(queryId("delete-account-confirmation").value)) return;
-        const res = await fetch("/api/account", { method: "DELETE" }).then(res => res.json()).catch(networkError);
-        console.log(res)
+        const password = prompt("Please enter your password");
+        const options = { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ password }) }
+        const res = await fetch("/api/account", options).then(res => res.json()).catch(networkError);
         if (res.error) return showErrorMessage(res.error);
         window.location.reload();
       }

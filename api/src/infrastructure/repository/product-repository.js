@@ -7,8 +7,8 @@ class ProductRepository {
   }
   async getProducts({ searchText, country, limit, offset }) {
     //  const values = ("%" + text + "% ").repeat(5).trim().split(" ");
-    const search = !searchText ? "" : `AND t1.name LIKE %${searchText}%`;
-    let query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold, (SELECT type FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS type, (SELECT size FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS size, (SELECT price FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS price FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber WHERE t1.reviewed = 1 AND t2.country = ? ${search} LIMIT ? OFFSET ?`;
+    let search = !searchText ? "" : `AND MATCH(t1.name) AGAINST('${searchText}' IN NATURAL LANGUAGE MODE)`;
+    let query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, t3.type, t3.size, t3.price, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number WHERE t1.reviewed = 1 AND t2.country = ? AND t3.inStock > 0 ${search} GROUP BY t1.number LIMIT ? OFFSET ?`;
 
     const result = await this.mySqlProvider.query(query, [country, limit, offset]);
     return result.map((product) => new Product(product));
@@ -27,9 +27,9 @@ class ProductRepository {
   }
 
   async getProductByNumber(productNumber, user) {
-    let query = `SELECT owner, number, name, description, pictures, reviewed, (SELECT  AVG(stars) FROM store.starRating WHERE item = number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = number) AS sold FROM store.product WHERE number = ?`;
+    let query = `SELECT t1.owner, t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number WHERE t1.number = ? AND t2.country = ? AND t3.inStock > 0 GROUP BY t1.number`;
 
-    const product = await this.mySqlProvider.query(query, productNumber);
+    const product = await this.mySqlProvider.query(query, [productNumber, user.country]);
     if (!product[0]) return null;
     if (product[0].reviewed === 0 && product[0].owner !== user.id && user.type !== "admin") return null;
 
@@ -38,11 +38,7 @@ class ProductRepository {
 
     const types = await this.getProductTypes(product[0].number);
 
-    query = `SELECT country, estimatedTime, cost FROM store.shipping WHERE productNumber = ? AND country = ?`;
-    let shipping = await this.mySqlProvider.query(query, [product[0].number, user.country]);
-    shipping = shipping[0] ? shipping[0] : {};
-
-    return new ProductDetails({ ...product[0], types, ...shipping, specifications });
+    return new ProductDetails({ ...product[0], types, specifications });
   }
 
   async getProductTypes(productNumber) {
@@ -69,7 +65,7 @@ class ProductRepository {
   }
 
   async getByCategory({ country, searchText, limit, offset }) {
-    const query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold,(SELECT type FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS type, (SELECT size FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS size, (SELECT price FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS price FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.category t3 ON t1.number = t3.productNumber WHERE t1.reviewed = 1 AND t2.country = ? AND t3.name = ? LIMIT ? OFFSET ?`;
+    let query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, t3.type, t3.size, t3.price, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number JOIN store.category t4 ON t4.productNumber = t1.number WHERE t1.reviewed = 1 AND t2.country = ? AND t4.name = ? AND t3.inStock > 0 GROUP BY t1.number LIMIT ? OFFSET ?`;
 
     const result = await this.mySqlProvider.query(query, [country, searchText, limit, offset]);
     const products = result.map((product) => new Product(product));
@@ -78,14 +74,14 @@ class ProductRepository {
   }
 
   async getHotSale({ country, limit, offset }) {
-    const query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold, (SELECT type FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS type, (SELECT size FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS size, (SELECT price FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS price FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber WHERE t1.reviewed = 1 AND t2.country = ? ORDER BY sold DESC LIMIT ? OFFSET ?`;
+    const query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, t3.type, t3.size, t3.price, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number JOIN store.category t4 ON t4.productNumber = t1.number WHERE t1.reviewed = 1 AND t2.country = ? AND t3.inStock > 0 GROUP BY t1.number ORDER BY sold DESC LIMIT ? OFFSET ?`;
 
     const result = await this.mySqlProvider.query(query, [country, limit, offset]);
     const products = result.map((product) => new Product(product));
     return { products, name: "Hot-Sale" };
   }
   async getRandom({ country, limit, offset }) {
-    const query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold, (SELECT type FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS type, (SELECT size FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS size, (SELECT price FROM store.type WHERE productNumber = t1.number ORDER BY price ASC LIMIT 1) AS price FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber WHERE t1.reviewed = 1 AND t2.country = ? LIMIT ? OFFSET ?`;
+    const query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, t3.type, t3.size, t3.price, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number WHERE t1.reviewed = 1 AND t2.country = ? AND t3.inStock > 0 GROUP BY t1.number LIMIT ? OFFSET ?`;
 
     const result = await this.mySqlProvider.query(query, [country, limit, offset]);
     const products = result.map((product) => new Product(product));

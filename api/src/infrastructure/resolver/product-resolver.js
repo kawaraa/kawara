@@ -58,9 +58,9 @@ class ProductResolver {
       response.status(400).end(CustomError.toJson(error));
     }
   }
-  async rateProduct({ query: { user, item, rate }, country }, response) {
+  async rateProduct({ user: { id }, query: { user, item, rate }, country }, response) {
     try {
-      await this.productRepository.rateProduct(new StarRating(user, item, rate));
+      await this.productRepository.rateProduct(new StarRating(user || id, item, rate));
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
