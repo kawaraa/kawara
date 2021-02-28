@@ -774,6 +774,12 @@ module.exports = ({user, body}) => `
 
       (async () => {
         setLoading(true);
+        const geoInfo = await fetch("/api/customer-geo").then((res) => res.json()).catch((err) => ({}));
+        const form = document.forms[0];
+        Array.from(form.country.options).forEach(el => el.value === "NL" && (el.selected = true));
+        form.city.value = geoInfo.city || "";
+        form.state.value = geoInfo.region || "";
+
         const addresses = await fetch("/api/buyer/address").then((res) => res.json()).catch(() => { });
         setLoading(false);
         if (!addresses.error) {
@@ -794,12 +800,6 @@ module.exports = ({user, body}) => `
           })
         }
 
-        const geoInfo = await fetch("/api/customer-geo").then((res) => res.json()).catch((err) => ({}));
-        if (!geoInfo || !geoInfo.country) return;
-        const form = document.forms[0];
-        Array.from(form.country.options).forEach(el => el.value === "NL" && (el.selected = true));
-        target.form.city.value = geoInfo.city || "";
-        target.form.state.value = geoInfo.region || "";
       })()
     </script>
 
