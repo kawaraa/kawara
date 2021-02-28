@@ -1,6 +1,7 @@
 const accountConfirmation = require("../../domain/email-template/account-confirmation.hbs");
 const orderConfirmation = require("../../domain/email-template/order-confirmation.hbs");
 const shippedItems = require("../../domain/email-template/shipped-items.hbs");
+const newOrder = require("../../domain/email-template/new-order.hbs");
 
 class MailHandler {
   constructor(mailer) {
@@ -23,7 +24,13 @@ class MailHandler {
 
   sendOrderConfirmationEmail(order) {
     order.domain = this.origin;
-    const options = { email: order.email, subject: "Order confirmation", html: orderConfirmation(order) };
+    let options = { email: order.email, subject: "Order confirmation", html: orderConfirmation(order) };
+    this.sendEmail(options).catch((err) => console.log("Order confirmation email Error: ", err));
+    options = {
+      email: order.sellerEmail,
+      subject: "New order has been placed",
+      html: newOrder(this.origin, order.sellerName),
+    };
     this.sendEmail(options).catch((err) => console.log("Order confirmation email Error: ", err));
   }
 

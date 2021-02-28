@@ -3,7 +3,6 @@ const { Formatter, CustomError } = require("k-utilities");
 class CheckoutRepository {
   constructor(mySqlProvider) {
     this.mySqlProvider = mySqlProvider;
-    // this.error = "Sorry there are items can not be shipped to xx";
   }
 
   async checkItem(item, country) {
@@ -12,7 +11,6 @@ class CheckoutRepository {
 
     const products = await this.mySqlProvider.query(query, [productNumber, name, type, size, country]);
     if (!products[0]) throw new CustomError("Invalid input item");
-    // if (products[0].country != country) throw new CustomError(this.error.replace("xx", country));
 
     item.picture = Formatter.stringToArray(products[0].pictures)[0];
     item.price = products[0].price;
@@ -61,13 +59,12 @@ class CheckoutRepository {
     return this.getOrder(orderId);
   }
   async setPaymentError(orderId, error) {
-    console.log({ orderId, error });
     const log = { owner: orderId, content: error, type: "payment-error" };
     await this.mySqlProvider.query(`REPLACE INTO archive.log SET ?`, log);
   }
 
   async getOrder(orderId) {
-    let query = `SELECT t1.total, t2.fullName, t2.street, t2.city, t2.postalCode, t2.state, t2.country, t2.email FROM store.order t1 JOIN user.address t2 ON t2.id = t1.addressId WHERE t1.id = ?`;
+    let query = `SELECT t1.total, t2.fullName, t2.street, t2.city, t2.postalCode, t2.state, t2.country, t2.email, t5.email AS sellerEmail, t5.firstName AS sellerName FROM store.order t1 JOIN user.address t2 ON t2.id = t1.addressId JOIN store.soldItem t3 ON t3.orderId = t1.id JOIN store.product t4 ON t4.number = t3.productNumber JOIN user.account t5 ON t5.id = t4.owner WHERE t1.id = ? GROUP BY t1.id`;
     const orderResult = await this.mySqlProvider.query(query, orderId);
 
     query = `SELECT name, picture, productNumber, quantity, type, size, price, shippingCost, (price + shippingCost) * quantity AS total FROM store.soldItem WHERE orderId = ?`;

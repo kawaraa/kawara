@@ -5,9 +5,10 @@ const ConfirmOrderDeliveryCommand = require("../../domain/command/confirm-order-
 const StarRating = require("../../domain/model/star-rating");
 
 class ContactResolver {
-  constructor(server, firewall, customerRepository) {
+  constructor(server, firewall, fetch, customerRepository) {
     this.server = server;
     this.firewall = firewall;
+    this.fetch = fetch;
     this.customerRepository = customerRepository;
   }
 
@@ -16,6 +17,7 @@ class ContactResolver {
     this.server.post("/customer", this.createContact.bind(this));
     this.server.get("/customer/confirm-order-delivery", this.confirmOrderDelivery.bind(this));
     this.server.post("/customer/rate-us", this.rateUs.bind(this));
+    this.server.get("/customer-geo", this.geoInfo.bind(this));
   }
 
   async createContact({ user, body }, response) {
@@ -39,6 +41,15 @@ class ContactResolver {
     try {
       await this.customerRepository.rateUs(new StarRating(user, "kawara", rate));
       response.json({ success: true });
+    } catch (error) {
+      response.status(400).end(CustomError.toJson(error));
+    }
+  }
+  async geoInfo({ headers }, response) {
+    try {
+      const url = "https://get.geojs.io/v1/ip/geo/xxx.json".replace("xxx", headers["x-forwarded-for"]);
+      const res = await this.fetch(url).then((res) => res.json());
+      response.json(res);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
     }

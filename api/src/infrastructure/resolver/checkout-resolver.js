@@ -151,7 +151,6 @@ class CheckoutResolver {
       const payment = await this.confirmPaypalPayment(paymentId, JSON.stringify(paymentObject));
       await this.checkoutRepository.confirmPayment(paymentId);
       this.mailHandler.sendOrderConfirmationEmail({ ...order, ...user });
-      // Todos: send ean email to the seller that somebody ordered something.
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

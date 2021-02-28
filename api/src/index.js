@@ -57,7 +57,7 @@ module.exports = (router) => {
   const scrapeHandler = new ScrapeHandler(fetch, cheerio);
 
   // // Resolvers
-  const customerResolver = new CustomerResolver(router, firewall, customerRepository);
+  const customerResolver = new CustomerResolver(router, firewall, fetch, customerRepository);
   const authResolver = new AuthResolver(router, firewall, accountRepository, mailHandler);
   const accountResolver = new AccountResolver(router, firewall, accountRepository, deleteAccountHandler);
   const adminResolver = new AdminResolver(router, firewall, adminRepository);

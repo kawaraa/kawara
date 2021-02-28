@@ -776,22 +776,30 @@ module.exports = ({user, body}) => `
         setLoading(true);
         const addresses = await fetch("/api/buyer/address").then((res) => res.json()).catch(() => { });
         setLoading(false);
-        if (addresses.error) return;
-        savedAddressesWrapper.innerHTML = "";
-        addresses.forEach(({ fullName, street, city, postalCode, state, country, email, phone }) => {
-          const savedAddressItem = savedAddressEl.cloneNode(true);
-          const content = fullName + ",<br/>" + street + ",<br/>" + city + " " + postalCode + ",<br/>" + state + ", " + country + "<br/>" + email + "<br/>" + phone;
-          savedAddressItem.children[0].innerHTML = content;
-          savedAddressItem.children[1].dataset.fullName = fullName;
-          savedAddressItem.children[1].dataset.street = street;
-          savedAddressItem.children[1].dataset.city = city;
-          savedAddressItem.children[1].dataset.postalCode = postalCode;
-          savedAddressItem.children[1].dataset.state = state;
-          savedAddressItem.children[1].dataset.country = country;
-          savedAddressItem.children[1].dataset.email = email;
-          savedAddressItem.children[1].dataset.phone = phone;
-          savedAddressesWrapper.appendChild(savedAddressItem)
-        })
+        if (!addresses.error) {
+          savedAddressesWrapper.innerHTML = "";
+          addresses.forEach(({ fullName, street, city, postalCode, state, country, email, phone }) => {
+            const savedAddressItem = savedAddressEl.cloneNode(true);
+            const content = fullName + ",<br/>" + street + ",<br/>" + city + " " + postalCode + ",<br/>" + state + ", " + country + "<br/>" + email + "<br/>" + phone;
+            savedAddressItem.children[0].innerHTML = content;
+            savedAddressItem.children[1].dataset.fullName = fullName;
+            savedAddressItem.children[1].dataset.street = street;
+            savedAddressItem.children[1].dataset.city = city;
+            savedAddressItem.children[1].dataset.postalCode = postalCode;
+            savedAddressItem.children[1].dataset.state = state;
+            savedAddressItem.children[1].dataset.country = country;
+            savedAddressItem.children[1].dataset.email = email;
+            savedAddressItem.children[1].dataset.phone = phone;
+            savedAddressesWrapper.appendChild(savedAddressItem)
+          })
+        }
+
+        const geoInfo = await fetch("/api/customer-geo").then((res) => res.json()).catch((err) => ({}));
+        if (!geoInfo || !geoInfo.country) return;
+        const form = document.forms[0];
+        Array.from(form.country.options).forEach(el => el.value === "NL" && (el.selected = true));
+        target.form.city.value = geoInfo.city || "";
+        target.form.state.value = geoInfo.region || "";
       })()
     </script>
 

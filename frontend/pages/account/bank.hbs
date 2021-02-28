@@ -245,7 +245,7 @@ module.exports = (user, countries) => `
       <input type="hidden" name="owner" />
       <input type="number" name="amount1" min="1" max="10" required />
       <input type="number" name="amount2" min="1" max="10" required />
-      <button type="button" onclick="removeClass(this.parentElement, 'show')" class="btn">cancel</button>
+      <button type="button" onclick="removeClass(this.parentElement.parentElement, 'show')" class="btn">cancel</button>
       <button type="submit" class="btn">Save</button>
     </div>
   </form>
