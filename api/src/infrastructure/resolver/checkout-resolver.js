@@ -128,11 +128,12 @@ class CheckoutResolver {
   async confirmPayment({ user, query }, response) {
     try {
       const { payment_intent, paymentId, PayerID } = query;
-      if (!payment_intent && !paymentId) throw new Error("Failed to confirm Payment, please try again (!)");
+      if (!payment_intent && !paymentId) throw new CustomError("Failed to confirm Payment, please try again");
 
       if (payment_intent) {
         const intent = await this.stripe.paymentIntents.retrieve(payment_intent);
-        if (!intent.charges.data[0].paid) throw new Error("Failed to confirm Payment, please try again (!)");
+        if (!intent.charges.data[0].paid)
+          throw new CustomError("Failed to confirm Payment, please try again");
         // console.log(intent.charges.data[0].status); //success or failed
         const order = await this.checkoutRepository.confirmPayment(payment_intent);
         this.mailHandler.sendOrderConfirmationEmail({ ...order, ...user });
@@ -140,7 +141,7 @@ class CheckoutResolver {
       }
 
       const order = await this.checkoutRepository.getOrder(paymentId);
-      if (!order.total) Error("Failed to confirm Payment, please try again (!)");
+      if (!order.total) throw new CustomError("Failed to confirm Payment, please try again");
 
       const paymentObject = {
         payer_id: PayerID,
@@ -150,6 +151,7 @@ class CheckoutResolver {
       const payment = await this.confirmPaypalPayment(paymentId, JSON.stringify(paymentObject));
       await this.checkoutRepository.confirmPayment(paymentId);
       this.mailHandler.sendOrderConfirmationEmail({ ...order, ...user });
+      // Todos: send ean email to the seller that somebody ordered something.
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

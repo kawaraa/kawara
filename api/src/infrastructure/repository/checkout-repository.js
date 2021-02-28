@@ -62,7 +62,9 @@ class CheckoutRepository {
     return this.getOrder(orderId);
   }
   async setPaymentError(orderId, error) {
-    await this.mySqlProvider.query(`UPDATE store.order SET note = ? WHERE id = ?`, [error, orderId]);
+    console.log({ orderId, error });
+    const log = { owner: orderId, content: error, type: "payment-error" };
+    await this.mySqlProvider.query(`REPLACE INTO archive.log SET ?`, log);
   }
 
   async getOrder(orderId) {

@@ -9,7 +9,6 @@ class CreateSellerAccountCommand {
     this._password = account.password;
     this._firstName = account.firstName;
     this._lastName = account.lastName;
-    this.created = null;
     this._about = account.about;
     this.confirmed = 0;
   }

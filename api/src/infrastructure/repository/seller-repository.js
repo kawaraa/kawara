@@ -12,10 +12,10 @@ class SellerRepository {
 
   async createProduct(product) {
     let { owner, number, name, pictures, video, description, source, category, specifications } = product;
-    const values = [owner, number, name, pictures, video, description, source, null, 0];
+    const values = [owner, number, name, pictures, video, description, source];
     const marks = (arr) => "(?),".repeat(arr.length).slice(0, -1);
 
-    let query = `INSERT INTO store.product VALUES(?,?,?,?,?,?,?,?,?)`;
+    let query = `INSERT INTO store.product (owner, number, name, pictures, video, description, source) VALUES(?,?,?,?,?,?,?)`;
 
     await this.mySqlProvider.query(query, values);
 

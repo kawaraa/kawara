@@ -8,8 +8,6 @@ class CreateContactCommand {
     this._subject = contact.subject;
     this._message = contact.message;
     this.solved = 0;
-    this.created = null;
-    this.note = null;
   }
   set _name(value) {
     if (!Validator.isString(value, 4, 40)) throw new CustomError("Invalid input 'Name'");

@@ -9,7 +9,6 @@ class CreateBuyerAccountCommand {
     this._password = account.password;
     this.firstName = "";
     this.lastName = "";
-    this.created = null;
     this.about = "";
     this.confirmed = 0;
   }

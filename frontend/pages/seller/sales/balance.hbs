@@ -146,7 +146,7 @@ module.exports = ({user}) => `
         if (balance.error) return showErrorMessage(balance.error);
 
         query(".balance-sold").innerText = priceToString(balance.sold);
-        query(".balance-fee").innerText = priceToString(balance.fee);
+        query(".balance-fee").innerText = "-" + priceToString(balance.fee);
         query(".balance-total").innerText = priceToString(balance.total);
 
       })()

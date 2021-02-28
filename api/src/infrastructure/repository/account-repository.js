@@ -1,4 +1,4 @@
-const { CustomError, Hashing } = require("k-utilities");
+const { CustomError, Hashing, Formatter } = require("k-utilities");
 
 class AccountRepository {
   constructor(mySqlProvider) {
@@ -80,38 +80,12 @@ class AccountRepository {
     const result = await this.mySqlProvider.query(query, owner);
     return result[0] ? result[0] : {};
   }
+
   async updateBank(bank) {
     let query = `SELECT * FROM user.bank WHERE owner = ? AND status = 'pending'`;
     const bankResult = await this.mySqlProvider.query(query, bank.owner);
-    if (bankResult[0]) throw new CustomError("You can't update or delete payment method while it's pending");
+    if (bankResult[0]) throw new CustomError("You can't update payment method while it's pending");
     await this.mySqlProvider.query(`REPLACE INTO user.bank SET ?`, bank);
-  }
-  async confirmBank({ owner, amount1, amount2 }) {
-    let query = `SELECT * FROM user.bank WHERE owner = ? AND status = 'pending'`;
-    const bankResult = await this.mySqlProvider.query(query, owner);
-    if (!bankResult[0]) throw new CustomError("Unauthorized operation");
-
-    let { confirmationAmount1, confirmationAmount2, note } = bankResult[0];
-    const test1 = amount1 == confirmationAmount1 && amount2 == confirmationAmount2;
-    const test2 = amount1 == confirmationAmount2 && amount2 == confirmationAmount1;
-    let { attempts, attemptDate } = this.parseBankNote(note);
-    if (!attempts) attempts = 0;
-    if (!attemptDate) attemptDate = Date.now();
-    const period = Math.round((Date.now() - attemptDate) / 1000 / 60 / 60 / 24);
-
-    if (attempts >= 3 && period < 3) throw new CustomError(this.config.bankBlockingError);
-    else if (attempts >= 3 && period >= 3) {
-      attempts = 0;
-      attemptDate = Date.now();
-    }
-
-    query = `UPDATE user.bank SET status = 'confirmed' WHERE owner = ?`;
-    if (test1 || test2) return await this.mySqlProvider.query(query, owner);
-
-    note = JSON.stringify({ attempts: attempts + 1, attemptDate });
-    await this.mySqlProvider.query(`UPDATE user.bank SET note = ? WHERE owner = ?`, [note, owner]);
-
-    throw new CustomError(this.config.bankConfirmError.replace("xxx", 2 - attempts));
   }
 
   async deleteBank(owner) {
@@ -121,12 +95,39 @@ class AccountRepository {
     await this.mySqlProvider.query(`DELETE FROM user.bank WHERE owner = ?`, owner);
   }
 
-  parseBankNote(note) {
-    try {
-      return note ? JSON.parse(note) : {};
-    } catch (error) {
-      return {};
+  async confirmBank({ owner, amount1, amount2 }) {
+    let query = `SELECT * FROM user.bank WHERE owner = ? AND status = 'pending'`;
+    const bankResult = await this.mySqlProvider.query(query, owner);
+    if (!bankResult[0]) throw new CustomError("Unauthorized operation");
+
+    let { confirmationAmount1, confirmationAmount2 } = bankResult[0];
+    const test1 = amount1 == confirmationAmount1 && amount2 == confirmationAmount2;
+    const test2 = amount1 == confirmationAmount2 && amount2 == confirmationAmount1;
+    let { type, content, created } = await this.getLog(owner);
+
+    if (!content) content = 0;
+    const period = Math.round((Date.now() - Date.now(created || null)) / 1000 / 60 / 60 / 24);
+
+    if (content >= 3 && period < 3) throw new CustomError(this.config.bankBlockingError);
+    else if (content >= 3 && period >= 3) {
+      content = 0;
+      created = Formatter.dateToString(null);
     }
+
+    query = `UPDATE user.bank SET status = 'confirmed' WHERE owner = ?`;
+    if (test1 || test2) return await this.mySqlProvider.query(query, owner);
+
+    this.saveLog({ owner, type, content: content + 1, created });
+    throw new CustomError(this.config.bankConfirmError.replace("xxx", 2 - content));
+  }
+  async getLog(owner) {
+    const noteResult = await this.mySqlProvider.query(`SELECT * FROM archive.log WHERE owner = ?`, owner);
+    if (typeof noteResult[0].content == "object") noteResult[0].content = JSON.parse(note);
+    return noteResult[0];
+  }
+  async saveLog(log) {
+    if (typeof log.content == "object") log.content = JSON.stringify(log.content);
+    await this.mySqlProvider.query(`REPLACE INTO archive.log SET ?`, log);
   }
 }
 

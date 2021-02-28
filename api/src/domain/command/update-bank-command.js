@@ -10,8 +10,6 @@ class UpdateBankCommand {
     this._accountNumber = bank.accountNumber;
     this._bic = bank.bic;
     this.status = "initial";
-    this.created = null;
-    this.note = null;
   }
   set _country(value) {
     if (!countries[value]) throw new CustomError("Invalid input 'Country'");
@@ -22,8 +20,8 @@ class UpdateBankCommand {
     else throw new CustomError("Invalid input 'Account Holder Name'");
   }
   set _routingNumber(value) {
-    if (Validator.isString(value, 9, 9)) this.routingNumber = value;
-    else throw new CustomError("Invalid input 'Routing Number'");
+    if (value && !Validator.isString(value, 9, 9)) throw new CustomError("Invalid input 'Routing Number'");
+    this.routingNumber = value;
   }
   set _accountNumber(value) {
     if (Validator.isString(value, 7, 100)) this.accountNumber = value;

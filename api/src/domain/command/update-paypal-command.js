@@ -10,8 +10,6 @@ class UpdatePaypalCommand {
     this._accountNumber = bank.accountNumber;
     this.bic = null;
     this.status = "initial";
-    this.created = null;
-    this.note = null;
   }
   set _country(value) {
     if (!countries[value]) throw new CustomError("Invalid input 'Country'");

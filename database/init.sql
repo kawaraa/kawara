@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS `account` (
   `password` VARCHAR(250) NOT NULL,
   `firstName` VARCHAR(20) NULL,
   `lastName` VARCHAR(20) NULL,
-  `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `about` VARCHAR(250) NULL,
-  `confirmed` TINYINT DEFAULT 0,
+  `confirmed` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY(`id`)
 );
 
@@ -38,9 +38,8 @@ CREATE TABLE IF NOT EXISTS `bank` (
   `bic` VARCHAR(11) NULL,
   `confirmationAmount1` INT NULL,
   `confirmationAmount2` INT NULL,
-  `status` ENUM('initial', 'pending', 'confirmed') DEFAULT 'initial',
-  `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `note` VARCHAR(250) NULL,
+  `status` ENUM('initial', 'pending', 'confirmed') NOT NULL DEFAULT 'initial',
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(`owner`)
 );
 
@@ -51,9 +50,8 @@ CREATE TABLE IF NOT EXISTS `contact` (
   `name` VARCHAR(40) NOT NULL,
   `subject` VARCHAR(50) NULL,
   `message` VARCHAR(250) NOT NULL,
-  `solved` TINYINT DEFAULT 0,
-  `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `note` VARCHAR(250) NULL,
+  `solved` TINYINT NOT NULL DEFAULT 0,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY(`id`)
 );
 
@@ -68,8 +66,8 @@ CREATE TABLE IF NOT EXISTS `product` (
   `video` VARCHAR(250) NULL,
   `description` TEXT NOT NULL,
   `source` TEXT NOT NULL,
-  `created` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `reviewed` TINYINT DEFAULT 0,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `reviewed` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY(`number`)
 );
 
@@ -123,9 +121,8 @@ CREATE TABLE IF NOT EXISTS `order` (
   `paymentMethod` ENUM('card', 'ideal', 'paypal') NOT NULL,
   `total` INT NOT NULL,
   `currency` ENUM('USD', 'EUR') NOT NULL,
-  `orderDate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `completed` TINYINT DEFAULT 0,
-  `note` VARCHAR(250) NULL,
+  `orderDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `completed` TINYINT NOT NULL DEFAULT 0,
   PRIMARY KEY(`id`)
 );
 
@@ -149,16 +146,15 @@ CREATE TABLE IF NOT EXISTS `shipment` (
   `orderId` VARCHAR(250) NOT NULL,
   `carrier` VARCHAR(250) NOT NULL,
   `trackNumber` VARCHAR(100) NOT NULL,
-  `shippingDate` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `shippingDate` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `deliveryDate` TIMESTAMP NULL,
-  `note` VARCHAR(250) NULL,
   PRIMARY KEY(`id`)
 );
 
 CREATE TABLE IF NOT EXISTS `sale` (
   `owner` VARCHAR(250) NOT NULL,
   `soldItemId` VARCHAR(250) NOT NULL,
-  `payout` INT DEFAULT 0,
+  `payout` INT NOT NULL DEFAULT 0,
   `payoutDate` TIMESTAMP NULL,
   PRIMARY KEY(`owner`, `soldItemId`)
 );
@@ -167,10 +163,18 @@ CREATE TABLE IF NOT EXISTS `sale` (
 CREATE DATABASE IF NOT EXISTS `archive`;
 USE `archive`;
 
+CREATE TABLE IF NOT EXISTS `log` (
+  `owner` VARCHAR(250),
+  `type` VARCHAR(250) NOT NULL DEFAULT 'other',
+  `content` TEXT NOT NULL,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY(`owner`, `type`)
+);
+
 CREATE TABLE IF NOT EXISTS `report` (
-  `id` VARCHAR(250) NOT NULL UNIQUE,
+  `id` VARCHAR(250),
   `type` ENUM('payment', 'shipment', 'return', 'general') NOT NULL,
-  `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `description` TEXT NOT NULL,
   PRIMARY KEY(`id`)
 );
@@ -183,6 +187,9 @@ CREATE TABLE IF NOT EXISTS `deleted` (
 );
 
 ALTER TABLE store.product ADD FULLTEXT(`name`);
+SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
+-- ALTER USER 'root'@'databse' IDENTIFIED WITH mysql_native_password BY 'root-psw';
+-- flush privileges;
 
 -- To suport arabic language if not supported, run the following commands
 -- ALTER TABLE `product` MODIFY column `description` VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;

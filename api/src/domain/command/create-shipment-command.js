@@ -7,9 +7,7 @@ class CreateShipmentCommand {
     this.itemId = shipment.itemId;
     this._carrier = shipment.carrier;
     this._trackNumber = shipment.trackNumber;
-    this.shippingDate = null;
     this.deliveryDate = null;
-    this.note = null;
   }
 
   set _carrier(value) {
