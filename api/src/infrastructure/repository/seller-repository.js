@@ -28,15 +28,15 @@ class SellerRepository {
       sizes.forEach(({ size, price, inStock }) => typesValues.push([number, type, size, price, inStock]));
     });
 
-    await this.mySqlProvider.query(`INSERT INTO store.type VALUES ${marks(typesValues)}`, typesValues);
+    await this.mySqlProvider.query(`REPLACE INTO store.type VALUES ${marks(typesValues)}`, typesValues);
 
     const shippings = product.shippings.map(({ country, estimatedTime, cost }) => {
-      query = `INSERT INTO store.shipping  VALUES `;
+      query = `REPLACE INTO store.shipping  VALUES `;
       return [number, country, estimatedTime, cost];
     });
     await this.mySqlProvider.query(query + marks(shippings), shippings);
 
-    query = `INSERT INTO store.category SET ?`;
+    query = `REPLACE INTO store.category SET ?`;
     await this.mySqlProvider.query(query, { productNumber: number, name: category });
 
     return product;

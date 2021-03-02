@@ -4,8 +4,8 @@ const { Formatter } = require("k-utilities");
 const CreateProductCommand = require("../../domain/command/create-product-command");
 
 class CreateProductHandler {
-  constructor(productRepository, storageProvider) {
-    this.productRepository = productRepository;
+  constructor(sellerRepository, storageProvider) {
+    this.sellerRepository = sellerRepository;
     this.storageProvider = storageProvider;
     this.config = env.createProductHandler;
     this.filesInProcess = 0;
@@ -36,7 +36,7 @@ class CreateProductHandler {
               type.type = await this.uploadBase64File(type.type);
             })
           );
-          const product = await this.productRepository.createProduct(this.command);
+          const product = await this.sellerRepository.createProduct(this.command);
           this.product = {};
           this.command = {};
           this.formDataParser = null;
