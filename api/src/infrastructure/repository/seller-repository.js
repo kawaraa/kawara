@@ -20,7 +20,7 @@ class SellerRepository {
     await this.mySqlProvider.query(query, values);
 
     let specs = specifications.map(({ title, description }) => [number, title, description]);
-    query = `INSERT INTO store.specification VALUES ${marks(specs)}`;
+    query = `REPLACE INTO store.specification VALUES ${marks(specs)}`;
     await this.mySqlProvider.query(query, specs);
 
     const typesValues = [];
