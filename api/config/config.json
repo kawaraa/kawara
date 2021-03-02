@@ -21,27 +21,5 @@
     "notDeliveredItemError": "Sorry you can't delete your account. \nYou still have orders are not delivered yet",
     "deleteProductPeriodError": "Sorry you can't delete this product. \nYou can only delete it after you receive the payout. \nTry again after you receive the payouts",
     "balanceRemainError": "Sorry you can't delete your account. \nYou still have money in you account, please wait until you receive you money then try agin"
-  },
-  "categories": {
-    "other": "Other",
-    "womenswear": "Women's Wear",
-    "menswear": "Men's Wear",
-    "shoes": "Shoes",
-    "luggage-bags": "Luggage & Bags",
-    "watches": "Watches",
-    "jewelry-accessories": "Jewelry & Accessories",
-    "sports": "Sports",
-    "mother-kids": "Mother & Kids",
-    "toys-hobbies": "Toys & Hobbies",
-    "health-beauty": "Health & Beauty",
-    "computers": "Computers",
-    "cellphones-telecommunications": "Cellphones & Telecommunications",
-    "office-supplies": "Office & Supplies",
-    "consumer-electronics": "Consumer & Electronics",
-    "automobiles-motorcycles-bicycles": "Automobiles & Motorcycles Bicycles",
-    "home-garden": "Home & Garden",
-    "home-improvement": "Home Improvement",
-    "home-appliances": "Home Appliances",
-    "pets": "Pets"
   }
 }

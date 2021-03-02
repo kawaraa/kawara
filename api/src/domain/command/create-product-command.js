@@ -27,7 +27,7 @@ class CreateProductCommand {
     else throw new CustomError("Invalid input 'Product Description' length must be at least 50 letters");
   }
   set _category(value) {
-    if (Object.keys(env.categories).find((k) => k === value.toLowerCase())) this.category = value;
+    if (Validator.isString(value, 4, 50)) this.category = value;
     else this.category = "other";
   }
   set _specifications(value) {

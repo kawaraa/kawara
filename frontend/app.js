@@ -38,10 +38,10 @@ const routes = require("./config/routes.json");
     app.use("/orders", firewall.authRequired);
     app.use("/auth", firewall.authNotRequired);
 
-    routes.forEach(({ method, path, filePath }) => {
-      const view = require("./pages" + filePath);
-      if (!/.js$/gim.test(filePath)) return app[method](path, (req, res) => res.send(view(req)));
-      app[method](path, view.bind({ fetch, apiService: env.API, notFoundPage }));
+    routes.forEach(({ method, url, path }) => {
+      const view = require("./pages" + path);
+      if (!/.js$/gim.test(path)) return app[method](url, (req, res) => res.send(view(req)));
+      app[method](url, view.bind({ fetch, apiService: env.API, notFoundPage }));
     });
 
     app.use("*", (req, res) => res.status(404).end(notFoundPage(req.user)));

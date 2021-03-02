@@ -14,7 +14,7 @@ class ProductResolver {
     this.server.use("/product", this.firewall.checkRequestInfo);
     this.server.get("/product", this.getProductsBySearchQuery.bind(this));
     this.server.get("/product/collection", this.getProductCollection.bind(this));
-    this.server.get("/product/category", this.getProductsByCategory.bind(this));
+    this.server.get("/product/category/:search", this.getProductsByCategory.bind(this));
     this.server.get("/product/:number", this.getProductByNumber.bind(this));
     this.server.post("/product/rate", this.rateProduct.bind(this));
   }
@@ -47,9 +47,9 @@ class ProductResolver {
     }
   }
 
-  async getProductsByCategory({ user, query }, response) {
+  async getProductsByCategory({ user, query, params }, response) {
     try {
-      query = { ...new SearchCriteria(query), country: user.country };
+      query = { ...new SearchCriteria({ ...query, ...params }), country: user.country };
       const category = await this.productRepository.getByCategory(query);
       category.currency = user.currency;
       category.rate = user.rate;

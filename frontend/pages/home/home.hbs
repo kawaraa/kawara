@@ -4,6 +4,7 @@ const footer = require("../../layout/footer.hbs");
 const search = require("../../layout/search.hbs");
 const bannerSlider = require("../../layout/banner-slider.hbs")
 const product = require("./product.hbs");
+const categories = env.categories;
 
 module.exports = ({user}, {currency, rate, collections}, title = "Best product and fast shipping") => `
 <!DOCTYPE html>
@@ -67,9 +68,9 @@ module.exports = ({user}, {currency, rate, collections}, title = "Best product a
 
         <!-- bannerSlider([], "home") -->
 
-        ${!collections[0]? "" : collections.render(col => `
+        ${!collections[0]? "" : collections.render(col => !categories[col.name] ? "" : `
         <section class="categories wrapper">
-          <a href="/category?name=${col.name}" class="categories name">${col.name.replace("-"," ")}</a>
+          <a href="/category/${col.name}" class="categories name">${categories[col.name]}</a>
           <ul class="product-list home">
             ${col.products.render((p) => product(p, currency, rate, "home"))}
           </ul>
