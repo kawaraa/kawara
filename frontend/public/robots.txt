@@ -1,2 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /api/*
+Disallow: /shopping-cart/*
+Disallow: /seller/*
+Disallow: /orders/*
