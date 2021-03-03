@@ -13,24 +13,29 @@ module.exports = (user) => `
 
     .footer-row {
       display: flex;
+      align-items: center;
       margin: 20px 0 40px 0;
     }
 
     .footer.logo {
       display: flex;
-      margin-bottom: 20px;
     }
 
     .footer-payment-methods {
       flex: auto;
       display: flex;
       flex-flow: row wrap;
+      align-items: center;
       justify-content: center;
     }
 
     .payment-method {
       height: 25px;
       margin: 0 5px;
+    }
+
+    .payment-method.p {
+      height: 20px;
     }
 
     .payment-logo {
@@ -96,7 +101,7 @@ module.exports = (user) => `
     /* =============== Mobile, IPads & Tablet styles =============== */
     @media screen and (max-width: 850px) {
       .footer-row {
-        margin: 0;
+        margin: 0 0 25px 0;
       }
 
       .payment-method {
@@ -128,12 +133,12 @@ module.exports = (user) => `
   <footer class="container">
     <div class="footer-row">
       <a href="/" class="footer navbar logo link no-focus" tabindex="0">
-        <span class="logo e">E</span>
-        <span class="logo letters">asy</span>
-        <span class="logo g">G</span>
-        <span class="logo letters">et</span>
-        <span class="logo s">S</span>
-        <span class="logo letters">hop</span>
+        <span class="logo k">k</span>
+        <span class="logo letters">a</span>
+        <span class="logo w">w</span>
+        <span class="logo letters">a</span>
+        <span class="logo letters">r</span>
+        <span class="logo a">a</span>
       </a>
       <div class="footer-payment-methods">
         <div class="payment-method"><img src="/image/visa-card-logo.png" alt="Visa card logo" class="payment-logo" />
@@ -144,7 +149,7 @@ module.exports = (user) => `
             class="payment-logo" /></div>
         <div class="payment-method"><img src="/image/american-express-logo.png" alt="American Express card logo"
             class="payment-logo" /></div>
-        <div class="payment-method"><img src="/image/paypal-logo.png" alt="PayPal card logo" class="payment-logo" />
+        <div class="payment-method p"><img src="/image/paypal-logo.png" alt="PayPal card logo" class="payment-logo" />
         </div>
       </div>
     </div>
@@ -183,9 +188,9 @@ module.exports = (user) => `
       <ul class="column">
         <h4 class="column-heading">Site map</h4>
         <li class="column-item"><a href="/" class="footer-link">Home</a></li>
-        <li class="column-item"><a href="/category?name=Health-Beauty" class="footer-link">Beauty</a></li>
-        <li class="column-item"> <a href="/category?name=Jewelry-Watches" class="footer-link">Jewelry</a></li>
-        <li class="column-item"><a href="/category?name=Sports" class="footer-link">Sports</a></li>
+        <li class="column-item"><a href="/category/health-beauty" class="footer-link">Beauty</a></li>
+        <li class="column-item"> <a href="/category/jewelry-accessories" class="footer-link">Jewelry</a></li>
+        <li class="column-item"><a href="/category/sports" class="footer-link">Sports</a></li>
     </div>
   </footer>
 
