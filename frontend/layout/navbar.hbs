@@ -1,5 +1,5 @@
 const globalComponents = require("./global-components.hbs");
-const { countries } = require("k-utilities");
+const { countries, Validator } = require("k-utilities");
 
 module.exports = (user) => `
 
@@ -86,9 +86,8 @@ module.exports = (user) => `
       border-bottom: 0.5px solid var(--blur);
     }
 
-    .user-drop-menu-country {
-      flex: auto;
-      font-size: 17px;
+    .country-flag {
+      height: 20px;
     }
 
     .user-drop-menu-btn {
@@ -311,7 +310,6 @@ module.exports = (user) => `
       <span class="logo a">a</span>
     </a>
 
-
     <ul class="navbar drop-menu">
       <li><a href="/" class="navbar-link nf" tabindex="0">Home</a></li>
       <li><a href="/category/health-beauty" class="navbar-link nf" tabindex="0">Beauty</a></li>
@@ -327,7 +325,10 @@ module.exports = (user) => `
     </a>
 
     <div class="navbar-user-drop-menu-wrapper">
-      <span class="user-drop-menu-country">${user.country}</span>
+      ${!countries[user.country]? "" : `
+      <img src="/image/flags/${user.country}.png" alt="${countries[user.country][0]} flag" class="country-flag">
+      `}
+
       ${!user.id ? "" : `
       <button name="userDropMenu" class="user-drop-menu-btn">
         <svg class="avatar-svg">
