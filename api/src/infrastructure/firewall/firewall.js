@@ -61,7 +61,7 @@ class Firewall {
     }
   }
   async checkGeo(request, country) {
-    const geo = { ip: request.headers["x-forwarded-for"], country: request.headers["x-code"] || country };
+    const geo = { ip: request.headers["x-forwarded-for"], country: request.headers["x-code"] };
     try {
       if (/frontend:3000|localhost:3000/gim.test(request.headers["host"])) return geo;
       const res = await this.fetch(this.config.geoApi.replace("xxx", ip)).then((res) => res.json());
