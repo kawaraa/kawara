@@ -12,6 +12,7 @@ class Firewall {
     this.authNotRequired = this.authenticationNotRequired.bind(this);
     this.adminRequired = this.isAdmin.bind(this);
     this.sellerRequired = this.isSeller.bind(this);
+    this.rates = {};
     this.updateExchangeRates();
   }
 
@@ -58,8 +59,8 @@ class Firewall {
   }
   async updateExchangeRates(url = this.config.api + "/auth/exchange-rates") {
     const exchangeInfo = await this.fetch(url).then((res) => res.json());
-    this.rates = { ...exchangeInfo.rates };
-    setTimeout(() => this.updateExchangeRates(), 1000 * 60 * 60 * 24);
+    this.rates = exchangeInfo;
+    setTimeout(this.updateExchangeRates.bind(), 1000 * 60 * 60 * 24);
   }
   async validateToken({ method, headers, user }, response) {
     try {
