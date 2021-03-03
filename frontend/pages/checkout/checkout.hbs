@@ -9,7 +9,7 @@ module.exports = ({user, body}) => `
 <html lang="en">
 
   <head>
-    ${header("Checkout EasyGetShop")}
+    ${header("Checkout Kawara")}
     <style>
       .container.checkout {
         min-height: 90vh;
@@ -533,21 +533,21 @@ module.exports = ({user, body}) => `
               <label class="input-field method">
                 <span>Card</span>
                 <div class="card-logos">
-                  <img src="/image/visa-card-logo.png" alt="" class="card" />
-                  <img src="/image/master-card-logo.png" alt="" class="card" />
-                  <img src="/image/maestro-card-logo.png" alt="" class="card" />
-                  <img src="/image/american-express-logo.png" alt="" class="card" />
+                  <img src="/image/visa-card-logo.png" alt="Visa card logo" class="card" />
+                  <img src="/image/master-card-logo.png" alt="Master card logo" class="card" />
+                  <img src="/image/maestro-card-logo.png" alt="Maestro card logo" class="card" />
+                  <img src="/image/american-express-logo.png" alt="American express logo" class="card" />
                 </div>
                 <input type="radio" name="paymentMethod" value="card" />
               </label>
               <label class="input-field method">
                 <span>Ideal</span>
-                <img src="/image/ideal-logo.png" alt="" />
+                <img src="/image/ideal-logo.png" alt="ideal logo.png" />
                 <input type="radio" name="paymentMethod" value="idealBank" />
               </label>
               <label class="input-field method">
                 <span>PayPal</span>
-                <img src="/image/paypal-logo.png" alt="" class="paypal" />
+                <img src="/image/paypal-logo.png" alt="PayPal logo" class="paypal" />
                 <input type="radio" name="paymentMethod" value="paypal" />
               </label>
             </div>
@@ -572,7 +572,7 @@ module.exports = ({user, body}) => `
             ${JSON.parse(body.items).render(item => `
             <li class="checkout-item-wrapper">
               <div class="checkout-item-column img">
-                <img src="${item.picture}" onclick="previewPicture(event)" alt="" class="checkout-item-img">
+                <img src="${item.picture}" onclick="previewPicture(event)" alt="${item.name}" class="checkout-item-img">
               </div>
               <div class="checkout-item-column details">
                 <a href="/" class="checkout-item-name">${item.name}</a>
@@ -580,7 +580,7 @@ module.exports = ({user, body}) => `
                   <dt class="type-name">Type<span> / Color / Material</span>:</dt>
                   <dd class="type-desc type">
                     ${!Validator.isUrl(item.type)?item.type:`
-                    <img src="${item.type}" onclick="previewPicture(event)" alt="" />
+                    <img src="${item.type}" onclick="previewPicture(event)" alt="Product type color material" />
                     `}
                   </dd>
                 </dl>

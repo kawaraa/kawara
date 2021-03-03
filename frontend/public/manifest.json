@@ -1,11 +1,11 @@
 {
-  "name": "EasyGetShop",
-  "short_name": "EGS",
+  "name": "Kawara",
+  "short_name": "kwa",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#feffff",
   "theme_color": "#24305e",
-  "description": "EasyGetShop is web shop that provides heigh quality products with good price and fast shipping, it helps you find the nearest local supplier to deliver the product quickly.",
+  "description": "Kawara is a web shop and online shopping that provides heigh quality products with good price and fast shipping by working together with with local suppliers.",
   "orientation": "portrait-primary",
   "icons": [
     {

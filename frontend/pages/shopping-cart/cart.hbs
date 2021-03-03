@@ -7,7 +7,7 @@ const itemList = require("./item-list.hbs");
 module.exports = ({user}) => `
 <!DOCTYPE html>
 <html lang="en">
-  ${header("Shopping Cart at EasyGetShop")}
+  ${header("Shopping Cart on Kawara")}
 
   <body>
     ${navbar(user)}
@@ -297,17 +297,22 @@ module.exports = ({user}) => `
             <div class="protection column">
               <h3 class="payment-h">Payment Methods</h3>
               <div class="footer-payment-methods">
-                <div class="payment-method"><img src="/image/visa-card-logo.png" alt="" class="payment-logo" /></div>
-                <div class="payment-method"><img src="/image/maestro-card-logo.png" alt="" class="payment-logo" /></div>
-                <div class="payment-method"><img src="/image/master-card-logo.png" alt="" class="payment-logo" /></div>
-                <div class="payment-method"><img src="/image/american-express-logo.png" alt="" class="payment-logo" />
+                <div class="payment-method"><img src="/image/visa-card-logo.png" alt="visa card logo"
+                    class="payment-logo" /></div>
+                <div class="payment-method"><img src="/image/maestro-card-logo.png" alt="maestro card logo"
+                    class="payment-logo" /></div>
+                <div class="payment-method"><img src="/image/master-card-logo.png" alt="master card logo"
+                    class="payment-logo" /></div>
+                <div class="payment-method"><img src="/image/american-express-logo.png" alt="american express logo"
+                    class="payment-logo" />
                 </div>
-                <div class="payment-method"><img src="/image/paypal-logo.png" alt="" class="payment-logo" /></div>
+                <div class="payment-method"><img src="/image/paypal-logo.png" alt="paypal logo" class="payment-logo" />
+                </div>
               </div>
             </div>
             <div class="protection column right">
               <h3 class="protection-h">
-                <img src="/image/protuction.png" alt="" class="protection-logo">
+                <img src="/image/protection.png" alt="Protection logo" class="protection-logo">
                 Buyer Protection
               </h3>
               <p>Get full refund if the item is not as described or if is not delivered.</p>

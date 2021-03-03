@@ -393,14 +393,14 @@ module.exports = ({user}, {currency, rate, product}) => `
           <section class="pictures wrapper">
             <div class="main-picture">
               <img src="${product.pictures[0]}" onclick="previewPicture(event)"
-                onload="this.parentElement.style.height = this.parentElement.offsetWidth + 'px';" alt=""
+                onload="this.parentElement.style.height = this.parentElement.offsetWidth + 'px';" alt="${product.name}"
                 data-picture="${product.pictures[0]}" class="pictures main" />
             </div>
 
             <ul class="picture-list">
               ${product.pictures.render(p => `
               <li class="picture item" onmouseover="showPicture(this)">
-                <img src="${p}" alt="" class="picture img" />
+                <img src="${p}" alt="Product type, color and material" class="picture img" />
               </li>
               `)}
             </ul>

@@ -115,7 +115,7 @@ module.exports = (types)=> `
     ${types.render(type => `
     <div class="type-form-item">
       ${Validator.isUrl(type.type)? `
-      <img src="${type.type}" alt="" class="type-form-img" />
+      <img src="${type.type}" alt="Product type, color and material" class="type-form-img" />
       ` : `
       <label class="type-form-value" style="background: ${type.type};">${type.type}</label>
       `}
