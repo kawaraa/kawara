@@ -16,7 +16,7 @@ class Firewall {
   }
 
   async checkRequest(request, response, next) {
-    const { ip, country } = await this.checkGeo(request.headers["x-forwarded-for"], this.config.country);
+    const { ip, country } = await this.checkGeo(request.headers["x-forwarded-for"]);
     const { symbol, code, rate } = this.checkCurrency(country);
     request.user = { ip, country, currency: symbol, rate, type: "visitor", displayName: "Guest" };
     const token = this.cookie.parse(request.headers.cookie || "")["userToken"];
@@ -43,13 +43,12 @@ class Firewall {
     if (request.user.id) return response.redirect("/");
     next();
   }
-  async checkGeo(ip, country) {
+  async checkGeo(ip) {
     try {
       const res = await this.fetch(this.config.geoApi.replace("xxx", ip)).then((res) => res.json());
-      if (res && res.country) return res;
-      return { ip, country };
+      return res && res.country ? res : { ip, country: "" };
     } catch (error) {
-      return { ip, country };
+      return { ip, country: "" };
     }
   }
   checkCurrency(country) {
