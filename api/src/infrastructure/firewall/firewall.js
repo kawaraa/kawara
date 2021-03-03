@@ -24,7 +24,6 @@ class Firewall {
       else response.clearCookie("userToken");
     }
     if (this.config.adminIPs.find((IP) => IP === ip)) request.user.type = "admin";
-    if (request.user.type === "admin" || request.user === "seller") request.user.rate = 1;
     next();
   }
   // This is a middleware for "/admin"
