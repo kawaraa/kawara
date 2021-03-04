@@ -1,5 +1,5 @@
 const filesMustCache = /(googleapis|gstatic)|\.(JS|CSS|SVG|PNG|JPG|jPEG|WEBP|BMP|GIF|ICO|WEBM|MPG|MP2|MP4|MPEG|MPE|MPV|OGG|M4P|M4V|AVI|WMV|MOV|QT|FLV|SWF|AVCHD|JSON)$/gim;
-const staticFileCacheName = "static-files-v0";
+const staticFileCacheName = "static-files-v1";
 const staticFileCachePaths = [
   "/",
   "/offline.html",
