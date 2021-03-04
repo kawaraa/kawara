@@ -67,7 +67,7 @@ class CreateProductHandler {
     }
     this.filesInProcess += 1;
     try {
-      const imageExt = /\.(jpg|png|jpeg|gif|bmp|webp)$/i;
+      const imageExt = /\.(JPG|PNG|JPEG|GIF|BMP|WEBP)$/i;
       const videoExt = /\.(WEBM|MPG|MP2|MP4|MPEG|MPE|MPV|OGG|M4P|M4V|AVI|WMV|MOV|QT|FLV|SWF|AVCHD)$/i;
       const test1 = imageExt.test(path.extname(part.filename.toLowerCase()));
       const test2 = videoExt.test(path.extname(part.filename.toLowerCase()));

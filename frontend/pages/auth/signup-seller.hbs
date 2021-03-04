@@ -63,7 +63,7 @@ module.exports = ({user}) => `
         height: 120px;
       }
 
-      #country {
+      #country:disabled {
         cursor: not-allowed;
       }
 
@@ -185,7 +185,7 @@ module.exports = ({user}) => `
             <use href="#left-arrow-svg-symbol" />
           </svg>
         </a>
-        <form action="/api/auth/create-seller" method="POST" class="create-seller-form" onsubmit="handleSubmit(event)">
+        <form class="create-seller-form" onsubmit="handleSubmit(event)">
           <h1 class="create-seller-h">Create a seller account</h1>
           <div class="field-wrapper">
             <div class="input-field">
@@ -224,7 +224,8 @@ module.exports = ({user}) => `
           <div class="field-wrapper">
             <div class="input-field">
               <label for="country">Country</label>
-              <input type="text" value="${countries[user.country][0]}" disabled id="country" class=" nf" tabindex="0" />
+              <input type="text" value="${!countries[user.country]? '' : countries[user.country][0] }"
+                ${!countries[user.country]? '' : 'disabled' } id="country" class=" nf" tabindex="0" />
             </div>
             <div class="input-field">
               <label for="state">State / Province</label>
