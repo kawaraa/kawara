@@ -3,19 +3,19 @@ module.exports = (product, currency, rate, cssClass)=> `
   <a href="/product/${product.number}" class="product inner">
     <div class="product image-wrapper ${!product.pictures[1]? '' : 'flip'}">
       <div class="product image-inner">
-        <img src="${product.pictures[0]}" class="product img" alt="${product.name}">
+        <img src="${product.pictures[0]}" class="product img" alt="${product.name}" title="${product.name}">
         ${!product.pictures[1]? "" : `<img src="${product.pictures[1]}" class="product img back"
           alt="${product.name}">`}
       </div>
     </div>
-    <h5 class="product name">${product.name}</h5>
-    <span class="product price">${product.price.priceToString(rate, currency)}</span>
-    <div class="product shipping">
+    <h2 class="product name">${product.name}</h2>
+    <p class="product price">${product.price.priceToString(rate, currency)}</p>
+    <p class="product shipping">
       <span class="product shipping-cost">
         ${product.shippingCost > 0 ? product.shippingCost.priceToString(rate, currency) : "Free"}
       </span>
       shipping to <span class="product country">${product.country}</span>
-    </div>
+    </p>
     <div class="product-info wrapper">
       <span class="stars-wrapper">
         &#9733;&#9733;&#9733;&#9733;&#9733;
@@ -24,7 +24,6 @@ module.exports = (product, currency, rate, cssClass)=> `
         </span>
       </span>
       <span> <span class="product sold">${product.sold}</span> Sold</span>
-
     </div>
   </a>
   <button onclick="Cart.add({ ...this.dataset })" data-number="${product.number}" data-name="${product.name}"

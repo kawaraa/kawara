@@ -11,7 +11,7 @@ class CreateProductHandler {
     this.filesInProcess = 0;
     this.formDataParser = formidable({ keepExtensions: false, multiples: false });
     this.formDataParser.maxFieldsSize = 20 * 1000000; // a MB = 1 million byte, a GB = 1000 MB
-    this.formDataParser.maxFileSize = 1000 * 1000000;
+    this.formDataParser.maxFileSize = 500 * 1000000;
     this.formDataParser.maxFields = 13;
     this.formDataParser.onPart = this.handelFile.bind(this);
   }

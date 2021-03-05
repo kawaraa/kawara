@@ -81,8 +81,8 @@ CREATE TABLE IF NOT EXISTS `type` (
 
 CREATE TABLE IF NOT EXISTS `specification` (
   `productNumber` VARCHAR(250) NOT NULL,
-  `title` VARCHAR(30) NOT NULL,
-  `description` VARCHAR(30) NOT NULL,
+  `title` VARCHAR(250) NOT NULL,
+  `description` VARCHAR(250) NOT NULL,
   PRIMARY KEY(`productNumber`, `title`)
 );
 

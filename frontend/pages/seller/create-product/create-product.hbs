@@ -18,6 +18,7 @@ module.exports = ({user}) => `
 
     <style>
       h2 {
+        margin: 50px 0 30px 0;
         text-align: center;
       }
 
@@ -127,7 +128,7 @@ module.exports = ({user}) => `
 
     <div class="root-container">
       <main class="container create-product">
-        ${user.type !== "admin" ? "" : scrappingForm()}
+        <!-- user.type !== "admin" ? "" : scrappingForm() -->
 
         <h2>Add product manually</h2>
         <form onsubmit="sendProduct(event)" id="manual-form">

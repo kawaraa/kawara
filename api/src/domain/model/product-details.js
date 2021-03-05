@@ -13,6 +13,7 @@ class ProductDetails {
     this.sold = product.sold || 0;
     this.specifications = product.specifications;
     this.types = product.types || [];
+    this.created = product.created;
   }
 }
 module.exports = ProductDetails;

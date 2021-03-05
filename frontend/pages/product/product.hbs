@@ -3,13 +3,34 @@ const navbar = require("../../layout/navbar.hbs");
 const footer = require("../../layout/footer.hbs");
 const search = require("../../layout/search.hbs");
 const productTypes = require("./product-types.hbs");
+const title = "One step to checkout - Checkout page ";
 
 module.exports = ({user}, {currency, rate, product}) => `
 <!DOCTYPE html>
 <html lang="en">
 
   <head>
-    ${header(!product? "" : product.name)}
+    ${header(title + product.name, product.name, product.name)}
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          "author": "Kawara",
+          "name": "${product.name}",
+          "image": "${product.pictures[0]}", 
+          "description": "${product.name}",
+          "price": "${product.types[0].sizes[0].price.priceToString(rate, currency)}",
+          "datePublished": "${product.created}",
+          "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "${product.stars}",
+          "reviewCount": "7462",
+          "bestRating": "5",
+          "worstRating": "1"
+          }
+        }
+        </script>
+
     <style>
       .container.product-page {
         margin-top: 50px;
@@ -394,7 +415,7 @@ module.exports = ({user}, {currency, rate, product}) => `
             <div class="main-picture">
               <img src="${product.pictures[0]}" onclick="previewPicture(event)"
                 onload="this.parentElement.style.height = this.parentElement.offsetWidth + 'px';" alt="${product.name}"
-                data-picture="${product.pictures[0]}" class="pictures main" />
+                title="${product.name}" data-picture="${product.pictures[0]}" class="pictures main" />
             </div>
 
             <ul class="picture-list">
@@ -421,7 +442,9 @@ module.exports = ({user}, {currency, rate, product}) => `
               </div>
               <div class="details sold">${product.sold} Sold</div>
             </div>
+
             ${productTypes(product.types)}
+
             <div class="details quantity">
               <label class="quantity babel">Quantity:</label>
               <button class="quantity-btn minus" onclick="updateQuantity(-1)">-</button>
@@ -506,7 +529,9 @@ module.exports = ({user}, {currency, rate, product}) => `
         country: shippingElement.dataset.country,
         estimatedTime: query(".shipping.estimate").dataset.estimatedTime,
       };
+
       function getProductType() { return productType }
+
       function updateProductType(product) {
         Object.keys(product).forEach(k => productType[k] = product[k])
       }

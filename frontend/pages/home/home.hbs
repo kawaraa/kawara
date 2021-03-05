@@ -6,12 +6,12 @@ const bannerSlider = require("../../layout/banner-slider.hbs")
 const product = require("./product.hbs");
 const categories = env.categories;
 
-module.exports = ({user}, {currency, rate, collections}, title = "Best product and fast shipping") => `
+module.exports = ({user}, {currency, rate, collections} ) => `
 <!DOCTYPE html>
 <html lang="en">
 
   <head>
-    ${header(title)}
+    ${header("Kawara Easy Online Shopping Best Products And Fast Shipping")}
     <style>
       .container.home {
         min-height: 90vh;

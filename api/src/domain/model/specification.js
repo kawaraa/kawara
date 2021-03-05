@@ -7,12 +7,12 @@ class Specification {
   }
 
   set _title(value) {
-    if (!Validator.isString(value, 3, 30)) throw new CustomError("Invalid input 'Specification Title'");
-    this.title = value;
+    if (Validator.isString(value, 3, 100)) this.title = value;
+    else throw new CustomError("Invalid input 'Specification Title' is long");
   }
   set _description(value) {
-    if (!Validator.isString(value, 1, 30)) throw new CustomError("Invalid input 'Specification Description'");
-    this.description = value;
+    if (Validator.isString(value, 1, 250)) this.description = value;
+    else throw new CustomError("Invalid input 'Specification Description'");
   }
 }
 module.exports = Specification;
