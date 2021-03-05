@@ -31,11 +31,6 @@ class CreateProductHandler {
       this.formDataParser.on("end", async () => {
         if (response.finished || this.filesInProcess > 0) return;
         try {
-          await Promise.all(
-            this.command.types.map(async (type) => {
-              type.type = await this.uploadBase64File(type.type);
-            })
-          );
           const product = await this.sellerRepository.createProduct(this.command);
           this.product = {};
           this.command = {};
@@ -100,20 +95,20 @@ class CreateProductHandler {
       this.formDataParser.emit("error", error);
     }
   }
-  async uploadBase64File(base64) {
-    return new Promise((resolve, reject) => {
-      // base64[1] is the mimeType
-      const data = base64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-      if (!data || !data[1]) return resolve(base64); // then the base64 is normal text or url
-      const fileName = Formatter.newId() + "." + data[1].split("/")[1];
-      const options = { metadata: { contentType: data[1] } };
-      const buffer = new Buffer.from(data[2], "base64");
-      this.storageProvider.storage.file(fileName).save(buffer, options, (error) => {
-        if (error) return reject(error);
-        resolve(this.config.domain + fileName);
-      });
-    });
-  }
+  // async uploadBase64File(base64) {
+  //   return new Promise((resolve, reject) => {
+  //     // base64[1] is the mimeType
+  //     const data = base64.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+  //     if (!data || !data[1]) return resolve(base64); // then the base64 is normal text or url
+  //     const fileName = Formatter.newId() + "." + data[1].split("/")[1];
+  //     const options = { metadata: { contentType: data[1] } };
+  //     const buffer = new Buffer.from(data[2], "base64");
+  //     this.storageProvider.storage.file(fileName).save(buffer, options, (error) => {
+  //       if (error) return reject(error);
+  //       resolve(this.config.domain + fileName);
+  //     });
+  //   });
+  // }
 }
 
 module.exports = CreateProductHandler;

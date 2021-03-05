@@ -1,4 +1,4 @@
-const { Formatter, CustomError, Hashing } = require("k-utilities");
+const { Formatter, CustomError, Hashing, Validator } = require("k-utilities");
 
 class DeleteAccountAndProductHandler {
   constructor(mySqlProvider, storageProvider) {
@@ -57,7 +57,12 @@ class DeleteAccountAndProductHandler {
     query = `SELECT pictures, video FROM store.product WHERE number = ?`;
     let picturesUrls = await this.mySqlProvider.query(query, productNumber);
     if (picturesUrls[0].video) picturesUrls[0].pictures += picturesUrls[0].video;
-    picturesUrls = Formatter.stringToArray(picturesUrls[0].pictures);
+
+    query = `SELECT type FROM store.type WHERE productNumber = ?`;
+    let types = await this.mySqlProvider.query(query, productNumber);
+
+    types = types.filter((t) => Validator.isUrl(t.type)).reduce((init, t) => init + t.type + ",", "");
+    picturesUrls = Formatter.stringToArray(picturesUrls[0].pictures + types);
 
     await Promise.all(
       picturesUrls.map(async (url) => {

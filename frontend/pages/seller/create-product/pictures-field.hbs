@@ -6,21 +6,24 @@ module.exports = () => `
   }
 
   #main-picture-preview-wrapper {
+    overflow: hidden;
     display: none;
-    max-width: 300px;
-    max-height: 300px;
+    max-width: 450px;
+    max-height: 450px;
+    justify-content: center;
+    align-items: center;
     margin: 0 auto 10px auto;
+  }
+
+  #main-picture-preview-wrapper>img {
+    max-width: 100%;
+    max-height: 100%;
   }
 
   .pictures-file-input-wrapper {
     overflow: hidden;
     display: flex;
     border-radius: 5px;
-  }
-
-  #main-picture-preview-wrapper>img {
-    max-width: 100%;
-    max-height: 100%;
   }
 
   #main-picture {
