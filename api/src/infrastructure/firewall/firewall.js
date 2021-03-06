@@ -62,9 +62,9 @@ class Firewall {
   async checkGeo(ip) {
     try {
       const res = await this.fetch(this.config.geoApi.replace("xxx", ip)).then((res) => res.json());
-      return res && res.country ? res : { ip, country: "" };
+      return res && res.country ? res : { ip, country: this.config.country };
     } catch (error) {
-      return { ip, country: "" };
+      return { ip, country: this.config.country };
     }
   }
   checkCurrency(country) {

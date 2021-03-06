@@ -22,25 +22,14 @@ self.addEventListener("activate", async (evt) => {
 });
 
 self.addEventListener("fetch", (evt) => {
-  if (/auth/.test(evt.request.url)) {
-    evt.respondWith(
-      caches.open(staticFileCacheName).then((cache) => {
-        cache.delete("/");
-        return fetch(evt.request).then((response) => {
-          cache.add("/");
-          return response;
-        });
-      })
-    );
-  } else {
+  if (evt.request.url.indexOf("http") < 0) evt.respondWith(fetch(evt.request));
+  else if (filesMustCache.test(evt.request.url)) {
     evt.respondWith(
       caches
         .match(evt.request)
         .then((cachedResponse) => {
           if (cachedResponse) return cachedResponse;
-          else if (evt.request.url.indexOf("http") < 0) return fetch(evt.request);
           return fetch(evt.request).then((response) => {
-            if (!filesMustCache.test(evt.request.url)) return response;
             return caches.open(staticFileCacheName).then((cache) => {
               cache.put(evt.request, response.clone());
               return response;
@@ -49,5 +38,55 @@ self.addEventListener("fetch", (evt) => {
         })
         .catch((error) => caches.match(staticFileCachePaths[1])) // offline fallback page
     );
+  } else {
+    evt.respondWith(
+      fetch(evt.request)
+        .then((response) => {
+          return caches.open(staticFileCacheName).then((cache) => {
+            cache.delete("/");
+            cache.add("/");
+            cache.put(evt.request, response.clone());
+            return response;
+          });
+        })
+        .catch((error) => {
+          console.log("SW", error);
+          caches.match(evt.request).then((cachedResponse) => {
+            if (cachedResponse) return cachedResponse;
+            return caches.match(staticFileCachePaths[1]);
+          });
+        }) // offline fallback page
+    );
   }
 });
+
+// self.addEventListener("fetch", (evt) => {
+//   if (/auth/.test(evt.request.url)) {
+//     evt.respondWith(
+//       caches.open(staticFileCacheName).then((cache) => {
+//         cache.delete("/");
+//         return fetch(evt.request).then((response) => {
+//           cache.add("/");
+//           return response;
+//         });
+//       })
+//     );
+//   } else {
+//     evt.respondWith(
+//       caches
+//         .match(evt.request)
+//         .then((cachedResponse) => {
+//           if (cachedResponse) return cachedResponse;
+//           else if (evt.request.url.indexOf("http") < 0) return fetch(evt.request);
+//           return fetch(evt.request).then((response) => {
+//             if (!filesMustCache.test(evt.request.url)) return response;
+//             return caches.open(staticFileCacheName).then((cache) => {
+//               cache.put(evt.request, response.clone());
+//               return response;
+//             });
+//           });
+//         })
+//         .catch((error) => caches.match(staticFileCachePaths[1])) // offline fallback page
+//     );
+//   }
+// });

@@ -27,20 +27,22 @@ class ProductRepository {
   }
 
   async getProductByNumber(productNumber, user) {
-    let query = `SELECT t1.owner, t1.number, t1.name, t1.description, t1.pictures, t1.created, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number WHERE t1.reviewed > 0 AND t1.number = ? OR MATCH(t1.name) AGAINST('${productNumber}' IN NATURAL LANGUAGE MODE) AND t2.country = ? AND t3.inStock > 0 GROUP BY t1.number`;
+    let query = `SELECT t1.owner, t1.number, t1.name, t1.description, t1.pictures, t1.created, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number WHERE (t1.number = ? OR MATCH(t1.name) AGAINST('${productNumber}' IN NATURAL LANGUAGE MODE)) AND t1.reviewed > 0 AND t2.country = ? AND t3.inStock > 0 GROUP BY t1.number`;
+
     if (user.type == "seller" || user.type == "admin") {
-      query = `SELECT t1.owner, t1.number, t1.name, t1.description, t1.pictures, t1.created, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number WHERE t1.number = ? GROUP BY t1.number`;
+      query = `SELECT t1.owner, t1.number, t1.name, t1.description, t1.pictures, t1.created, t2.country, t2.estimatedTime, t2.cost, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number WHERE t1.number = ? GROUP BY t2.country`;
     }
 
-    const product = await this.mySqlProvider.query(query, [productNumber, user.country]);
-    if (!product[0]) return null;
+    const productResult = await this.mySqlProvider.query(query, [productNumber, user.country]);
+    const product = productResult.find((p) => p.country == user.country) || productResult[0];
+    if (!product) return null;
 
     query = `SELECT title, description FROM store.specification WHERE productNumber = ?`;
-    const specifications = await this.mySqlProvider.query(query, product[0].number);
+    const specifications = await this.mySqlProvider.query(query, product.number);
 
-    const types = await this.getProductTypes(product[0].number);
+    const types = await this.getProductTypes(product.number);
 
-    return new ProductDetails({ ...product[0], types, specifications });
+    return new ProductDetails({ ...product, types, specifications });
   }
 
   async getProductTypes(productNumber) {
