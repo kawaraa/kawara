@@ -6,11 +6,6 @@
   },
   {
     "method": "get",
-    "url": "/category/:name",
-    "path": "/category/category.js"
-  },
-  {
-    "method": "get",
     "url": "/product/:number",
     "path": "/product/product.js"
   },
@@ -18,6 +13,11 @@
     "method": "get",
     "url": "/search",
     "path": "/search/search.js"
+  },
+  {
+    "method": "get",
+    "url": "/category/:name",
+    "path": "/category/category.js"
   },
   {
     "method": "get",
@@ -123,6 +123,11 @@
     "method": "get",
     "url": "/admin/payouts",
     "path": "/admin/payouts.hbs"
+  },
+  {
+    "method": "get",
+    "url": "/admin/user/:id",
+    "path": "/admin/user.hbs"
   },
   {
     "method": "get",

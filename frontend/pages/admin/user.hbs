@@ -1,0 +1,36 @@
+const header = require("../../layout/header.hbs");
+const navbar = require("../../layout/navbar.hbs");
+const footer = require("../../layout/footer.hbs");
+const { Validator } =require("k-utilities");
+
+module.exports = ({user}) => `
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    ${header("Admin - User Page")}
+
+    <style>
+
+    </style>
+  </head>
+
+  <body>
+    ${navbar(user)}
+
+    <div class="root-container">
+      <main class="container">
+
+      </main>
+    </div>
+
+
+    <script>
+
+    </script>
+
+    ${footer(user)}
+  </body>
+
+</html>
+`
