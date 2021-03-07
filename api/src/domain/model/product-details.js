@@ -6,6 +6,7 @@ class ProductDetails {
     this.name = product.name;
     this.description = product.description;
     this.pictures = Formatter.stringToArray(product.pictures);
+    this.video = product.video;
     this.country = product.country;
     this.estimatedTime = product.estimatedTime;
     this.shippingCost = product.cost;

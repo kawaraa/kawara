@@ -8,8 +8,8 @@ class CreateProductCommand {
     this.owner = product.owner;
     this.number = Formatter.newId();
     this._name = product.name;
-    this.pictures = !product.pictureUrls ? "" : product.pictureUrls + ",";
     this.video = product.video || null;
+    this._pictures = !product.pictureUrls ? "" : product.pictureUrls + ",";
     this._description = product.description;
     this._category = product.category;
     this.source = product.source;
@@ -21,6 +21,15 @@ class CreateProductCommand {
   set _name(value) {
     if (Validator.isString(value, 50, 250)) this.name = value;
     else throw new CustomError("Invalid input 'Product Name' length must be between 50 and 250 letters");
+  }
+  set _pictures(value) {
+    const imageExt = /\.(JPG|PNG|JPEG|GIF|BMP|WEBP)$/i;
+    const videoExt = /\.(WEBM|MPG|MP2|MP4|MPEG|MPE|MPV|OGG|M4P|M4V|AVI|WMV|MOV|QT|FLV|SWF|AVCHD)$/i;
+    const pics = Formatter.stringToArray(value);
+    this.pictures = pics.filter((pc) => imageExt.test(pc)).reduce((init, pic) => init + pic + ",", "");
+    const videos = pics.filter((pc) => videoExt.test(pc));
+    if (videos[0]) this.video = videos[0];
+    if (videos[1]) throw new CustomError("You can add only one video");
   }
   set _description(value) {
     if (Validator.isString(value, 50)) this.description = value;

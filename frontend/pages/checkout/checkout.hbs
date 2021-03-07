@@ -500,7 +500,7 @@ module.exports = ({user, body}) => `
               </div>
               <div class="input-field">
                 <label for="state">State / Province / Region</label>
-                <input type="text" name="state" min="2" max="85" required />
+                <input type="text" name="state" max="85" />
               </div>
               <div class="input-field">
                 <label for="city">City / Town</label>
@@ -707,7 +707,7 @@ module.exports = ({user, body}) => `
         if (!Validator.isString(fullName.value, 5, 40)) return fullName.style.boxShadow = "0 0 0 2px red";
         if (!Validator.isEmail(email.value)) return email.style.boxShadow = "0 0 0 2px red";
         if (!Validator.isPhoneNumber(phone.value)) return phone.style.boxShadow = "0 0 0 2px red";
-        if (!Validator.isString(state.value, 2, 85)) return state.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isString(state.value, 0, 85)) return state.style.boxShadow = "0 0 0 2px red";
         if (!Validator.isString(city.value, 2, 85)) return city.style.boxShadow = "0 0 0 2px red";
         if (!Validator.isString(postalCode.value, 4, 10)) return postalCode.style.boxShadow = "0 0 0 2px red";
         if (!Validator.isString(street.value, 5, 130)) return street.style.boxShadow = "0 0 0 2px red";

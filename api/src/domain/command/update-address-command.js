@@ -27,15 +27,15 @@ class UpdateAddressCommand {
     this.fullName = value.trim();
   }
   set _street(value) {
-    if (!Validator.isString(value, 0, 100)) throw new CustomError("Invalid input 'Street'");
+    if (!Validator.isString(value, 5, 100)) throw new CustomError("Invalid input 'Street'");
     this.street = value.trim();
   }
   set _city(value) {
-    if (!Validator.isString(value, 0, 85)) throw new CustomError("Invalid input 'City'");
+    if (!Validator.isString(value, 3, 85)) throw new CustomError("Invalid input 'City'");
     this.city = value.trim();
   }
   set _postalCode(value) {
-    if (!Validator.isString(value, 0, 10)) throw new CustomError("Invalid input 'Postal Code'");
+    if (!Validator.isString(value, 3, 10)) throw new CustomError("Invalid input 'Postal Code'");
     this.postalCode = value.trim();
   }
   set _state(value) {
