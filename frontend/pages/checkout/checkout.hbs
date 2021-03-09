@@ -623,6 +623,17 @@ module.exports = ({user, body}) => `
 
       savedAddressesWrapper.innerHTML = "Looks like you don't have any saved address yet.";
 
+      function pointTheError(inputEl) {
+        inputEl.style.boxShadow = "0 0 0 2px red";
+        (function smoothScroll() {
+          const currentScroll = document.documentElement.scrollTop || document.body.scrollTop;
+          if (inputEl.getBoundingClientRect().top >= 140) return
+          window.requestAnimationFrame(smoothScroll);
+          window.scrollTo(0, currentScroll - (currentScroll / 20));
+
+        })();
+      }
+
       const cardStyle = {
         base: {
           color: "#585757",
@@ -704,13 +715,13 @@ module.exports = ({user, body}) => `
         const { paymentMethod, bankHolder } = e.target;
         const { fullName, email, phone, country, state, city, postalCode, street, houseNumber, addition } = e.target;
 
-        if (!Validator.isString(fullName.value, 5, 40)) return fullName.style.boxShadow = "0 0 0 2px red";
-        if (!Validator.isEmail(email.value)) return email.style.boxShadow = "0 0 0 2px red";
-        if (!Validator.isPhoneNumber(phone.value)) return phone.style.boxShadow = "0 0 0 2px red";
-        if (!Validator.isString(state.value, 0, 85)) return state.style.boxShadow = "0 0 0 2px red";
-        if (!Validator.isString(city.value, 2, 85)) return city.style.boxShadow = "0 0 0 2px red";
-        if (!Validator.isString(postalCode.value, 4, 10)) return postalCode.style.boxShadow = "0 0 0 2px red";
-        if (!Validator.isString(street.value, 5, 130)) return street.style.boxShadow = "0 0 0 2px red";
+        if (!Validator.isString(fullName.value, 5, 40)) return pointTheError(fullName);
+        if (!Validator.isEmail(email.value)) return pointTheError(email);
+        if (!Validator.isPhoneNumber(phone.value)) return pointTheError(phone);
+        if (!Validator.isString(state.value, 0, 85)) return pointTheError(state);
+        if (!Validator.isString(city.value, 2, 85)) return pointTheError(city);
+        if (!Validator.isString(postalCode.value, 4, 10)) return pointTheError(postalCode);
+        if (!Validator.isString(street.value, 5, 130)) return pointTheError(street);
 
         const address = {
           country: country.value,

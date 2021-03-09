@@ -22,7 +22,6 @@ class Firewall {
     request.user = { ip, country, currency: symbol, rate, type: "visitor", displayName: "Guest" };
     const token = this.cookie.parse(request.headers.cookie || "")["userToken"];
     if (token) request.user = await this.validateToken(request, response);
-    if (this.config.adminIPs.find((IP) => IP === ip)) request.user.type = "admin";
     next();
   }
   // This is a middleware for "/admin"
