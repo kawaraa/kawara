@@ -34,9 +34,9 @@ class BuyerResolver {
       response.status(400).end(CustomError.toJson(error));
     }
   }
-  async confirmItemDelivery({ user: { id }, query: { item } }, response) {
+  async confirmItemDelivery({ user: { id }, query: { sold } }, response) {
     try {
-      await this.buyerRepository.confirmItemDelivery(new ConfirmOrderDeliveryCommand(id, item));
+      await this.buyerRepository.confirmItemDelivery(new ConfirmOrderDeliveryCommand(id, sold));
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

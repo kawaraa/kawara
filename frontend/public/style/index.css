@@ -63,6 +63,28 @@ body {
 .btn:hover {
   background: var(--red);
 }
+.x-btn {
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  padding-bottom: 5px;
+  font-size: 35px;
+  line-height: 0;
+  transform: rotate(45deg);
+  border-radius: 50%;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.x-btn:hover {
+  color: var(--red);
+}
+
 .stars-wrapper {
   display: inline-block;
   position: relative;

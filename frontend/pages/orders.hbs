@@ -53,6 +53,7 @@ module.exports = ({user}) => `
       }
 
       .order-list {
+        position: relative;
         list-style: none;
         min-height: 75vh;
         margin: 30px 0 60px 0;
@@ -259,6 +260,83 @@ module.exports = ({user}) => `
         font-size: 15px;
       }
 
+      .rating-form {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding-top: 100px;
+        text-align: center;
+        background: var(--white);
+      }
+
+      .rating-form>.x-btn {
+        top: 10px;
+        right: 10px;
+      }
+
+      .rating-form>h5 {
+        font-size: 20px;
+        margin-bottom: 30px;
+      }
+
+      .star-rating-wrapper {
+        display: inline-block;
+        position: relative;
+        font-size: 40px;
+        color: gray;
+      }
+
+      .star-rating-front {
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0;
+        height: 100%;
+        color: orange;
+      }
+
+      .star-rating-range {
+        overflow: hidden;
+        position: absolute;
+        top: 10%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 80%;
+        cursor: pointer;
+        opacity: 0;
+        z-index: 2;
+      }
+
+      .check-mark {
+        font-size: 35px;
+        line-height: 0;
+        font-weight: bold;
+        color: var(--green);
+        display: inline-block;
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+
+      .check-mark.show {
+        opacity: 1;
+      }
+
+      p.thanks {
+        display: none;
+        margin: 30px 0;
+        font-size: 25px;
+        text-align: center;
+      }
+
+      p.thanks.show {
+        display: block;
+        animation: opacity 0.5s;
+      }
+
       /* =============== Mobile, IPads & Tablet styles =============== */
       @media screen and (max-width: 850px) {}
     </style>
@@ -316,13 +394,27 @@ module.exports = ({user}) => `
               </div>
             </section>
           </li>
+          <form onchange="postRate(this)" class="rating-form">
+            <button type="button" onclick="this.parentElement.remove()" class="x-btn">+</button>
+            <h5>How are you satisfied with the products?</h5>
+            <div class="star-rating-wrapper">
+              &#9733;&#9733;&#9733;&#9733;&#9733;
+              <input oninput="setRate(this)" type="range" min="0" max="5" step="0.1" value="3" name="stars"
+                class="star-rating-range">
+              <span class="star-rating-front">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+            </div>
+            <span class="check-mark">&#10003;</span>
+            <p class="thanks">Thanks for giving your feedback!.</p>
+          </form>
         </ul>
+
       </main>
     </div>
 
     <script>
       const orderList = query(".order-list");
       const orderEl = orderList.children[0].cloneNode(true);
+      const ratingForm = query(".rating-form").cloneNode(true);
       orderList.innerHTML = "";
 
       ${ Validator.toString() }
@@ -333,12 +425,32 @@ module.exports = ({user}) => `
         btn.nextElementSibling.classList.toggle("show")
       }
 
+      function setRate(input) {
+        if (input.form.dataset.rated) return;
+        input.nextElementSibling.style.width = Math.round(input.value / 5 * 100) + "%";
+      }
+      async function postRate(form) {
+        if (form.dataset.rated) return;
+        const url = "/api/product/rate" + "?item=" + form.dataset.item + "&rate=" + form.stars.value;
+        setLoading(true);
+        const res = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
+        setLoading(false);
+        if (res.error) return showErrorMessage(res.error);
+        form.dataset.rated = "true";
+        addClass(form.querySelector(".check-mark"), "show");
+        addClass(query("p.thanks"), "show");
+      }
+
+
       async function confirmDelivery(btn) {
-        const url = "/api/buyer/order?item=" + btn.dataset.itemId;
+        const url = "/api/buyer/order?sold=" + btn.dataset.sold;
         setLoading(true);
         const orders = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
         setLoading(false);
         if (orders.error) return showErrorMessage(orders.error);
+        const form = ratingForm.cloneNode(true);
+        form.dataset.item = btn.dataset.item
+        orderList.appendChild(form);
         btn.parentElement.parentElement.parentElement.parentElement.remove();
       }
 
@@ -377,7 +489,8 @@ module.exports = ({user}) => `
           shipmentWrapper.style.display = "block";
 
           const confirmWrapper = orderWrapper.querySelector(".confirm-btn-wrapper");
-          confirmWrapper.children[0].dataset.itemId = order.itemId;
+          confirmWrapper.children[0].dataset.sold = order.itemId;
+          confirmWrapper.children[0].dataset.item = order.productNumber;
           confirmWrapper.style.display = "block";
           if (order.deliveryDate) {
             orderWrapper.querySelector(".delivery-date>span").innerText = Formatter.dateToText(order.deliveryDate);
@@ -404,8 +517,11 @@ module.exports = ({user}) => `
         fetchOrders("?status=" + target.name + "&limit=20&offset=0&sortBy=desc");
       }
 
-
-      fetchOrders("?status=notshipped&limit=20&offset=0&sortBy=desc");
+      const header = query(".tabs-wrapper");
+      const searchQuery = Formatter.parseURLEncoded(window.location.href);
+      if (searchQuery.tab == "notshipped") getOrders({ target: header.children[0] });
+      else if (searchQuery.tab == "delivered") getOrders({ target: header.children[2] });
+      else getOrders({ target: header.children[1] });
     </script>
 
     ${footer(user)}

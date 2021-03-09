@@ -189,29 +189,6 @@ module.exports = ({user}) => `
         border: 0.5px solid var(--dark);
       }
 
-      .shipment-info-form>.cancel-btn {
-        overflow: hidden;
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 25px;
-        height: 25px;
-        border-radius: 50%;
-        padding-bottom: 5px;
-        font-size: 35px;
-        line-height: 0;
-        font-weight: bold;
-        transform: rotate(45deg);
-        border-radius: 50%;
-        border: none;
-        background: none;
-        cursor: pointer;
-      }
-
-      .shipment-info-form>.cancel-btn:hover {
-        color: var(--red);
-      }
-
       .submit.btn {
         width: 75px;
         margin-left: 30px;
@@ -377,7 +354,7 @@ module.exports = ({user}) => `
               <label for="track-number">Tracking number</label>
               <input type="text" name="trackNumber" id="track-number" />
             </div>
-            <button type="button" onclick="this.parentElement.remove()" class="cancel-btn">+</button>
+            <button type="button" onclick="this.parentElement.remove()" class="x-btn">+</button>
             <div><button type="submit" class="submit btn">send</button></div>
           </form>
         </ul>

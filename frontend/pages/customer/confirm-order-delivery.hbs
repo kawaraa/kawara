@@ -101,6 +101,20 @@ module.exports = ({user}) => `
         z-index: 2;
       }
 
+      .check-mark {
+        font-size: 35px;
+        line-height: 0;
+        font-weight: bold;
+        color: var(--green);
+        display: inline-block;
+        opacity: 0;
+        transition: opacity 0.5s;
+      }
+
+      .check-mark.show {
+        opacity: 1;
+      }
+
       h2.thanks {
         display: none;
         margin: 30px 0;
@@ -164,6 +178,7 @@ module.exports = ({user}) => `
                 name="/api/customer/rate-us" class="star-rating-range">
               <span class="star-rating-front">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
             </div>
+            <span class="check-mark">&#10003;</span>
             <h5>How are you satisfied with the products?</h5>
             <div class="star-rating-wrapper">
               &#9733;&#9733;&#9733;&#9733;&#9733;
@@ -171,6 +186,7 @@ module.exports = ({user}) => `
                 name="/api/product/rate" class="star-rating-range">
               <span class="star-rating-front">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
             </div>
+            <span class="check-mark">&#10003;</span>
           </article>
           <h2 class="thanks">Thanks for giving your feedback!.</h2>
         </section>
@@ -192,12 +208,12 @@ module.exports = ({user}) => `
         const res = await fetch(url, { method: "POST" }).then(res => res.json()).catch(networkError);
         if (res.error) showErrorMessage(res.error);
         input.dataset.rated = "true";
-        errorWrapper.style.display = "none";
         query("h2.thanks").style.display = "block";
+        addClass(input.parentElement.nextElementSibling, "show");
       }
 
       (async (user) => {
-        if (user) return window.location.href = "/";
+        if (user) return window.location.href = "/orders?tab=shipped";
         const { pathname, search } = window.location;
         setLoading(true);
         const res = await fetch("/api" + pathname + search).then(res => res.json()).catch(networkError)

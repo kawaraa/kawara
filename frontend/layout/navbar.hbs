@@ -124,7 +124,7 @@ module.exports = (user) => `
     #user-drop-menu-list {
       display: none;
       position: absolute;
-      top: 40px;
+      top: 50px;
       right: 20px;
       min-width: 175px;
       flex-flow: column;
@@ -390,7 +390,7 @@ module.exports = (user) => `
     }
     updateNavbarShoppingCart()
 
-    function parseUREncoded(url) {
+    function parseURLEncoded(url) {
       let obj = {};
       try {
         url = new URL(url);
@@ -407,7 +407,7 @@ module.exports = (user) => `
 
     queryAll(".navbar-link").forEach(link => {
       if (link.pathname === "/category") {
-        if (parseUREncoded(window.location.href).name === parseUREncoded(link.href).name) {
+        if (parseURLEncoded(window.location.href).name === parseURLEncoded(link.href).name) {
           addClass(link, "active");
         }
       }
