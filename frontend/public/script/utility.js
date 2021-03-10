@@ -23,10 +23,9 @@ function addClass(el, className) {
 class Cookies {
   static set(name, value, expires) {
     document.cookie = name + "=" + value + ";" + (expires || "");
-    console.log(document.cookie);
   }
   static get(name) {
-    return Cookies.getAll().find((cookie) => cookie[name]);
+    return Cookies.getAll().find((cookie) => cookie[name])[name] || null;
   }
   static getAll() {
     return document.cookie.split(";").map((str) => {
