@@ -88,12 +88,12 @@ module.exports = ({user}, {currency, rate, collections} ) => `
 
     <script>
 
-     // if ("serviceWorker" in navigator) {
-       // navigator.serviceWorker
-        //  .register("sw.js")
-        //  .then((registration) => console.log("Service Worker has been registered: ", registration))
-        //  .catch((error) => console.log("Service Worker hasn't been registered: ", error));
-     // }
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("sw.js")
+          .then((registration) => console.log("Service Worker has been registered: ", registration))
+          .catch((error) => console.log("Service Worker hasn't been registered: ", error));
+      }
 
     </script>
 
