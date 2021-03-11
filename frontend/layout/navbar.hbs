@@ -75,6 +75,12 @@ module.exports = (user) => `
       border-radius: 50px;
     }
 
+    .navbar-link.active,
+    .navbar-link:hover {
+      background: var(--red);
+      color: var(--white);
+    }
+
     .navbar-user-drop-menu-wrapper {
       position: relative;
       max-width: 60px;
@@ -168,11 +174,6 @@ module.exports = (user) => `
       border-radius: 50%;
     }
 
-    .navbar-link:hover {
-      background: var(--red);
-      color: var(--white);
-    }
-
     .navbar.shopping-cart-link {
       position: relative;
       text-decoration: none;
@@ -244,6 +245,27 @@ module.exports = (user) => `
       background: var(--red);
     }
 
+    .back-btn {
+      display: none;
+      position: absolute;
+      bottom: -40px;
+      right: 7px;
+      height: 30px;
+      width: 18px;
+      text-decoration: none;
+      font-size: 40px;
+      justify-content: center;
+      align-items: center;
+      font-family: Georgia, monospace, -apple-system, BlinkMacSystemFont, system-ui;
+      cursor: pointer;
+    }
+
+    .greater-than.delete-svg {
+      width: 100%;
+      height: 100%;
+      stroke: var(--font);
+      stroke-width: 35px;
+    }
 
     /* =============== Mobile, IPads & Tablet styles =============== */
     @media screen and (max-width: 850px) {
@@ -297,6 +319,9 @@ module.exports = (user) => `
         display: block;
       }
 
+      .back-btn.show {
+        display: flex;
+      }
     }
   </style>
 
@@ -360,6 +385,11 @@ module.exports = (user) => `
       <div class="nav-icon-bar2"></div>
       <div class="nav-icon-bar3"></div>
     </div>
+    <a href="/" onclick="event.preventDefault() + window.history.back()" class="back-btn">
+      <svg class="greater-than delete-svg">
+        <use href="#greater-than-svg-symbol" />
+      </svg>
+    </a>
   </nav>
 
   <script>
@@ -388,31 +418,11 @@ module.exports = (user) => `
     function updateNavbarShoppingCart() {
       choppingCartItemNum.innerText = Cart.getItems().length
     }
-    updateNavbarShoppingCart()
+    updateNavbarShoppingCart();
 
-    function parseURLEncoded(url) {
-      let obj = {};
-      try {
-        url = new URL(url);
-      } catch (error) {
-        return obj
-      }
-      let query = url.search.replace("?", "").split("&");
-      for (let i = 0; i < query.length; i++) {
-        let pair = query[i].split("=");
-        obj[pair[0]] = pair[1];
-      }
-      return obj;
-    }
+    queryAll(".navbar-link").forEach(link => window.location.pathname == link.pathname && addClass(link, "active"));
 
-    queryAll(".navbar-link").forEach(link => {
-      if (link.pathname === "/category") {
-        if (parseURLEncoded(window.location.href).name === parseURLEncoded(link.href).name) {
-          addClass(link, "active");
-        }
-      }
-      else if (window.location.pathname == link.pathname) addClass(link, "active");
-    });
+    if (window.location.pathname != "/") addClass(query(".back-btn"), "show");
   </script>
 </div>
 
