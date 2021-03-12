@@ -1,5 +1,5 @@
 const filesMustCache = /(googleapis|gstatic)|\.(JS|CSS|SVG|PNG|JPG|jPEG|WEBP|BMP|GIF|ICO|WEBM|MPG|MP2|MP4|MPEG|MPE|MPV|OGG|M4P|M4V|AVI|WMV|MOV|QT|FLV|SWF|AVCHD|JSON)$/gim;
-const staticFileCacheName = "static-files-v6";
+const staticFileCacheName = "static-files-v7";
 const staticFileCachePaths = [
   "/",
   "/offline.html",
@@ -43,9 +43,10 @@ async function handleAuthRequest(request) {
 async function handleOtherRequest(request) {
   try {
     const response = await fetch(request);
-    if (request.method != "POST") {
-      await caches.open(staticFileCacheName).then((cache) => cache.put(request, response.clone()));
-    }
+    await caches
+      .open(staticFileCacheName)
+      .then((cache) => cache.put(request, response.clone()))
+      .catch((err) => console.log(err));
     return response;
   } catch (error) {
     return handleCachedFileRequest(request);
