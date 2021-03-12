@@ -19,6 +19,19 @@ function addClass(el, className) {
   el.className += " " + className;
   return el;
 }
+function copyText(text = "") {
+  const copy = () => {
+    const input = document.createElement("input");
+    document.body.appendChild(input);
+    input.value = text;
+    input.select(); /* Select the text field */
+    input.setSelectionRange(0, 99999); /* Select the text for mobile devices */
+    document.execCommand("copy");
+    input.remove();
+    popMessage("Copied product link");
+  };
+  navigator.clipboard.writeText(text).then(() => popMessage("Copied product link"), copy);
+}
 
 class Cookies {
   static set(name, value, expires) {

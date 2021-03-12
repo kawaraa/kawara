@@ -47,6 +47,26 @@ ${svgIcons}
     }
   }
 
+  #popup-message {
+    display: none;
+    position: fixed;
+    z-index: 8;
+    top: 40vh;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 5px 10px;
+    font-size: 18px;
+    background: var(--white);
+    color: var(--dark);
+    border-radius: 5px;
+    box-shadow: 0 0 5px 0 var(--font);
+  }
+
+  #popup-message.show {
+    display: block;
+    animation: opacity 1s;
+  }
+
   #prompt-message {
     display: block;
     position: fixed;
@@ -176,6 +196,7 @@ ${svgIcons}
   <div id="screen-loader"></div>
 </div>
 
+<p id="popup-message"></p>
 <div id="prompt-message"><span></span><span onclick="showErrorMessage()">+</span></div>
 
 <div id="picture-preview-outer" onclick="if(this === event.target) this.style.display = 'none'">
@@ -183,6 +204,13 @@ ${svgIcons}
 </div>
 
 <script>
+  function popMessage(message = "") {
+    const messageWrapper = queryId("popup-message")
+    addClass(messageWrapper, "show");
+    messageWrapper.innerText = message;
+    setTimeout(() => removeClass(messageWrapper, "show"), 4000);
+  }
+
   function previewPicture({ target }) {
     const picturePreview = queryId("picture-preview-outer");
     picturePreview.children[0].children[0].src = target.src;
