@@ -425,7 +425,7 @@ module.exports = ({user}, {currency, rate, product}) => `
 
       <main class="container product-page">
         <div class="view-container">
-          <section class="pictures wrapper">
+          <aside class="pictures wrapper">
             <div class="main-picture">
               <img src="${product.pictures[0]}" onclick="previewPicture(event)"
                 onload="this.parentElement.style.height = this.parentElement.offsetWidth + 'px';" alt="${product.name}"
@@ -439,7 +439,7 @@ module.exports = ({user}, {currency, rate, product}) => `
               </li>
               `)}
             </ul>
-          </section>
+          </aside>
 
           <section class="details wrapper">
             <h1 class="details heading" data-name="${product.name}">${product.name}</h1>

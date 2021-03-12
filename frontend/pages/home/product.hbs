@@ -28,7 +28,7 @@ module.exports = (product, currency, rate, cssClass)=> `
   </a>
   <button onclick="Cart.add({ ...this.dataset })" data-number="${product.number}" data-name="${product.name}"
     data-type="${product.type}" data-size="${product.size}" data-price="${product.price}" data-currency="${currency}"
-    data-country="${product.country}" data-estimated-time="${product.estimatedTime}" :
+    data-country="${product.country}" data-estimated-time="${product.estimatedTime}"
     data-shipping-cost="${product.shippingCost}" data-picture="${product.pictures[0]}" data-quantity="${1}"
     class="product add">+</button>
 </li>

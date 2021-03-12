@@ -223,7 +223,7 @@ module.exports = () => `
   <li class="cart-item-wrapper" style="display: none;">
     <input type="checkbox" class="select-item" onchange="selectItem(this)" />
     <div class="cart-item-column img">
-      <img src="/" onclick="previewPicture(event)" class="cart-item-img" />
+      <img src="/" onclick="previewPicture(event)" alt="Shopping cart item picture" class="cart-item-img" />
     </div>
     <div class="cart-item-column details">
       <a href="/product/" class="cart-item-name"></a>
@@ -291,6 +291,7 @@ module.exports = () => `
     else {
       const img = document.createElement("img");
       img.src = item.type;
+      img.alt = "Shopping cart item type / color picture";
       img.onclick = previewPicture;
       type.innerHTML = "";
       type.appendChild(img);

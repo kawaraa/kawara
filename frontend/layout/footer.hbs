@@ -47,8 +47,11 @@ module.exports = (user) => `
     }
 
     .column {
-      list-style: none;
       flex: auto;
+    }
+
+    .column>ul {
+      list-style: none;
     }
 
     .column-heading {
@@ -171,9 +174,11 @@ module.exports = (user) => `
         </div>
         <p class="legal-copyright">Copyright &#169; Kawara.</p>
       </div>
-      <ul class="column">
+
+      <div class="column">
         <h6 class="column-heading">Support</h6>
-        <!-- <li class="column-item social-media">
+        <ul>
+          <!-- <li class="column-item social-media">
           <a class="media" href="https://www.facebook.com/kawaraa" rel="nofollow" target="_blank">
             <img src="/image/facebook-logo.png" alt="Facebook logo" class="media-logo" />
           </a>
@@ -184,18 +189,23 @@ module.exports = (user) => `
             <img src="/image/whatsapp-logo.png" alt="WhatsApp logo" class="media-logo" />
           </a>
         </li> -->
-        <li class="column-item"><a href="/contact" class="footer-link">Contact</a></li>
-        <li class="column-item"><a href="/about" class="footer-link">About</a></li>
-        <li class="column-item"><a href="/qa" class="footer-link nf" tabindex="0">Q&#38;A</a></li>
-        <li class="column-item"><a href="/seller/orders" class="footer-link nf" tabindex="0">Seller</a></li>
-      </ul>
-      </ul>
-      <ul class="column">
-        <h4 class="column-heading">Site map</h4>
-        <li class="column-item"><a href="/" class="footer-link">Home</a></li>
-        <li class="column-item"><a href="/category/health-beauty" class="footer-link">Beauty</a></li>
-        <li class="column-item"> <a href="/category/jewelry-accessories" class="footer-link">Jewelry</a></li>
-        <li class="column-item"><a href="/category/sports" class="footer-link">Sports</a></li>
+          <li class="column-item"><a href="/contact" class="footer-link">Contact</a></li>
+          <li class="column-item"><a href="/about" class="footer-link">About</a></li>
+          <li class="column-item"><a href="/qa" class="footer-link nf" tabindex="0">Q&#38;A</a></li>
+          <li class="column-item"><a href="/seller/orders" class="footer-link nf" tabindex="0">Seller</a></li>
+        </ul>
+      </div>
+
+      <div class="column">
+        <h6 class="column-heading">Site map</h6>
+        <ul>
+          <li class="column-item"><a href="/" class="footer-link">Home</a></li>
+          <li class="column-item"><a href="/category/health-beauty" class="footer-link">Beauty</a></li>
+          <li class="column-item"> <a href="/category/jewelry-accessories" class="footer-link">Jewelry</a></li>
+          <li class="column-item"><a href="/category/sports" class="footer-link">Sports</a></li>
+        </ul>
+      </div>
+
     </div>
   </footer>
 

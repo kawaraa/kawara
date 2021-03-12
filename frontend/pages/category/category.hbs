@@ -49,9 +49,9 @@ module.exports = ({user}, {currency, rate, name, products}) => `
         <h1 class="home heading">${name.replace("-"," ")}</h1>
         <section class="products-outer">
           <ul class="product-list category">
-            ${products.render((p) => product(p, currency, rate, "category"))}<span style="opacity: 0;">.</span>
+            ${products.render((p) => product(p, currency, rate, "category"))}
           </ul>
-          <button onclick="showMorProducts()" class="btn show-more">Show more</button>
+          <button onclick="showMoreProducts()" class="btn show-more">Show more</button>
         </section>
       </main>
     </div>
@@ -61,7 +61,7 @@ module.exports = ({user}, {currency, rate, name, products}) => `
       const productItem = productsWrapper.children[0].cloneNode(true);
 
       let offset = 20;
-      async function showMorProducts() {
+      async function showMoreProducts() {
         setLoading(true);
         const url = "/api/product/category?name=${name}&limit=20&offset=" + offset
         const category = await fetch(url).then(res => res.json()).catch(networkError);

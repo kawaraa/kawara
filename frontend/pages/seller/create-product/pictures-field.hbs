@@ -110,6 +110,11 @@ module.exports = () => `
     right: 15px;
   }
 
+  .info-on-images-sizes {
+    font-size: 12px;
+    margin: 10px 20px 0 0;
+  }
+
   /* =============== Mobile, IPads & Tablet styles =============== */
   @media screen and (max-width: 850px) {
 
@@ -144,6 +149,9 @@ module.exports = () => `
       <input onchange="showInputText(this)" type="file" accept="video/*" name="video" data-msg="Upload a video"
         id="video" />
     </div>
+
+    <p class="info-on-images-sizes">Please make sure the images are in (JPG PNG JPEG GIF BMP or WEBP) format and the
+      aspect is 4:3 ratio or in square shape, and also the size of the images and video should be under 10 MB.</p>
 
     <button type="button" onclick="addPictureUrl()" class="add-btn">Add Picture URL</button>
 
