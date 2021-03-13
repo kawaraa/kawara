@@ -253,6 +253,11 @@ module.exports = ({user}, {currency, rate, product}) => `
       .specs.title {
         font-weight: bold;
         margin-right: 5px;
+        text-transform: capitalize;
+      }
+
+      .specs.desc {
+        text-transform: capitalize;
       }
 
       .overview-h {
@@ -519,7 +524,7 @@ module.exports = ({user}, {currency, rate, product}) => `
             ${product.specifications.render(spec=>`
             <li class="specs item">
               <span class="specs title">${spec.title}:</span>
-              <span class="specs value" title="UR Sugar">${spec.description}</span>
+              <span class="specs desc" title="UR Sugar">${spec.description}</span>
             </li>
             `)}
           </ul>

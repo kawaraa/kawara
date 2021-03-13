@@ -71,6 +71,8 @@ class ProductRepository {
   async getByCategory({ country, searchText, limit, offset }) {
     let query = `SELECT t1.number, t1.name, t1.description, t1.pictures, t2.country, t2.estimatedTime, t2.cost, t3.type, t3.size, t3.price, (SELECT  AVG(stars) FROM store.starRating WHERE item = t1.number) AS stars, (SELECT SUM(quantity) FROM store.soldItem WHERE productNumber = t1.number) AS sold FROM store.product t1 JOIN store.shipping t2 ON t1.number = t2.productNumber JOIN store.type t3 ON t3.productNumber = t1.number JOIN store.category t4 ON t4.productNumber = t1.number WHERE t1.reviewed = 1 AND t2.country = ? AND t4.name = ? AND t3.inStock > 0 GROUP BY t1.number LIMIT ? OFFSET ?`;
 
+    if (searchText.toLowerCase() == "explore") return this.getRandom({ country, limit, offset });
+
     const result = await this.mySqlProvider.query(query, [country, searchText, limit, offset]);
     const products = result.map((product) => new Product(product));
 

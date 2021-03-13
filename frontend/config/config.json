@@ -1,5 +1,6 @@
 {
   "publicDir": "/public",
+  "createProductConfirmation": "Please double check everything before you submit the form and make sure the prices are in EUR CENT E.g. if the price ( 100 ) would be ( €1.00 ). \nOnce you create the product, you can't updated. \n𝗗𝗶𝗱 𝘆𝗼𝘂 𝗰𝗵𝗲𝗰𝗸 𝗲𝘃𝗲𝗿𝘆𝘁𝗵𝗶𝗻𝗴?",
   "deleteProductConfirmation": "Note: Deleting this product will also permanently delete all the data of this product. example of the data that will be deleted are, the number of stars and people recommendations.\n 𝐀𝐫𝐞 𝐲𝐨𝐮 𝐬𝐮𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨 𝐭𝐡𝐢𝐬?",
   "deleteAccountConfirmation": "Note: Deleting your account will also permanently delete all the products and all the data.\n 𝐀𝐫𝐞 𝐲𝐨𝐮 𝐬𝐮𝐫𝐞 𝐲𝐨𝐮 𝐰𝐚𝐧𝐭 𝐭𝐨 𝐝𝐨 𝐭𝐡𝐢𝐬?",
   "categories": {

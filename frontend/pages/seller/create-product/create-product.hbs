@@ -6,7 +6,7 @@ const picturesField = require("./pictures-field.hbs");
 const typesField = require("./types-field.hbs");
 const specificationsField = require("./specifications-field.hbs");
 const shippingsField = require("./shippings-field.hbs");
-const { categories } = require("../../../config/config.json");
+const { categories, createProductConfirmation } = env;
 const { countries } = require("k-utilities");
 
 module.exports = ({user}) => `
@@ -130,7 +130,7 @@ module.exports = ({user}) => `
       <main class="container create-product">
         <!-- user.type !== "admin" ? "" : scrappingForm() -->
 
-        <h2>Add product manually</h2>
+        <h2>Add product form</h2>
         <form onsubmit="sendProduct(event)" id="manual-form">
 
           ${picturesField()}
@@ -170,12 +170,14 @@ module.exports = ({user}) => `
           </div>
         </form>
       </main>
+      <input type="hidden" id="create-product-confirmation" value="${createProductConfirmation}">
     </div>
 
     <script>
       async function sendProduct(e) {
         e.preventDefault();
         showErrorMessage();
+        if (!confirm(queryId("create-product-confirmation").value)) return;
         setLoading(true);
         try {
           const pictureUrls = getPictures();
