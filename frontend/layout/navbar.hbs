@@ -401,7 +401,7 @@ module.exports = (user) => `
     let prevScroll = window.pageYOffset;
     window.onscroll = (e) => {
       if (window.pageYOffset <= prevScroll) navbar.style.top = "0";
-      else navbar.style.top = "-" + (navbar.offsetHeight + 4) + "px";
+      else if (window.pageYOffset > 30) navbar.style.top = "-" + (navbar.offsetHeight + 4) + "px";
       prevScroll = window.pageYOffset;
     };
 
