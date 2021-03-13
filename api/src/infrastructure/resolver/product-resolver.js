@@ -49,8 +49,11 @@ class ProductResolver {
 
   async getProductsByCategory({ user, query, params }, response) {
     try {
+      let category = null;
       query = { ...new SearchCriteria({ ...query, ...params }), country: user.country };
-      const category = await this.productRepository.getByCategory(query);
+      if (query.searchText == "explore") category = await this.productRepository.getRandom(query);
+      else if (query.searchText == "hot-sale") category = await this.productRepository.getHotSale(query);
+      else category = await this.productRepository.getByCategory(query);
       category.currency = user.currency;
       category.rate = user.rate;
       response.json(category);

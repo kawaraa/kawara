@@ -18,6 +18,7 @@ module.exports = ({user}, {currency, rate, name, products}) => `
 
       .home.heading {
         text-transform: capitalize;
+        margin-left: 10px;
       }
 
       .product-list.category {
@@ -67,7 +68,7 @@ module.exports = ({user}, {currency, rate, name, products}) => `
       let offset = 20;
       async function showMoreProducts() {
         setLoading(true);
-        const url = "/api/product/category?name=${name}&limit=20&offset=" + offset
+        const url = "/api/product/category/${name}?limit=20&offset=" + offset
         const category = await fetch(url).then(res => res.json()).catch(networkError);
         setLoading(false);
         if (category.error) return showErrorMessage(category.error);

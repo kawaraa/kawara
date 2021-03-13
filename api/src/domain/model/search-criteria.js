@@ -4,7 +4,7 @@ class SearchCriteria {
   constructor(query) {
     this._limit = query.limit; // Limit per page
     this._offset = query.offset; // the start of the limit
-    this._search = query.text || query.search;
+    this._searchText = query.text || query.search;
     this._sortBy = query.sortBy || query.sortby;
   }
 
@@ -17,9 +17,9 @@ class SearchCriteria {
     if (!Validator.isNumber(value, 20, 20)) this.limit = 20;
     else this.limit = Number.parseInt(value);
   }
-  set _search(value) {
+  set _searchText(value) {
     if (!Validator.isString(value, 0)) this.searchText = "";
-    else this.searchText = value.slice(0, 50);
+    else this.searchText = value.slice(0, 50).toLowerCase();
   }
   set _sortBy(value) {
     this.sortBy = (value + "").toUpperCase();
