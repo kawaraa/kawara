@@ -41,8 +41,8 @@ module.exports = () => `
   }
 
   .specification-wrapper input[type="button"] {
-    bottom: 9px;
-    right: -20px;
+    bottom: 11px;
+    right: -19px;
   }
 
   /* =============== Mobile, IPads & Tablet styles =============== */
@@ -65,7 +65,7 @@ module.exports = () => `
 
     .specification-wrapper input[type="button"] {
       bottom: 11px;
-      right: -25px;
+      right: -24px;
     }
   }
 </style>
@@ -75,7 +75,7 @@ module.exports = () => `
   <div id="specifications">
     <button type="button" onclick="addSpecification()" class="add-btn">Add Spec</button>
     <div class="specification-wrapper">
-      <input type="button" value="+" onclick="this.parentElement.remove()" style="display: none;" />
+      <input type="button" value="×" onclick="this.parentElement.remove()" style="display: none;" />
       <div class="specification-box">
         <label for="specification-title">Title</label>
         <input type="text" name="specTitle" />

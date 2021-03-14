@@ -105,7 +105,7 @@ module.exports = () => `
 
   .size-wrapper>input[type="button"] {
     bottom: 0;
-    right: -20px;
+    right: -19px;
   }
 
   .size-box {
@@ -197,7 +197,7 @@ module.exports = () => `
 
     .size-wrapper>input[type="button"] {
       bottom: 9px;
-      right: -20px;
+      right: -19px;
     }
   }
 </style>
@@ -207,7 +207,7 @@ module.exports = () => `
   <div id="types">
     <button type="button" onclick="addType()" class="add-btn">Add Type</button>
     <div class="type-wrapper">
-      <input type="button" value="+" onclick="this.parentElement.remove()" style="display: none;" />
+      <input type="button" value="×" onclick="this.parentElement.remove()" style="display: none;" />
       <div class="type-input">
         <label for="type">Type / Color / Material</label>
         <input onchange="showPictureText(this)" type="text" name="type" accept="image/*" required
@@ -217,7 +217,7 @@ module.exports = () => `
       <div class="sizes">
         <button type="button" onclick="addSize(this.parentElement)" class="add-btn">Add Size</button>
         <div class="size-wrapper">
-          <input type="button" value="+" onclick="this.parentElement.remove()" style="display: none;" />
+          <input type="button" value="×" onclick="this.parentElement.remove()" style="display: none;" />
           <div class="size-box">
             <label for="size">Size / Other</label>
             <input type="text" name="size" min="1" max="8" accept="image/*" required />

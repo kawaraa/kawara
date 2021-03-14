@@ -79,12 +79,14 @@ module.exports = ({user}) => `
         height: 25px;
         font-size: 18px;
         font-weight: bold;
-        line-height: 0;
         background: none;
         border: none;
-        transform: rotate(45deg);
         outline: none;
         cursor: pointer;
+      }
+
+      input[type="button"]:hover {
+        color: var(--red);
       }
 
       .add-btn {

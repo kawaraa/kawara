@@ -6,7 +6,7 @@ module.exports = (user, countries) => `
   }
 
   .shipping-wrapper>input[type="button"] {
-    bottom: 1px;
+    bottom: 4px;
     right: -25px;
   }
 
@@ -79,7 +79,7 @@ module.exports = (user, countries) => `
     <button type="button" onclick="addShipping()" class="add-btn">Add Shipping</button>
 
     <div class="shipping-wrapper">
-      <input type="button" value="+" onclick="this.parentElement.remove()" style="display: none;" />
+      <input type="button" value="×" onclick="this.parentElement.remove()" style="display: none;" />
       <div class="shipping-box">
         <label for="country">Country</label>
         <select name="country" class="country">
