@@ -65,19 +65,19 @@ body {
 }
 .x-btn {
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   top: 0;
   right: 0;
   width: 25px;
   height: 25px;
-  border-radius: 50%;
-  padding-bottom: 5px;
-  font-size: 35px;
-  line-height: 0;
-  transform: rotate(45deg);
-  border-radius: 50%;
-  border: none;
+  font-size: 28px;
   background: none;
+  border: none;
+  border-radius: 50%;
+  font-family: monospace;
   cursor: pointer;
 }
 

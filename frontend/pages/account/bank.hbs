@@ -184,7 +184,7 @@ module.exports = (user, countries) => `
   </article>
 
   <form onsubmit="handleUpdateBank(event)" class="add-bank form">
-    <button type="button" onclick="cancelBankForm(this.parentElement)" class="btn cancel nf">+</button>
+    <button type="button" onclick="cancelBankForm(this.parentElement)" class="x-btn nf">×</button>
     <h4>Add bank to get paid</h4>
     <div class="field-input">
       <label for="bank-country">Country of bank account</label>
@@ -216,7 +216,7 @@ module.exports = (user, countries) => `
   </form>
 
   <form onsubmit="handleUpdatePaypal(event)" class="add-paypal form">
-    <button type="button" onclick="cancelBankForm(this.parentElement)" class="btn cancel nf">+</button>
+    <button type="button" onclick="cancelBankForm(this.parentElement)" class="x-btn nf">×</button>
     <h4>Connect your PayPal account to get paid</h4>
     <div class="field-input">
       <label for="ppl-country">Country</label>

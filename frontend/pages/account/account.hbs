@@ -146,22 +146,15 @@ module.exports = ({user}) => `
         display: flex;
       }
 
-      .btn.cancel {
-        position: absolute;
+      form>.x-btn {
         top: -30px;
         right: -10px;
-        width: 25px;
-        height: 25px;
-        font-size: 28px;
-        line-height: 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-family: monospace;
-        transform: rotate(45deg);
         background: var(--red);
-        cursor: pointer;
-        border-radius: 50%;
+        color: var(--white);
+      }
+
+      .x-btn:hover {
+        color: var(--white);
       }
 
       .btn.save {
@@ -185,10 +178,37 @@ module.exports = ({user}) => `
       .address-form {
         display: none;
         position: relative;
+        max-width: 600px;
+        margin: auto;
+        flex-flow: column;
+      }
+
+      .address-form>.x-btn {
+        right: 0;
+      }
+
+      .address-form>input,
+      .address-form>select {
+        margin: 5px 0;
+        overflow: hidden;
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 17px;
+        border: none;
+        border-radius: 5px;
+        box-shadow: 0 0 3px 0 var(--font);
+        outline: none;
+      }
+
+      .address-form>.btn {
+        margin-top: 10px;
+        padding: 10px 5px;
+        border-radius: 5px;
       }
 
       .address-form.show {
-        display: block;
+        display: flex;
       }
 
       .delete-account.btn {
@@ -216,7 +236,7 @@ module.exports = ({user}) => `
       <main class="container settings">
         <h1 class="settings-h">Account Settings</h1>
         <form class="edit-form name" onsubmit="handleUpdateFullName(event)">
-          <button type="button" onclick="cancel(this.parentElement)" class="btn cancel nf">+</button>
+          <button type="button" onclick="cancel(this.parentElement)" class="x-btn nf">×</button>
           <input type="text" name="firstName" required placeholder="First Name" class="first nf" />
           <input type="text" name="lastName" required placeholder="Last Name" class="last nf" />
           <button type="submit" class="btn save nf">Save</button>
@@ -233,7 +253,7 @@ module.exports = ({user}) => `
         </div>
 
         <form class="edit-form password" onsubmit="handleUpdatePassword(event)">
-          <button type="button" onclick="cancel(this.parentElement)" class="btn cancel nf">+</button>
+          <button type="button" onclick="cancel(this.parentElement)" class="x-btn nf">×</button>
           <input type="password" name="oldPassword" min="8" required placeholder="Old Password" class="first nf" />
           <input type="password" name="password" min="8" required placeholder="New Password" class="first nf" />
           <input type="password" name="confirmPassword" min="8" required placeholder="Confirm Password"
@@ -251,7 +271,7 @@ module.exports = ({user}) => `
         <h4 class="title address">Addresses</h4>
 
         <form class="address-form" onsubmit="handleUpdateAddress(event)">
-          <button type="button" onclick="cancel(this.parentElement)" class="btn cancel nf">+</button>
+          <button type="button" onclick="cancel(this.parentElement)" class="x-btn nf">×</button>
           <input type="hidden" name="id" />
           <input type="text" name="fullName" required placeholder="Full Name" class="nf" />
           <input type="text" name="street" required placeholder="Street" class="nf" />
@@ -263,7 +283,7 @@ module.exports = ({user}) => `
           </select>
           <input type="email" name="email" required placeholder="Email" class="nf" />
           <input type="tel" name="phone" required placeholder="Phone" class="nf" />
-          <button type="submit" class="btn save nf">Save</button>
+          <button type="submit" class="btn nf">Save</button>
         </form>
         <div class="addresses show">
           <button type="button" name="address" onclick="showAddressForm(this)" class="btn nf">Add</button>

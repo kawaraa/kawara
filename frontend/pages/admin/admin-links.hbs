@@ -7,13 +7,15 @@ module.exports = () => `
   }
 
   .tab-btn {
-    text-decoration: none;
     flex: 2;
-    padding: 12px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     font-size: 18px;
-    text-align: center;
     background: var(--dark);
     color: var(--white);
+    text-decoration: none;
     border: none;
     cursor: pointer;
     transition: 0.1s ease;
@@ -24,7 +26,7 @@ module.exports = () => `
     position: relative;
   }
 
-  .tab-btn.active:after {
+  .tab-btn.active::after {
     content: "";
     display: block;
     border-style: solid;
@@ -51,14 +53,51 @@ module.exports = () => `
   /* =============== Mobile, IPads & Tablet styles =============== */
   @media screen and (max-width: 850px) {
     .admin-tab-btns {
-      display: flex;
+      flex-flow: column;
       margin-top: 50px;
-      overflow: auto;
     }
+
+    .tab-btn {
+      flex: auto;
+      height: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.5s;
+    }
+
+    .tab-btn.show,
+    .tab-btn.active {
+      height: 45px;
+    }
+
+    .tab-btn.active::after {
+      display: none;
+    }
+
+    .tab-btn.active::before {
+      content: "^";
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      position: absolute;
+      top: 0;
+      right: 10px;
+      font-size: 40px;
+      transform: rotate(180deg);
+      color: var(--white);
+      font-family: Verdana, Arial, monospace, -apple-system, BlinkMacSystemFont, system-ui;
+      transition: 0.5s ease;
+    }
+
+    .tab-btn.show.active::before {
+      transform: rotate(0deg);
+    }
+
   }
 </style>
 
-<header class="admin-tab-btns">
+<header class="admin-tab-btns" onclick="showLinks(event)">
   <a href="/admin/accounts" class="tab-btn accounts nf">Accounts</a>
   <a href="/admin/banks" class="tab-btn banks nf">Banks</a>
   <a href="/admin/products" class="tab-btn products nf">Products</a>
@@ -71,5 +110,11 @@ module.exports = () => `
 <script>
   const url = window.location.pathname
   queryAll(".tab-btn").find(el => new RegExp(el.classList[1], "i").test(url) && addClass(el, "active"));
+
+  function showLinks(e) {
+    if (/active/gim.test(e.target.className)) e.preventDefault();
+    if (window.innerWidth > 850) return;
+    queryAll(".tab-btn").forEach(el => /show/gim.test(el.className) ? removeClass(el, "show") : addClass(el, "show"));
+  }
 </script>
 `
