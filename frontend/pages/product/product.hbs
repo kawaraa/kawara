@@ -23,7 +23,6 @@ module.exports = ({user}, {currency, rate, product}) => `
           "datePublished": "${product.created}",
           "brand":"Kawara",
           "sku":"${product.number}",
-          "offers":"sell",
           "aggregateRating": {
           "@type": "AggregateRating",
           "ratingValue": "${product.stars || (Math.random() * 5).toFixed(1)}",
