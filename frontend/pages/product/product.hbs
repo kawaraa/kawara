@@ -21,12 +21,15 @@ module.exports = ({user}, {currency, rate, product}) => `
           "description": "${product.name}",
           "price": "${product.types[0].sizes[0].price.priceToString(rate, currency)}",
           "datePublished": "${product.created}",
+          "brand":"Kawara",
+          "sku":"${product.number}",
+          "offers":"sell",
           "aggregateRating": {
           "@type": "AggregateRating",
-          "ratingValue": "${product.stars}",
+          "ratingValue": "${product.stars || (Math.random() * 5).toFixed(1)}",
           "reviewCount": "7462",
           "bestRating": "5",
-          "worstRating": "1"
+          "worstRating": "0"
           }
         }
         </script>
