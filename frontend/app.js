@@ -34,8 +34,7 @@ const routes = require("./config/routes.json");
     app.use("/", firewall.checkRequestInfo);
     app.use("/admin", firewall.adminRequired, firewall.authRequired);
     app.use("/seller", firewall.sellerRequired);
-    app.use("/account", firewall.authRequired);
-    app.use("/orders", firewall.authRequired);
+    app.use(["/account", "/orders"], firewall.authRequired);
     app.use("/auth", firewall.authNotRequired);
 
     routes.forEach(({ method, url, path }) => {

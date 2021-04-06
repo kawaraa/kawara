@@ -59,23 +59,23 @@ class Cart {
       (p) => p.number !== item.number || p.type !== item.type || p.size !== item.size
     );
     items.push(item);
-    window.sessionStorage.setItem("cart", JSON.stringify(Array.from(items)));
+    window.localStorage.setItem("cart", JSON.stringify(Array.from(items)));
     updateNavbarShoppingCart(items.length);
   }
   static remove(itemId) {
     const cart = Cart.getItems().filter((item) => item.id !== itemId);
-    window.sessionStorage.setItem("cart", JSON.stringify(cart));
+    window.localStorage.setItem("cart", JSON.stringify(cart));
     updateNavbarShoppingCart(cart.length);
   }
   static getItems() {
     try {
-      return JSON.parse(window.sessionStorage.cart);
+      return JSON.parse(window.localStorage.cart);
     } catch (error) {
       return [];
     }
   }
   static empty() {
-    window.sessionStorage.setItem("cart", "[]");
+    window.localStorage.setItem("cart", "[]");
   }
 }
 
