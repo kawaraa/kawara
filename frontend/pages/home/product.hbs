@@ -3,9 +3,10 @@ module.exports = (product, currency, rate, cssClass)=> `
   <a href="/product/${product.number}" class="product inner">
     <div class="product image-wrapper ${!product.pictures[1]? '' : 'flip'}">
       <div class="product image-inner">
-        <img src="${product.pictures[0]}" class="product img" alt="${product.name}" title="${product.name}">
-        ${!product.pictures[1]? "" : `<img src="${product.pictures[1]}" class="product img back"
-          alt="${product.name}">`}
+        <img src="${product.pictures[0]}" class="product img" alt="${product.name}" title="${product.name}"
+          loading="lazy">
+        ${!product.pictures[1]? "" : `<img src="${product.pictures[1]}" class="product img back" alt="${product.name}"
+          loading="lazy">`}
       </div>
     </div>
     <h2 class="product name">${product.name}</h2>
