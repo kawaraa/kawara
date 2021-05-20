@@ -4,10 +4,11 @@ const CategoryQuery = require("../../domain/model/category-query");
 const StarRating = require("../../domain/model/star-rating");
 
 class ProductResolver {
-  constructor(server, firewall, productRepository) {
+  constructor(server, firewall, productRepository, logger) {
     this.server = server;
     this.firewall = firewall;
     this.productRepository = productRepository;
+    this.logger = logger;
   }
 
   resolve() {
@@ -26,6 +27,7 @@ class ProductResolver {
       response.json({ currency, rate, products });
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -35,6 +37,7 @@ class ProductResolver {
       response.json({ currency: user.currency, rate: user.rate, product });
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -44,6 +47,7 @@ class ProductResolver {
       response.json({ currency, rate, collections });
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -59,6 +63,7 @@ class ProductResolver {
       response.json(category);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async rateProduct({ user: { id }, query: { user, item, rate }, country }, response) {
@@ -67,6 +72,7 @@ class ProductResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 }

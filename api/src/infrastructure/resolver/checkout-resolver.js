@@ -5,7 +5,7 @@ const UpdateAddressCommand = require("../../domain/command/update-address-comman
 const CreateOrderCommand = require("../../domain/command/create-order-command");
 
 class CheckoutResolver {
-  constructor(server, firewall, checkoutRepository, mailHandler, stripe, paypal) {
+  constructor(server, firewall, checkoutRepository, mailHandler, stripe, paypal, logger) {
     this.server = server;
     this.firewall = firewall;
     this.checkoutRepository = checkoutRepository;
@@ -13,6 +13,7 @@ class CheckoutResolver {
     this.config = { ...env.CHECKOUT, origin: env.ORIGIN };
     this.stripe = stripe(this.config.stripeSecretKey);
     this.paypal = paypal;
+    this.logger = logger;
   }
 
   resolve() {
@@ -54,6 +55,7 @@ class CheckoutResolver {
       response.json({ clientSecret: client_secret });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async createIdealPaymentIntent({ user, body: { shipping, items } }, response) {
@@ -85,6 +87,7 @@ class CheckoutResolver {
       response.json({ clientSecret: client_secret });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async createPaypalPaymentIntent({ user, body: { shipping, items } }, response) {
@@ -123,6 +126,7 @@ class CheckoutResolver {
       response.json({ redirectLink: payment.links.find((link) => link.rel === "approval_url").href });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async confirmPayment({ user, query }, response) {
@@ -154,6 +158,7 @@ class CheckoutResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 

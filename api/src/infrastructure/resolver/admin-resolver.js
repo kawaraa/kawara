@@ -4,10 +4,11 @@ const BankConfirmationAmounts = require("../../domain/model/bank-confirmation-am
 const ConfirmOrderDeliveryCommand = require("../../domain/command/confirm-order-delivery-command");
 
 class BuyerResolver {
-  constructor(server, firewall, adminRepository) {
+  constructor(server, firewall, adminRepository, logger) {
     this.server = server;
     this.firewall = firewall;
     this.adminRepository = adminRepository;
+    this.logger = logger;
   }
 
   resolve() {
@@ -40,6 +41,7 @@ class BuyerResolver {
       response.send(accounts);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getBanks({ query }, response) {
@@ -49,6 +51,7 @@ class BuyerResolver {
       response.send(banks);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async setConfirmationAmounts({ body }, response) {
@@ -57,6 +60,7 @@ class BuyerResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -66,6 +70,7 @@ class BuyerResolver {
       response.send(products);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getOrders({ query }, response) {
@@ -74,6 +79,7 @@ class BuyerResolver {
       response.send(orders);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getShipments({ query }, response) {
@@ -82,6 +88,7 @@ class BuyerResolver {
       response.send(shipments);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async sendOrderReminderEmails(request, response) {
@@ -92,16 +99,18 @@ class BuyerResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async sendDeliveryReminderEmails(request, response) {
     try {
-      console.log("Hello from sendDeliveryReminderEmails");
+      this.logger.error.info("Hello from sendDeliveryReminderEmails");
       // todos: send an Email to reminder the customers to confirm the item delivery
       // this can be a handler that query all the items that has been shipped more than 5 days but not confirmed
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async cancelItem({ query: { item } }, response) {
@@ -111,6 +120,7 @@ class BuyerResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error.error(error);
     }
   }
   async confirmItemDelivery({ query: { user, item } }, response) {
@@ -119,6 +129,7 @@ class BuyerResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getSales({ query }, response) {
@@ -128,6 +139,7 @@ class BuyerResolver {
       response.send(sales);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async approveProduct({ params }, response) {
@@ -136,6 +148,7 @@ class BuyerResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getPayouts({ query }, response) {
@@ -144,6 +157,7 @@ class BuyerResolver {
       response.send(payouts);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async payout({ params }, response) {
@@ -151,8 +165,8 @@ class BuyerResolver {
       await this.adminRepository.makePayout(params.owner);
       response.send({ success: true });
     } catch (error) {
-      console.log(error);
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 }

@@ -1,7 +1,7 @@
 const { countries } = require("k-utilities");
 
 class Firewall {
-  constructor(cookie, jwt, fetch) {
+  constructor(cookie, jwt, fetch, logger) {
     this.cookie = cookie;
     this.jwt = jwt;
     this.config = env.FIREWALL;
@@ -11,6 +11,7 @@ class Firewall {
     this.authRequired = this.authenticationRequired.bind(this);
     this.sellerRequired = this.isSeller.bind(this);
     this.updateExchangeRates();
+    this.logger = logger;
   }
 
   async checkRequest(request, response, next) {
@@ -78,7 +79,7 @@ class Firewall {
       if (exchangeInfo.rates) this.rates = { ...exchangeInfo.rates };
       setTimeout(() => this.updateExchangeRates(), 1000 * 60 * 60 * 24);
     } catch (error) {
-      console.log("\n\nXXX Failed to fetch the Exchange Rate XXX\n\n");
+      this.logger.error("Failed to fetch the Exchange Rate");
     }
   }
 }

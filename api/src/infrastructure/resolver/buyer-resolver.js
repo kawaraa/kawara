@@ -4,10 +4,11 @@ const SearchCriteria = require("../../domain/model/search-criteria");
 const ConfirmOrderDeliveryCommand = require("../../domain/command/confirm-order-delivery-command");
 
 class BuyerResolver {
-  constructor(server, firewall, buyerRepository) {
+  constructor(server, firewall, buyerRepository, logger) {
     this.server = server;
     this.firewall = firewall;
     this.buyerRepository = buyerRepository;
+    this.logger = logger;
   }
 
   resolve() {
@@ -23,6 +24,7 @@ class BuyerResolver {
       response.json(addresses);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getOrders({ user, query }, response) {
@@ -32,6 +34,7 @@ class BuyerResolver {
       response.json(orders);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async confirmItemDelivery({ user: { id }, query: { sold } }, response) {
@@ -40,6 +43,7 @@ class BuyerResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 }

@@ -5,11 +5,12 @@ const ConfirmOrderDeliveryCommand = require("../../domain/command/confirm-order-
 const StarRating = require("../../domain/model/star-rating");
 
 class ContactResolver {
-  constructor(server, firewall, fetch, customerRepository) {
+  constructor(server, firewall, fetch, customerRepository, logger) {
     this.server = server;
     this.firewall = firewall;
     this.fetch = fetch;
     this.customerRepository = customerRepository;
+    this.logger = logger;
   }
 
   resolve() {
@@ -27,6 +28,7 @@ class ContactResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async confirmOrderDelivery({ query: { user, sold } }, response) {
@@ -35,6 +37,7 @@ class ContactResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async rateUs({ query: { user, rate } }, response) {
@@ -43,6 +46,7 @@ class ContactResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async geoInfo({ headers }, response) {
@@ -52,6 +56,7 @@ class ContactResolver {
       response.json(res);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 }

@@ -8,6 +8,7 @@ const Stripe = require("stripe");
 const paypal = require("paypal-rest-sdk");
 const fetch = require("node-fetch");
 const cheerio = require("cheerio");
+const { Logger } = require("k-utilities");
 const MysqlDatabaseProvider = require("./infrastructure/provider/mysql-database-provider");
 const GCloudStorageProvider = require("./infrastructure/provider/gcloud-storage-provider");
 const Firewall = require("./infrastructure/firewall/firewall");
@@ -57,19 +58,43 @@ module.exports = (router) => {
   const scrapeHandler = new ScrapeHandler(fetch, cheerio);
 
   // // Resolvers
-  const customerResolver = new CustomerResolver(router, firewall, fetch, customerRepository);
-  const authResolver = new AuthResolver(router, firewall, accountRepository, mailHandler);
-  const accountResolver = new AccountResolver(router, firewall, accountRepository, deleteAccountHandler);
-  const adminResolver = new AdminResolver(router, firewall, adminRepository);
+  const customerResolver = new CustomerResolver(
+    router,
+    firewall,
+    fetch,
+    customerRepository,
+    new Logger("customerResolver")
+  );
+  const authResolver = new AuthResolver(
+    router,
+    firewall,
+    accountRepository,
+    mailHandler,
+    new Logger("authResolver")
+  );
+  const accountResolver = new AccountResolver(
+    router,
+    firewall,
+    accountRepository,
+    deleteAccountHandler,
+    new Logger("accountResolver")
+  );
+  const adminResolver = new AdminResolver(router, firewall, adminRepository, new Logger("adminResolver"));
   // const userResolver = new UserResolver(router, firewall, accountRepository);
-  const productResolver = new ProductResolver(router, firewall, productRepository);
+  const productResolver = new ProductResolver(
+    router,
+    firewall,
+    productRepository,
+    new Logger("productResolver")
+  );
   const checkoutResolver = new CheckoutResolver(
     router,
     firewall,
     checkoutRepository,
     mailHandler,
     Stripe,
-    paypal
+    paypal,
+    new Logger("checkoutResolver")
   );
   const sellerResolver = new SellerResolver(
     router,
@@ -78,9 +103,10 @@ module.exports = (router) => {
     deleteAccountHandler,
     storageProvider,
     mailHandler,
-    scrapeHandler
+    scrapeHandler,
+    new Logger("sellerResolver")
   );
-  const buyerResolver = new BuyerResolver(router, firewall, buyerRepository);
+  const buyerResolver = new BuyerResolver(router, firewall, buyerRepository, new Logger("buyerResolver"));
   customerResolver.resolve();
   authResolver.resolve();
   accountResolver.resolve();

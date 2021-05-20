@@ -7,13 +7,14 @@ const UpdatePaypalCommand = require("../../domain/command/update-paypal-command"
 const BankConfirmationAmounts = require("../../domain/model/bank-confirmation-amounts");
 
 class AccountResolver {
-  constructor(server, firewall, accountRepository, deleteAccountHandler) {
+  constructor(server, firewall, accountRepository, deleteAccountHandler, logger) {
     this.server = server;
     this.firewall = firewall;
     this.accountRepository = accountRepository;
     this.deleteAccountHandler = deleteAccountHandler;
     this.isConfirmed = this.checkAccountConfirmation.bind(this);
     this.config = env.accountResolver;
+    this.logger = logger;
   }
 
   resolve() {
@@ -38,6 +39,7 @@ class AccountResolver {
       response.status(400).end(CustomError.toJson(this.config.confirmationError));
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -47,6 +49,7 @@ class AccountResolver {
       response.send(accounts);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async updatePassword({ user, body }, response) {
@@ -55,6 +58,7 @@ class AccountResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async updateFullName({ user, body }, response) {
@@ -63,8 +67,8 @@ class AccountResolver {
       await this.accountRepository.updateFullName(command);
       response.send({ success: true });
     } catch (error) {
-      console.log(error);
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async updateAddress({ user, body }, response) {
@@ -74,6 +78,7 @@ class AccountResolver {
       response.send(command);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async deleteAddress({ user, params }, response) {
@@ -82,6 +87,7 @@ class AccountResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getBank({ user }, response) {
@@ -90,6 +96,7 @@ class AccountResolver {
       response.send(bank);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async addBank({ user, body }, response) {
@@ -99,6 +106,7 @@ class AccountResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async addPaypal({ user, body }, response) {
@@ -108,6 +116,7 @@ class AccountResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async confirmBank({ user, body }, response) {
@@ -117,6 +126,7 @@ class AccountResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async removeBank({ user }, response) {
@@ -125,6 +135,7 @@ class AccountResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async deleteAccount({ user, body }, response) {
@@ -133,6 +144,7 @@ class AccountResolver {
       response.send({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 }

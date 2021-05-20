@@ -8,11 +8,12 @@ const LoginInfo = require("../../domain/model/login-info");
 const User = require("../../domain/model/user");
 
 class AuthResolver {
-  constructor(server, firewall, accountRepository, mailHandler) {
+  constructor(server, firewall, accountRepository, mailHandler, logger) {
     this.server = server;
     this.firewall = firewall;
     this.accountRepository = accountRepository;
     this.mailHandler = mailHandler;
+    this.logger = logger;
     this.config = env.FIREWALL.cookieOption;
     this.ips = {};
     this.getBlockingPeriod = () => Date.now() + 1000 * 60 * 60;
@@ -48,6 +49,7 @@ class AuthResolver {
     } catch (error) {
       response.clearCookie("userToken");
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -65,6 +67,7 @@ class AuthResolver {
     } catch (error) {
       response.clearCookie("userToken");
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -75,6 +78,7 @@ class AuthResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -96,6 +100,7 @@ class AuthResolver {
     } catch (error) {
       response.clearCookie("userToken");
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   checkUserState({ user }, response) {

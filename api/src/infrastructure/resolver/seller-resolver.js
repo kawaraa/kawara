@@ -5,15 +5,16 @@ const UpdateQuantityCommand = require("../../domain/command/update-quantity-comm
 const CreateShipmentCommand = require("../../domain/command/create-shipment-command");
 
 class SellerResolver {
-  constructor(server, firewall, sellerRepo, deleteProHandler, storageProvider, mailHandler, scrapeHandler) {
+  constructor(server, firewall, sellerRepo, deleteProHandler, storageProvider, mailHandler, scraper, logger) {
     this.server = server;
     this.firewall = firewall;
     this.sellerRepository = sellerRepo;
     this.deleteProductHandler = deleteProHandler;
     this.storageProvider = storageProvider;
     this.mailHandler = mailHandler;
-    this.scrapeHandler = scrapeHandler;
+    this.scrapeHandler = scraper;
     this.errorMessage = env.sellerResolver;
+    this.logger = logger;
   }
 
   resolve() {
@@ -40,6 +41,7 @@ class SellerResolver {
       response.json(product);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async scrapeProductUrl({ query }, response) {
@@ -48,6 +50,7 @@ class SellerResolver {
       response.json(scrapedProduct);
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async updateProductQuantity({ user, body }, response) {
@@ -56,6 +59,7 @@ class SellerResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async deleteProduct({ user, params }, response) {
@@ -64,6 +68,7 @@ class SellerResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async createShipment({ user, body }, response) {
@@ -74,6 +79,7 @@ class SellerResolver {
       response.json({ success: true });
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getProducts({ user, query }, response) {
@@ -83,6 +89,7 @@ class SellerResolver {
       response.json(products);
     } catch (error) {
       response.status(500).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 
@@ -93,8 +100,8 @@ class SellerResolver {
       orders.forEach((order) => (order.country = countries[order.country.toUpperCase()][0]));
       response.json(orders);
     } catch (error) {
-      console.log(error);
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getShipments({ user, query }, response) {
@@ -105,6 +112,7 @@ class SellerResolver {
       response.json(shipments);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getBalance({ user }, response) {
@@ -113,6 +121,7 @@ class SellerResolver {
       response.json(balance);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getSales({ user }, response) {
@@ -121,6 +130,7 @@ class SellerResolver {
       response.json(sales);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
   async getSalesHistory({ user, query }, response) {
@@ -130,6 +140,7 @@ class SellerResolver {
       response.json(salesHistory);
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));
+      this.logger.error(error);
     }
   }
 }

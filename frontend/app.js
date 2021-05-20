@@ -9,6 +9,8 @@ const fetch = require("node-fetch");
 const Firewall = require("./utility/firewall");
 const notFoundPage = require("./pages/not-found.hbs");
 const routes = require("./config/routes.json");
+const { Logger } = require("k-utilities");
+const logger = new Logger("App");
 
 (async () => {
   try {
@@ -40,13 +42,14 @@ const routes = require("./config/routes.json");
     routes.forEach(({ method, url, path }) => {
       const view = require("./pages" + path);
       if (!/.js$/gim.test(path)) return app[method](url, (req, res) => res.send(view(req)));
-      app[method](url, view.bind({ fetch, apiService: env.API, notFoundPage }));
+      const name = path.split("/")[1];
+      app[method](url, view.bind({ fetch, apiService: env.API, notFoundPage, logger: new Logger(name) }));
     });
 
     app.use("*", (req, res) => res.status(404).end(notFoundPage(req.user)));
 
     server.listen(env.PORT, () => console.log("Running on: http://localhost:" + env.PORT));
   } catch (error) {
-    console.error("ServerError: ", error);
+    logger.error(error);
   }
 })();

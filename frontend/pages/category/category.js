@@ -10,5 +10,6 @@ module.exports = async function ({ url, user, headers, params }, response) {
     else response.send(view({ user }, category));
   } catch (error) {
     response.status(400).send(this.notFoundPage(user, error.message));
+    this.logger.error(error);
   }
 };

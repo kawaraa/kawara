@@ -7,5 +7,6 @@ module.exports = async function ({ url, user, headers }, response) {
     else response.send(view({ user }, res.message));
   } catch (error) {
     response.status(400).send(view({ user }, error.message));
+    this.logger.error(error);
   }
 };
