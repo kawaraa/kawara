@@ -1,7 +1,7 @@
 {
   "name": "api",
   "version": "1.0.0",
-  "description": "This is the api gateway for Kawara",
+  "description": "This is the api gateway for KwaShopping",
   "main": "app.js",
   "keywords": [],
   "author": "",
@@ -12,11 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kawaraa/kawara.git/api"
+    "url": "git+https://github.com/kawaraa/kwashopping.git/api"
   },
-  "homepage": "https://github.com/kawaraa/kawara#readme",
+  "homepage": "https://github.com/kawaraa/kwashopping#readme",
   "bugs": {
-    "url": "https://github.com/kawaraa/kawara/issues"
+    "url": "https://github.com/kawaraa/kwashopping/issues"
   },
   "dependencies": {
     "@google-cloud/storage": "^5.8.1",

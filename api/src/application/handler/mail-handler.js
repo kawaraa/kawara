@@ -10,7 +10,7 @@ class MailHandler {
   }
 
   sendEmail({ email, subject, text, html }) {
-    const mailOptions = { from: '"Kawara" <service@kawaraa.com>', to: email, subject, text, html };
+    const mailOptions = { from: '"Kawara" <service@kwashopping.com>', to: email, subject, text, html };
     return new Promise((resolve, reject) => {
       this.mailTransporter.sendMail(mailOptions, (err, info) => (err ? reject(err) : resolve(info)));
     });
@@ -45,7 +45,7 @@ class MailHandler {
 module.exports = MailHandler;
 
 // const mailOptions = {
-//   from: '"Kawara" <service@kawaraa.com>', // sender address
+//   from: '"KwaShopping" <service@kwashopping.com>', // sender address
 //   to: "", // list of receivers
 //   subject: "", // Subject line
 //   text: "", // plain text body
@@ -60,6 +60,6 @@ module.exports = MailHandler;
 //    messageTime: 1367,
 //    messageSize: 2051,
 //    response: '250 2.0.0 OK  87654567 ou567i8693edj.79 - gsmtp',
-//    envelope: { from: 'service@kawaraa.com', to: [ 'example@email.com' ] },
-//    messageId: '<45ytr67u-120d-69462c1d90c1@kawaraa.com>'
+//    envelope: { from: 'service@kwashopping.com', to: [ 'example@email.com' ] },
+//    messageId: '<45ytr67u-120d-69462c1d90c1@kwashopping.com>'
 //  }

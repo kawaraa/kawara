@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "version": "1.0.0",
-  "description": "This is the frontend app for for kawara",
+  "description": "This is the frontend app for for kwashopping",
   "main": "app.js",
   "keywords": [],
   "author": "",
@@ -12,11 +12,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kawaraa/kawara.git/frontend"
+    "url": "git+https://github.com/kawaraa/kwashopping.git/frontend"
   },
-  "homepage": "https://github.com/kawaraa/kawara#readme",
+  "homepage": "https://github.com/kawaraa/kwashopping#readme",
   "bugs": {
-    "url": "https://github.com/kawaraa/kawara/issues"
+    "url": "https://github.com/kawaraa/kwashopping/issues"
   },
   "dependencies": {
     "cookie": "^0.4.0",

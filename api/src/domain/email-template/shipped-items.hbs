@@ -1,48 +1,57 @@
-const { Validator, countries } = require("k-utilities");
-
-module.exports = (shipment) => `
-<article style="font-family: sans-serif; margin-top: 50px; padding: 20px; box-shadow: 0 0 2px 0; border-radius: 10px;">
+const { Validator, countries } = require("k-utilities"); module.exports = (shipment) => `
+<article
+  style="font-family: sans-serif; margin-top: 50px; padding: 20px; box-shadow: 0 0 2px 0; border-radius: 10px;"
+>
   <h3 style="font-size: 30px;">Hi ${shipment.fullName}!</h3>
 
   <h1 style="font-size: 20px;">
     Your order on
-    <a href="https://kawaraa.com" style="color:#585757;  font-weight: bold;">
+    <a href="https://kwashopping.com" style="color:#585757;  font-weight: bold;">
       <span style="color:#24305e;">K</span>a<span style="color:#f76c6c;">w</span>ar<span
-        style="color: #6495ed;">a</span>
+        style="color: #6495ed;"
+      >a</span>
     </a>
     has been shipped.
   </h1>
 
   <p>Your order is on the way to you, the delivery time in general is between 2 - 7 days.<br />
     Please let us know when you receive the order by clicking this button &#128073;
-    <a href="${shipment.domain}/customer/confirm-order-delivery?user=${shipment.userId}&sold=${shipment.itemId}&item=${shipment.productNumber}"
-      style="background: #6495ed; color:white; text-decoration:none; display:inline-block; padding:3px 8px; border-radius:25px;">I
-      received it</a>.
+    <a
+      href="${shipment.domain}/customer/confirm-order-delivery?user=${shipment.userId}&sold=${shipment.itemId}&item=${shipment.productNumber}"
+      style="background: #6495ed; color:white; text-decoration:none; display:inline-block; padding:3px 8px; border-radius:25px;"
+    >I received it</a>.
     <br />
-    If you have any question, feel free to contact us on <a href="mailto:contact@kawaraa.com">contact@kawaraa.com</a>
+    If you have any question, feel free to contact us on
+    <a href="mailto:contact@kwashopping.com">contact@kwashopping.com</a>
   </p>
 
   <ul>
 
     <li style="position: relative; display: flex;align-items: center; margin-top: 20px;">
-      <div style="overflow: hidden; max-width: 100px; max-height: 100px; margin-right: 10px; border-radius: 5px;">
-        <img src="${shipment.picture}" style="width: 100%;">
+      <div
+        style="overflow: hidden; max-width: 100px; max-height: 100px; margin-right: 10px; border-radius: 5px;"
+      >
+        <img src="${shipment.picture}" style="width: 100%;" />
       </div>
       <div style="overflow: hidden; flex: auto;">
-        <a href="${shipment.domain}/product/${shipment.productNumber}"
-          style="display: block;overflow: hidden;margin: 5px 0 5px 0;font-size: 16px;white-space: nowrap;text-overflow: ellipsis;text-decoration: none;">${shipment.name}</a>
+        <a
+          href="${shipment.domain}/product/${shipment.productNumber}"
+          style="display: block;overflow: hidden;margin: 5px 0 5px 0;font-size: 16px;white-space: nowrap;text-overflow: ellipsis;text-decoration: none;"
+        >${shipment.name}</a>
         <dl style="display: flex;align-items: center;margin: 0;">
           <dt style="margin-right: 10px;font-size: 15px;">Type<span> / Color / Material</span>:</dt>
           <dd
-            style="overflow: hidden;display: flex;max-width: 135px;max-height: 60px;margin: 0;font-size: 15px;font-weight: bold;text-transform: uppercase;border-radius: 3px;">
-            ${!Validator.isUrl(shipment.type) ? shipment.type : ` <img src="${shipment.type}"
-              style=" max-width: 30px;max-height: 30px;">`}
+            style="overflow: hidden;display: flex;max-width: 135px;max-height: 60px;margin: 0;font-size: 15px;font-weight: bold;text-transform: uppercase;border-radius: 3px;"
+          >
+            ${!Validator.isUrl(shipment.type) ? shipment.type : `
+            <img src="${shipment.type}" style=" max-width: 30px;max-height: 30px;" />`}
           </dd>
         </dl>
         <dl style=" display: flex;align-items: center;margin: 0;">
           <dt style="margin-right: 10px;font-size: 15px;">Size<span> / Other</span>:</dt>
           <dd
-            style="overflow: hidden;display: flex;max-width: 135px;max-height: 60px;margin: 0;font-size: 15px;font-weight: bold;text-transform: uppercase;border-radius: 3px;">
+            style="overflow: hidden;display: flex;max-width: 135px;max-height: 60px;margin: 0;font-size: 15px;font-weight: bold;text-transform: uppercase;border-radius: 3px;"
+          >
             <span>${shipment.size}</span>
           </dd>
         </dl>
@@ -57,12 +66,13 @@ module.exports = (shipment) => `
     <p class="address">
       ${shipment.street},<br />
       ${shipment.city} ${shipment.postalCode},<br />
-      ${shipment.state},
-      ${countries[shipment.country][0]}
+      ${shipment.state}, ${countries[shipment.country][0]}
     </p>
     <p>
-      Carrier: <a href="${shipment.carrier}">${shipment.carrier}</a>
-      <br />Tracking Number: <span style="font-weight: bold;">${shipment.trackNumber}</span>
+      Carrier:
+      <a href="${shipment.carrier}">${shipment.carrier}</a>
+      <br />Tracking Number:
+      <span style="font-weight: bold;">${shipment.trackNumber}</span>
     </p>
   </section>
 </article>

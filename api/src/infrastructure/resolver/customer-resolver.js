@@ -42,7 +42,7 @@ class ContactResolver {
   }
   async rateUs({ query: { user, rate } }, response) {
     try {
-      await this.customerRepository.rateUs(new StarRating(user, "kawara", rate));
+      await this.customerRepository.rateUs(new StarRating(user, "kwashopping", rate));
       response.json({ success: true });
     } catch (error) {
       response.status(400).end(CustomError.toJson(error));

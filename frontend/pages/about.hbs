@@ -1,41 +1,15 @@
-const header = require("../layout/header.hbs");
-const navbar = require("../layout/navbar.hbs");
-const footer = require("../layout/footer.hbs");
-const { countries } = require("k-utilities");
+const header = require("../layout/header.hbs"); const navbar = require("../layout/navbar.hbs"); const footer =
+require("../layout/footer.hbs"); const { countries } = require("k-utilities"); module.exports = ({user}) => `
 
-module.exports = ({user}) => `
-<!DOCTYPE html>
 <html lang="en">
 
   <head>
     ${header("About Kawara")}
     <style>
-      .container.about {
-        min-height: 85vh;
-      }
-
-      .heading {
-        text-align: center;
-        margin: 100px 0 30px 0;
-      }
-
-      .para {
-        font-size: 18px;
-        line-height: 35px;
-        text-align: center;
-      }
-
-      /* =============== Mobile, IPads & Tablet styles =============== */
-      @media screen and (max-width: 850px) {
-        .container.about {
-          padding: 0 10px;
-        }
-
-        .heading {
-          margin-top: 50px;
-          font-size: 28px;
-        }
-      }
+      .container.about { min-height: 85vh; } .heading { text-align: center; margin: 100px 0 30px 0; } .para {
+      font-size: 18px; line-height: 35px; text-align: center; } /* =============== Mobile, IPads & Tablet
+      styles =============== */ @media screen and (max-width: 850px) { .container.about { padding: 0 10px; }
+      .heading { margin-top: 50px; font-size: 28px; } }
     </style>
   </head>
 
@@ -47,19 +21,23 @@ module.exports = ({user}) => `
       <main class="container about">
         <h1 class="heading">What is Kawara!</h1>
         <p class="para">
-          kawaraa.com is an online Marketplace and follow a set of rules to make the online shopping fun and hassle free
-          between buyer and seller. it's a new way of connecting the local manufacturers and retailers with local
-          people.<br />
-          The main goal of Kawara is to make the online shopping easier and faster by letting the local sellers sell
-          their products on kawara only to locals no overseas shippings, which means the longest delivery time for
-          any product on Kawara would be exactly like shipping an item within the country.<br />
-          For example if seller has products in ${countries[user.country][0]} and he wants to sell them, he can only
-          these products in ${countries[user.country][0]}, he can not sell then in another country.<br />
-          Also the buyer the same way, for example if someone visit kawaraa.com from ${countries[user.country][0]}, he
-          will only see the products that are within ${countries[user.country][0]}, this way the order will not take
-          longer to delivered and the shipping cost is low.<br />
-          We are picky when it comes to choose our sellers, we don't let the sellers sell products that are not in the
-          same country where the product will be shipped to, like Drop Shipping which most seller do.<br />
+          kwashopping.com is an online Marketplace and follow a set of rules to make the online shopping fun
+          and hassle free between buyer and seller. it's a new way of connecting the local manufacturers and
+          retailers with local people.<br />
+          The main goal of Kawara is to make the online shopping easier and faster by letting the local
+          sellers sell their products on KwaShopping only to locals no overseas shippings, which means the
+          longest delivery time for any product on Kawara would be exactly like shipping an item within the
+          country.<br />
+          For example if seller has products in ${countries[user.country][0]} and he wants to sell them, he
+          can only these products in ${countries[user.country][0]}, he can not sell then in another country.<br
+          />
+          Also the buyer the same way, for example if someone visit KwaShopping.com from
+          ${countries[user.country][0]}, he will only see the products that are within
+          ${countries[user.country][0]}, this way the order will not take longer to delivered and the shipping
+          cost is low.<br />
+          We are picky when it comes to choose our sellers, we don't let the sellers sell products that are
+          not in the same country where the product will be shipped to, like Drop Shipping which most seller
+          do.<br />
           Our mission is to make the online shopping easier faster and fun.
         </p>
       </main>
