@@ -2,7 +2,7 @@ const { Validator, CustomError } = require("k-utilities");
 
 class SoldItem {
   constructor(item) {
-    this.id = (Math.random() + Date.now() + Math.random() + "").replace(".", "");
+    this.id = crypto.randomUUID();
     this.orderId = null;
     this.shipmentId = null;
     this._productNumber = item.number;

@@ -53,7 +53,7 @@ class Cookies {
 
 class Cart {
   static add(item) {
-    item.id = (Math.random() + Date.now() + Math.random() + "").replace(".", "");
+    item.id = crypto.randomUUID();
     const cart = Cart.getItems();
     const items = cart.filter(
       (p) => p.number !== item.number || p.type !== item.type || p.size !== item.size

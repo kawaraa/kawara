@@ -1,205 +1,32 @@
 module.exports = () => `
 <style>
-  #types {
-    position: relative;
-    padding-bottom: 30px;
-  }
-
-  .type-wrapper {
-    position: relative;
-    margin: 20px 0;
-    padding: 15px;
-    box-shadow: 0 0px 8px 0 var(--font);
-    border-radius: 5px;
-  }
-
-  .type-wrapper>input[type="button"] {
-    top: 0px;
-    right: -2px;
-    font-size: 25px;
-  }
-
-  .type-input {
-    position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  label[for="type"] {
-    font-size: 18px;
-  }
-
-  input.type {
-    flex: auto;
-    margin: 0 10px;
-    padding: 5px;
-    font-size: 16px;
-    border: none;
-    box-shadow: 0 0 0px 1px var(--dark);
-    border-radius: 3px;
-  }
-
-  .type[type="file"] {
-    position: absolute;
-    width: 200px;
-    height: 20px;
-    top: 0;
-    right: 100px;
-    padding: initial;
-  }
-
-  .type[type="file"]:after {
-    content: attr(data-msg);
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    font-size: 16px;
-    text-align: center;
-    background: var(--blue);
-    color: var(--white);
-    cursor: pointer;
-  }
-
-
-  label[for="picture-file-checkbox"] {
-    margin-right: 20px;
-    position: relative;
-    padding: 5px 10px;
-    font-size: 16px;
-    border-radius: 25px;
-    background: var(--dark);
-    color: var(--white);
-    transition: 0.1s ease;
-  }
-
-  label.active {
-    background: var(--red);
-    color: var(--white);
-  }
-
-  label[for="picture-file-checkbox"]>input {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-  }
-
-  .sizes {
-    position: relative;
-    padding-bottom: 30px;
-  }
-
-  .size-wrapper {
-    display: flex;
-    position: relative;
-    margin: 20px 0 5px 0;
-    padding: 0 3px 0 0;
-  }
-
-  .size-wrapper>input[type="button"] {
-    bottom: 0;
-    right: -19px;
-  }
-
-  .size-box {
-    flex: 3;
-    margin-right: 5px;
-  }
-
-  .size-box:last-child {
-    margin: 0;
-  }
-
-  .size-box>label {
-    display: block;
-    width: 100%;
-    font-size: 15px;
-    margin-bottom: 2px;
-  }
-
-  .size-box>input {
-    display: block;
-    width: 100%;
-    padding: 3px 5px;
-    font-size: 16px;
-    border: none;
-    box-shadow: 0 0 0px 1px var(--dark);
-    border-radius: 2px;
-  }
-
-  /* =============== Mobile, IPads & Tablet styles =============== */
-  @media screen and (max-width: 850px) {
-    .input-field.t {
-      padding: 15px 0;
-    }
-
-    .input-field.t>p {
-      padding: 0 15px;
-    }
-
-    .type-wrapper {
-      box-shadow: 0 1px 4px 0 var(--font);
-      border-radius: 0;
-      padding: 10px;
-    }
-
-    .type-input {
-      display: block;
-    }
-
-    label[for="type"] {
-      display: block;
-      margin-bottom: 5px;
-    }
-
-    input.type {
-      display: inline-block;
-      margin-left: 0;
-      width: calc(100% - 90px);
-    }
-
-    .type[type="file"] {
-      position: relative;
-      left: 0;
-      width: calc(100% - 90px);
-      height: 25px;
-    }
-
-    .type[type="file"]:after {
-      padding-top: 3px;
-    }
-
-    label[for="picture-file-checkbox"] {
-      display: inline-block;
-      margin-right: 0;
-    }
-
-    .size-wrapper {
-      margin: 20px 5px 0 0;
-      padding-bottom: 10px;
-      border-bottom: 0.5px solid var(--blur);
-    }
-
-    .size-box {
-      margin: 0;
-    }
-
-    .size-box:last-child {
-      min-width: 125px;
-    }
-
-    .size-wrapper>input[type="button"] {
-      bottom: 9px;
-      right: -19px;
-    }
-  }
+  #types { position: relative; padding-bottom: 30px; } .type-wrapper { position: relative; margin: 20px 0;
+  padding: 15px; box-shadow: 0 0px 8px 0 var(--font); border-radius: 5px; } .type-wrapper>input[type="button"]
+  { top: 0px; right: -2px; font-size: 25px; } .type-input { position: relative; display: flex;
+  justify-content: space-between; align-items: center; } label[for="type"] { font-size: 18px; } input.type {
+  flex: auto; margin: 0 10px; padding: 5px; font-size: 16px; border: none; box-shadow: 0 0 0px 1px
+  var(--dark); border-radius: 3px; } .type[type="file"] { position: absolute; width: 200px; height: 20px; top:
+  0; right: 100px; padding: initial; } .type[type="file"]:after { content: attr(data-msg); display: block;
+  position: absolute; left: 0; top: 0; height: 100%; width: 100%; font-size: 16px; text-align: center;
+  background: var(--blue); color: var(--white); cursor: pointer; } label[for="picture-file-checkbox"] {
+  margin-right: 20px; position: relative; padding: 5px 10px; font-size: 16px; border-radius: 25px; background:
+  var(--dark); color: var(--white); transition: 0.1s ease; } label.active { background: var(--red); color:
+  var(--white); } label[for="picture-file-checkbox"]>input { position: absolute; top: 0; left: 0; width: 100%;
+  height: 100%; opacity: 0; cursor: pointer; } .sizes { position: relative; padding-bottom: 30px; }
+  .size-wrapper { display: flex; position: relative; margin: 20px 0 5px 0; padding: 0 3px 0 0; }
+  .size-wrapper>input[type="button"] { bottom: 0; right: -19px; } .size-box { flex: 3; margin-right: 5px; }
+  .size-box:last-child { margin: 0; } .size-box>label { display: block; width: 100%; font-size: 15px;
+  margin-bottom: 2px; } .size-box>input { display: block; width: 100%; padding: 3px 5px; font-size: 16px;
+  border: none; box-shadow: 0 0 0px 1px var(--dark); border-radius: 2px; } /* =============== Mobile, IPads &
+  Tablet styles =============== */ @media screen and (max-width: 850px) { .input-field.t { padding: 15px 0; }
+  .input-field.t>p { padding: 0 15px; } .type-wrapper { box-shadow: 0 1px 4px 0 var(--font); border-radius: 0;
+  padding: 10px; } .type-input { display: block; } label[for="type"] { display: block; margin-bottom: 5px; }
+  input.type { display: inline-block; margin-left: 0; width: calc(100% - 90px); } .type[type="file"] {
+  position: relative; left: 0; width: calc(100% - 90px); height: 25px; } .type[type="file"]:after {
+  padding-top: 3px; } label[for="picture-file-checkbox"] { display: inline-block; margin-right: 0; }
+  .size-wrapper { margin: 20px 5px 0 0; padding-bottom: 10px; border-bottom: 0.5px solid var(--blur); }
+  .size-box { margin: 0; } .size-box:last-child { min-width: 125px; } .size-wrapper>input[type="button"] {
+  bottom: 9px; right: -19px; } }
 </style>
 
 <div class="input-field t">
@@ -210,9 +37,19 @@ module.exports = () => `
       <input type="button" value="×" onclick="this.parentElement.remove()" style="display: none;" />
       <div class="type-input">
         <label for="type">Type / Color / Material</label>
-        <input onchange="showPictureText(this)" type="text" name="type" accept="image/*" required
-          data-msg="Upload picture" class="type" />
-        <label for="picture-file-checkbox">Picture<input type="checkbox" onchange="changeToFileInput(this)"></label>
+        <input
+          onchange="showPictureText(this)"
+          type="text"
+          name="type"
+          accept="image/*"
+          required
+          data-msg="Upload picture"
+          class="type"
+        />
+        <label for="picture-file-checkbox">Picture<input
+            type="checkbox"
+            onchange="changeToFileInput(this)"
+          /></label>
       </div>
       <div class="sizes">
         <button type="button" onclick="addSize(this.parentElement)" class="add-btn">Add Size</button>
@@ -236,78 +73,30 @@ module.exports = () => `
   </div>
 </div>
 <script>
-  const typesWrapper = queryId("types");
-  const typeEl = typesWrapper.children[1].cloneNode(true);
-  const newId = () => (Math.random() + Date.now() + Math.random() + "").replace(".", "")
-
-  function showPictureText(input) {
-    if (input.type !== "file") return;
-    const files = input.files.length
-    input.dataset.msg = files > 0 ? files + " picture selected" : "Upload picture";
-  }
-
-  function addType() {
-    if (typesWrapper.children.length > 15) return
-    const el = typeEl.cloneNode(true);
-    el.children[0].style.display = "block";
-    typesWrapper.appendChild(el)
-  }
-  function addSize(sizesWrapper) {
-    if (sizesWrapper.children.length > 10) return
-    const el = sizesWrapper.children[sizesWrapper.children.length - 1].cloneNode(true);
-    el.children[0].style.display = "block";
-    sizesWrapper.appendChild(el)
-  }
-  function changeToFileInput(checkbox) {
-    const input = checkbox.parentElement.parentElement.children[1];
-    if (checkbox.checked) {
-      input.type = "file";
-      input.name = newId();
-      addClass(checkbox.parentElement, "active");
-    }
-    else {
-      removeClass(checkbox.parentElement, "active");
-      input.type = "text";
-      input.name = "type";
-    }
-  }
-
-  function getTypes() {
-    const typeElements = Array.from(typesWrapper.querySelectorAll(".type-wrapper"));
-    let error = "";
-    const types = typeElements.map(typeWrapper => {
-      const type = { type: "" }
-      const typeInput = typeWrapper.querySelector("input.type");
-      const sizeElements = Array.from(typeWrapper.querySelectorAll(".size-wrapper"));
-
-      if ((!typeInput.files || !typeInput.files[0]) && !typeInput.value) {
-        typeInput.style.boxShadow = "0 0 0 2px red";
-        return error = "'Type Field' can not be empty";
-      } else if (typeInput.files) type.type = typeInput.name;
-      else type.type = typeInput.value;
-
-      type.sizes = sizeElements.map(sizeEl => {
-        const size = sizeEl.querySelector("input[name=size]");
-        const price = sizeEl.querySelector("input[name=price]");
-        const quantity = sizeEl.querySelector("input[name=quantity]");
-        if (!size.value) {
-          size.style.boxShadow = "0 0 0 2px red";
-          return error = "'Size Field' can not be empty";
-        }
-        if (!price.value || Number.isNaN(Number.parseInt(price.value))) {
-          price.style.boxShadow = "0 0 0 2px red";
-          return error = "Invalid input 'Price' must be a positive number";
-        }
-        if (!quantity.value || Number.isNaN(Number.parseInt(quantity.value))) {
-          quantity.style.boxShadow = "0 0 0 2px red";
-          return error = "Invalid input 'Quantity' must be a positive number";
-        }
-        return { size: size.value, price: price.value, quantity: quantity.value }
-      });
-      return type;
-    });
-    if (error) return showErrorMessage(error);
-    return JSON.stringify(types);
-  }
+  const typesWrapper = queryId("types"); const typeEl = typesWrapper.children[1].cloneNode(true); function
+  showPictureText(input) { if (input.type !== "file") return; const files = input.files.length
+  input.dataset.msg = files > 0 ? files + " picture selected" : "Upload picture"; } function addType() { if
+  (typesWrapper.children.length > 15) return const el = typeEl.cloneNode(true); el.children[0].style.display =
+  "block"; typesWrapper.appendChild(el) } function addSize(sizesWrapper) { if (sizesWrapper.children.length >
+  10) return const el = sizesWrapper.children[sizesWrapper.children.length - 1].cloneNode(true);
+  el.children[0].style.display = "block"; sizesWrapper.appendChild(el) } function changeToFileInput(checkbox)
+  { const input = checkbox.parentElement.parentElement.children[1]; if (checkbox.checked) { input.type =
+  "file"; input.name = crypto.randomUUID(); addClass(checkbox.parentElement, "active"); } else {
+  removeClass(checkbox.parentElement, "active"); input.type = "text"; input.name = "type"; } } function
+  getTypes() { const typeElements = Array.from(typesWrapper.querySelectorAll(".type-wrapper")); let error =
+  ""; const types = typeElements.map(typeWrapper => { const type = { type: "" } const typeInput =
+  typeWrapper.querySelector("input.type"); const sizeElements =
+  Array.from(typeWrapper.querySelectorAll(".size-wrapper")); if ((!typeInput.files || !typeInput.files[0]) &&
+  !typeInput.value) { typeInput.style.boxShadow = "0 0 0 2px red"; return error = "'Type Field' can not be
+  empty"; } else if (typeInput.files) type.type = typeInput.name; else type.type = typeInput.value; type.sizes
+  = sizeElements.map(sizeEl => { const size = sizeEl.querySelector("input[name=size]"); const price =
+  sizeEl.querySelector("input[name=price]"); const quantity = sizeEl.querySelector("input[name=quantity]"); if
+  (!size.value) { size.style.boxShadow = "0 0 0 2px red"; return error = "'Size Field' can not be empty"; } if
+  (!price.value || Number.isNaN(Number.parseInt(price.value))) { price.style.boxShadow = "0 0 0 2px red";
+  return error = "Invalid input 'Price' must be a positive number"; } if (!quantity.value ||
+  Number.isNaN(Number.parseInt(quantity.value))) { quantity.style.boxShadow = "0 0 0 2px red"; return error =
+  "Invalid input 'Quantity' must be a positive number"; } return { size: size.value, price: price.value,
+  quantity: quantity.value } }); return type; }); if (error) return showErrorMessage(error); return
+  JSON.stringify(types); }
 </script>
 `;
